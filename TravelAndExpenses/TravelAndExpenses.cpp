@@ -50,9 +50,9 @@ int main()
 {
 	
 
-	Journey journey1{ TravelType::Travel, 23.23 };
+	Journey journey1{ TravelType::Travel, 25.23 };
 	Journey journey2{ TravelType::TravelAndExpense, 23.23, 10.92 };
-	Journey journey3{ TravelType::Travel, 25.30 };
+	Journey journey3{ TravelType::Travel, 25.23 };
 	
 	vecJourneyCollection.push_back(journey1);
 	vecJourneyCollection.push_back(journey2);
