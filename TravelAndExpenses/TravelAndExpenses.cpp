@@ -22,6 +22,8 @@ struct Journey {
 	double expenseCost;
 	double totalCost;
 	double taxReclaim;
+	double expensePayable;
+	double finalPayment;
 
 	// Constructor for travel only
 	Journey(TravelType passTravelType, double passCost)
@@ -30,7 +32,9 @@ struct Journey {
 		travelCost = passCost;
 		totalCost = travelCost;
 		expenseCost = 0;
+		expensePayable = 0;
 		taxReclaim = totalCost * 0.2;
+		finalPayment = travelCost;
 	}
 	// Constructor used when there is travel and expenses
 	Journey(TravelType passTravelType, double passTravelCost, double passExpenseCost) {
@@ -39,6 +43,13 @@ struct Journey {
 		expenseCost = passExpenseCost;
 		totalCost = travelCost + expenseCost;
 		taxReclaim = totalCost * 0.2;
+		if (expenseCost >= 50) {
+			expensePayable = 50;
+		}
+		else {
+			expensePayable = expenseCost;
+		}
+		finalPayment = expensePayable + travelCost;
 	}
 
 
@@ -53,16 +64,19 @@ int main()
 	Journey journey1{ TravelType::Travel, 25.23 };
 	Journey journey2{ TravelType::TravelAndExpense, 23.23, 10.92 };
 	Journey journey3{ TravelType::Travel, 25.23 };
+	Journey journey4{ TravelType::TravelAndExpense, 120.25, 57.82 };
 	
 	vecJourneyCollection.push_back(journey1);
 	vecJourneyCollection.push_back(journey2);
 	vecJourneyCollection.push_back(journey3);
+	vecJourneyCollection.push_back(journey4);
 
 	for (int i = 0; i < (int)vecJourneyCollection.size(); ++i) {
 		if (vecJourneyCollection[i].travelType == TravelType::Travel) {
 			std::cout << "Travel type : " << ((((int)vecJourneyCollection[i].travelType) == 0) ? "Travel" : "Travel and Expenses")<< "\n";
 			std::cout << "Total Cost : \x9C"  << vecJourneyCollection[i].totalCost << "\n";
 			printf("Tax Reclaimable : \x9C%.2f\n", vecJourneyCollection[i].taxReclaim);
+			printf("Final payment made : \x9C%.2f\n", vecJourneyCollection[i].finalPayment);
 			std::cout << " " << "\n";
 		}
 		else {
@@ -71,6 +85,8 @@ int main()
 			std::cout << "Expense Cost : \x9C" << vecJourneyCollection[i].expenseCost << "\n";
 			std::cout << "Total Cost : \x9C" << vecJourneyCollection[i].totalCost << "\n";
 			printf("Tax Reclaimable : \x9C%.2f\n", vecJourneyCollection[i].taxReclaim);
+			printf("Expenses Payable : \x9C%.2f\n", vecJourneyCollection[i].expensePayable);
+			printf("Final payment made : \x9C%.2f\n", vecJourneyCollection[i].finalPayment);
 			std::cout << " " << "\n";
 		}
 	}
