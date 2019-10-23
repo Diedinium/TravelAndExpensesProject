@@ -84,6 +84,7 @@ void Pause();
 void TestingFunction();
 int ValidateChoiceInput();
 
+void TestFunction(std::vector<Journey> *vecJourneyCollectionPass);
 
 // Menu action functinons
 void AddNewJourney();
@@ -94,6 +95,9 @@ void ViewSummary();
 
 int main()
 {
+	std::vector<Journey> vecJourneyCollection2;
+	TestFunction(&vecJourneyCollection2);
+
 	PrintIntro();
 
 	int intMenuMainChoice = 0;
@@ -511,6 +515,16 @@ void TestingFunction() {
 	vecJourneyCollection.push_back(journey2);
 	vecJourneyCollection.push_back(journey3);
 	vecJourneyCollection.push_back(journey4);
+}
+
+// Experiemnt with passing by reference, needs implementing!
+void TestFunction(std::vector<Journey>* vecJourneyCollectionPass) {
+	double tempVar;
+	Journey tempJourney{ TravelType::TravelAndExpense, 25, 50 };
+	vecJourneyCollectionPass->push_back(tempJourney);
+	tempVar = vecJourneyCollectionPass->at(0).expenseCost;
+	std::cout << "Temp var is : " << tempVar;
+	Pause();
 }
 
 // Functions end
