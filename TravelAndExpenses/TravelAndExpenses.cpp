@@ -99,6 +99,8 @@ int main()
 	int intMenuMainChoice = 0;
 	bool boolExitWhile = false;
 
+	TestingFunction();
+
 	do {
 		PrintMainMenuScreen();
 
@@ -318,32 +320,26 @@ void ViewSummary() {
 			try {
 				switch (intSummaryChoiceInput) {
 					case 1: {
-						intSummaryChoiceInput = 0;
-						bool boolExitWhile = true;
+						boolExitWhile = true;
 						break;
 					}
 					case 2: {
-						intSummaryChoiceInput = 0;
-						bool boolExitWhile = true;
+						boolExitWhile = true;
 						break;
 					} 
 					case 3: {
-						intSummaryChoiceInput = 0;
-						bool boolExitWhile = true;
+						boolExitWhile = true;
 						break;
 					} 
 					case 4: {
-						intSummaryChoiceInput = 0;
-						bool boolExitWhile = true;
+						boolExitWhile = true;
 						break;
 					}
 					case 5: {
-						intSummaryChoiceInput = 0;
-						bool boolExitWhile = true;
+						boolExitWhile = true;
 						break;
 					}
 					default: {
-						intSummaryChoiceInput = 0;
 						throw std::exception("Not recognised as valid input.");
 						break;
 					}
@@ -355,8 +351,10 @@ void ViewSummary() {
 			}
 		}
 
-	} while (intSummaryChoiceInput != 4);
+	} while (intSummaryChoiceInput != 5);
 
+	intSummaryChoiceInput = 0;
+	boolExitWhile = false;
 
 }
 
@@ -437,6 +435,9 @@ void PrintMainMenuScreen() {
 	std::cout << "Option 1: Enter a new Journey\n";
 	if (vecJourneyCollection.size() > 0) {
 		std::cout << "Option 2: View current journeys\n";
+	}
+	if (vecJourneyCollection.size() > 0) {
+		std::cout << "Option 3: Summaries\n";
 	}
 	std::cout << "Option 9: Exit\n";
 	std::cout << "\n";
