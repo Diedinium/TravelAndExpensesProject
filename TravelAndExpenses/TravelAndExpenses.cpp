@@ -71,6 +71,7 @@ void PrintCurrentJourneysTravelExpense(std::vector<Journey>* vecJourneyCollectio
 void PrintAddJourneyScreen(std::vector<Journey>* vecJourneyCollection);
 void PrintMainMenuScreen(std::vector<Journey>* vecJourneyCollection);
 void PrintSummaryScreen();
+void PrintSummaryHeader(int* intWidth);
 
 // Misc helper functions
 void Pause();
@@ -82,7 +83,8 @@ void TestFunction(std::vector<Journey> *vecJourneyCollection);
 // Menu action functinons
 void AddNewJourney(std::vector<Journey>* vecJourneyCollection, int* intWidth);
 void ViewJourneys(std::vector<Journey>* vecJourneyCollection, int* intWidth);
-void ViewSummary();
+void ViewSummary(std::vector<Journey>* vecJourneyCollection, int* intWidth);
+void ViewCombinedSummary(std::vector<Journey>* vecJourneyCollection, int* intWidth);
 
 //Function namespace declaration end
 
@@ -132,7 +134,7 @@ int main()
 						break;
 					}
 					else {
-						ViewSummary();
+						ViewSummary(&vecJourneyCollection, &intWidth);
 						boolExitWhile = true;
 					}
 					break;
@@ -270,18 +272,21 @@ void ViewJourneys(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	system("CLS");
 	PrintTravelHeader(intWidth);
 	PrintCurrentJourneysTravel(vecJourneyCollection, intWidth);
+	std::cout << "\n";
 
 	PrintTravelExpenseHeader(intWidth);
 	PrintCurrentJourneysTravelExpense(vecJourneyCollection, intWidth);
+	std::cout << "\n";
 	Pause();
 }
 
-void ViewSummary() {
+void ViewSummary(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	int intSummaryChoiceInput = 0;
 	bool boolExitWhile = false;
 
 	do {
 		PrintSummaryScreen();
+		boolExitWhile = false;
 
 		while (boolExitWhile == false) {
 			std::cout << "Enter choice : ";
@@ -292,6 +297,7 @@ void ViewSummary() {
 				switch (intSummaryChoiceInput) {
 					case 1: {
 						boolExitWhile = true;
+						ViewCombinedSummary(vecJourneyCollection, intWidth);
 						break;
 					}
 					case 2: {
@@ -329,6 +335,26 @@ void ViewSummary() {
 
 }
 
+void ViewCombinedSummary(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
+	system("cls");
+	PrintSummaryHeader(intWidth);
+	if (vecJourneyCollection->size() > 0) {
+		PrintCurrentJourneysTravel(vecJourneyCollection, intWidth);
+		PrintCurrentJourneysTravelExpense(vecJourneyCollection, intWidth);
+	}
+
+	CalculateAllSummaryTotals(vecJourneyCollection);
+
+	Pause();
+}
+
+void PrintSummaryHeader(int* intWidth) {
+	std::cout << "All Journeys" << "\n";
+	std::cout << "------------------------------------------------------------------------------------------------------------------------\n";
+	std::cout << std::setw(*intWidth) << "Travel Type" << std::setw(*intWidth) << "Travel Cost" << std::setw(*intWidth) << "Exp Cost" << std::setw(*intWidth) << "Total Cost" << std::setw(*intWidth) << "Exp Payable" << std::setw(*intWidth) << "Tax Reclaim" << std::setw(*intWidth) << "Exp not Cvrd" << std::setw(*intWidth) << "Final Pay\n";
+	std::cout << "------------------------------------------------------------------------------------------------------------------------\n";
+}
+
 void PrintTravelHeader(int* intWidth) {
 	std::cout << "Travel Only Journeys" << "\n";
 	std::cout << "------------------------------------------------------------\n";
@@ -363,7 +389,6 @@ void PrintCurrentJourneysTravel(std::vector<Journey>* vecJourneyCollection, int*
 					<< std::setw(*intWidth) << std::fixed << vecJourneyCollection->at(i).finalPayment << "\n";
 			}
 		}
-		std::cout << "\n";
 	}
 }
 
@@ -391,7 +416,6 @@ void PrintCurrentJourneysTravelExpense(std::vector<Journey>* vecJourneyCollectio
 					<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).finalPayment << "\n";
 			}
 		}
-		std::cout << "\n";
 	}
 
 }
@@ -485,6 +509,20 @@ double ValidateDoubleInput() {
 	}
 
 	return DoubleValue;
+}
+
+auto CalculateAllSummaryTotals(std::vector<Journey>* vecJourneyCollection) {
+	struct result { double TotalTravel; double TotalExpense; double TotalOfTotals; double TotalExpensePay; double TotalTaxReclaim; double ExpenseNotCovered; double TotalFinalPay; };
+	result SummaryTotals = result();
+	if (vecJourneyCollection->size() <= 0) {
+		std::cout << "There are currently no stored journeys\n";
+	}
+	else {
+		for (std::size_t i = 0; i < vecJourneyCollection->size(); ++i) {
+			SummaryTotals.TotalTravel += vecJourneyCollection->at(i).travelCost;
+		}
+	}
+	
 }
 
 void Pause()
