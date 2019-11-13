@@ -244,7 +244,7 @@ auto CalculateTravelExpenseSummaryTotals(std::vector<Journey>* vecJourneyCollect
 }
 
 auto CalculateAllSummaryAverage(std::vector<Journey>* vecJourneyCollection) {
-	struct result { double TotalTravel; double TotalExpense; double TotalOfTotals; double TotalExpensePay; double TotalTaxReclaim; double ExpenseNotCovered; double TotalFinalPay; };
+	struct result { double AverageTravel; double AverageExpense; double AverageOfTotals; double AverageExpensePay; double AverageTaxReclaim; double AverageNotCovered; double AverageFinalPay; };
 	result SummaryTotals = result();
 	std::size_t NumOfRecords = 0;
 	if (vecJourneyCollection->size() <= 0) {
@@ -256,27 +256,27 @@ auto CalculateAllSummaryAverage(std::vector<Journey>* vecJourneyCollection) {
 			NumOfRecords++;
 		}
 		for (std::size_t i = 0; i < vecJourneyCollection->size(); ++i) {
-			SummaryTotals.TotalTravel += vecJourneyCollection->at(i).travelCost;
-			SummaryTotals.TotalExpense += vecJourneyCollection->at(i).expenseCost;
-			SummaryTotals.TotalOfTotals += vecJourneyCollection->at(i).totalCost;
-			SummaryTotals.TotalExpensePay += vecJourneyCollection->at(i).expensePayable;
-			SummaryTotals.TotalTaxReclaim += vecJourneyCollection->at(i).taxReclaim;
-			SummaryTotals.ExpenseNotCovered += vecJourneyCollection->at(i).expenseNotCovered;
-			SummaryTotals.TotalFinalPay += vecJourneyCollection->at(i).finalPayment;
+			SummaryTotals.AverageTravel += vecJourneyCollection->at(i).travelCost;
+			SummaryTotals.AverageExpense += vecJourneyCollection->at(i).expenseCost;
+			SummaryTotals.AverageOfTotals += vecJourneyCollection->at(i).totalCost;
+			SummaryTotals.AverageExpensePay += vecJourneyCollection->at(i).expensePayable;
+			SummaryTotals.AverageTaxReclaim += vecJourneyCollection->at(i).taxReclaim;
+			SummaryTotals.AverageNotCovered += vecJourneyCollection->at(i).expenseNotCovered;
+			SummaryTotals.AverageFinalPay += vecJourneyCollection->at(i).finalPayment;
 		}
-		SummaryTotals.TotalTravel /= NumOfRecords;
-		SummaryTotals.TotalExpense /= NumOfRecords;
-		SummaryTotals.TotalOfTotals /= NumOfRecords;
-		SummaryTotals.TotalExpensePay /= NumOfRecords;
-		SummaryTotals.TotalTaxReclaim /= NumOfRecords;
-		SummaryTotals.ExpenseNotCovered /= NumOfRecords;
-		SummaryTotals.TotalFinalPay /= NumOfRecords;
+		SummaryTotals.AverageTravel /= NumOfRecords;
+		SummaryTotals.AverageExpense /= NumOfRecords;
+		SummaryTotals.AverageOfTotals /= NumOfRecords;
+		SummaryTotals.AverageExpensePay /= NumOfRecords;
+		SummaryTotals.AverageTaxReclaim /= NumOfRecords;
+		SummaryTotals.AverageNotCovered /= NumOfRecords;
+		SummaryTotals.AverageFinalPay /= NumOfRecords;
 		return SummaryTotals;
 	}
 }
 
 auto CalculateTravelSummaryAverage(std::vector<Journey>* vecJourneyCollection) {
-	struct result { double TotalTravel; double TotalTaxReclaim; double TotalFinalPay; };
+	struct result { double AverageTravel; double AverageTaxReclaim; double AverageFinalPay; };
 	result SummaryTotals = result();
 	std::size_t NumOfRecords = 0;
 	if (vecJourneyCollection->size() <= 0) {
@@ -291,14 +291,14 @@ auto CalculateTravelSummaryAverage(std::vector<Journey>* vecJourneyCollection) {
 		}
 		for (std::size_t i = 0; i < vecJourneyCollection->size(); ++i) {
 			if (vecJourneyCollection->at(i).travelType == TravelType::Travel) {
-				SummaryTotals.TotalTravel += vecJourneyCollection->at(i).travelCost;
-				SummaryTotals.TotalTaxReclaim += vecJourneyCollection->at(i).taxReclaim;
-				SummaryTotals.TotalFinalPay += vecJourneyCollection->at(i).finalPayment;
+				SummaryTotals.AverageTravel += vecJourneyCollection->at(i).travelCost;
+				SummaryTotals.AverageTaxReclaim += vecJourneyCollection->at(i).taxReclaim;
+				SummaryTotals.AverageFinalPay += vecJourneyCollection->at(i).finalPayment;
 			}
 		}
-		SummaryTotals.TotalTravel /= NumOfRecords;
-		SummaryTotals.TotalTaxReclaim /= NumOfRecords;
-		SummaryTotals.TotalFinalPay /= NumOfRecords;
+		SummaryTotals.AverageTravel /= NumOfRecords;
+		SummaryTotals.AverageTaxReclaim /= NumOfRecords;
+		SummaryTotals.AverageFinalPay /= NumOfRecords;
 		return SummaryTotals;
 	}
 
@@ -565,7 +565,18 @@ void ViewCombinedSummary(std::vector<Journey>* vecJourneyCollection, int* intWid
 	}
 
 	try {
-		auto totals = CalculateAllSummaryAverage(vecJourneyCollection);
+		auto average = CalculateAllSummaryAverage(vecJourneyCollection);
+		std::cout << "\n";
+		std::cout.precision(2);
+		std::cout
+			<< std::fixed << std::setw(*intWidth) << "Averages :"
+			<< std::fixed << std::setw(*intWidth) << average.AverageTravel
+			<< std::fixed << std::setw(*intWidth) << average.AverageExpense
+			<< std::fixed << std::setw(*intWidth) << average.AverageOfTotals
+			<< std::fixed << std::setw(*intWidth) << average.AverageExpensePay
+			<< std::fixed << std::setw(*intWidth) << average.AverageTaxReclaim
+			<< std::fixed << std::setw(*intWidth) << average.AverageNotCovered
+			<< std::fixed << std::setw(*intWidth) << average.AverageFinalPay << "\n";
 	}
 	catch (std::exception& exp) {
 		std::cout << "Error : " << exp.what() << "\n";
@@ -592,6 +603,20 @@ void ViewTravelOnlySummary(std::vector<Journey>* vecJourneyCollection, int* intW
 		std::cout << "Error : " << exp.what() << "\n";
 	}
 
+	try {
+		auto average = CalculateTravelSummaryAverage(vecJourneyCollection);
+		std::cout << "\n";
+		std::cout.precision(2);
+		std::cout
+			<< std::fixed << std::setw(*intWidth) << "Averages :"
+			<< std::fixed << std::setw(*intWidth) << average.AverageTravel
+			<< std::fixed << std::setw(*intWidth) << average.AverageTaxReclaim
+			<< std::fixed << std::setw(*intWidth) << average.AverageFinalPay << "\n";
+	}
+	catch (std::exception& exp) {
+		std::cout << "Error : " << exp.what() << "\n";
+	}
+
 	Pause();
 }
 
@@ -614,6 +639,24 @@ void ViewTravelExpensesOnlySummary(std::vector<Journey>* vecJourneyCollection, i
 			<< std::fixed << std::setw(*intWidth) << totals.TotalFinalPay << "\n";
 	}
 	catch (std::exception & exp) {
+		std::cout << "Error : " << exp.what() << "\n";
+	}
+
+	try {
+		auto average = CalculateTravelExpenseSummaryAverage(vecJourneyCollection);
+		std::cout << "\n";
+		std::cout.precision(2);
+		std::cout
+			<< std::fixed << std::setw(*intWidth) << "Averages :"
+			<< std::fixed << std::setw(*intWidth) << average.AverageTravel
+			<< std::fixed << std::setw(*intWidth) << average.AverageExpense
+			<< std::fixed << std::setw(*intWidth) << average.AverageOfTotals
+			<< std::fixed << std::setw(*intWidth) << average.AverageExpensePay
+			<< std::fixed << std::setw(*intWidth) << average.AverageTaxReclaim
+			<< std::fixed << std::setw(*intWidth) << average.AverageNotCovered
+			<< std::fixed << std::setw(*intWidth) << average.AverageFinalPay << "\n";
+	}
+	catch (std::exception& exp) {
 		std::cout << "Error : " << exp.what() << "\n";
 	}
 
