@@ -83,6 +83,9 @@ auto CalculateTravelExpenseSummaryTotals(std::vector<Journey>* vecJourneyCollect
 auto CalculateAllSummaryAverage(std::vector<Journey>* vecJourneyCollection);
 auto CalculateTravelSummaryAverage(std::vector<Journey>* vecJourneyCollection);
 auto CalculateTravelExpenseSummaryAverage(std::vector<Journey>* vecJourneyCollection);
+auto CalculateAllSummaryLargest(std::vector<Journey>* vecJourneyCollection);
+auto CalculateTravelSummaryLargest(std::vector<Journey>* vecJourneyCollection);
+auto CalculateTravelExpenseSummaryLargest(std::vector<Journey>* vecJourneyCollection);
 
 // Testing function : Automatically adds some journeys to save time when testing.
 void TestFunction(std::vector<Journey> *vecJourneyCollection);
@@ -337,6 +340,31 @@ auto CalculateTravelExpenseSummaryAverage(std::vector<Journey>* vecJourneyCollec
 		SummaryTotals.AverageNotCovered /= NumOfRecords;
 		SummaryTotals.AverageFinalPay /= NumOfRecords;
 		return SummaryTotals;
+	}
+}
+
+auto CalculateAllSummaryLargest(std::vector<Journey>* vecJourneyCollection) {
+
+}
+
+auto CalculateTravelSummaryLargest(std::vector<Journey>* vecJourneyCollection) {
+
+}
+
+auto CalculateTravelExpenseSummaryLargest(std::vector<Journey>* vecJourneyCollection) {
+	struct result { double AverageTravel; double AverageExpense; double AverageOfTotals; double AverageExpensePay; double AverageTaxReclaim; double AverageNotCovered; double AverageFinalPay; };
+	result SummaryTotals = result();
+
+	if (vecJourneyCollection->size() <= 0) {
+		std::cout << "There are currently no stored journeys\n";
+		return SummaryTotals;
+	}
+	else {
+		for (std::size_t i = 0; i < vecJourneyCollection->size(); ++i) {
+			if (vecJourneyCollection->at(i).travelType == TravelType::TravelAndExpense) {
+
+			}
+		}
 	}
 }
 
