@@ -88,7 +88,7 @@ auto CalculateTravelSummaryLargest(std::vector<Journey>* vecJourneyCollection);
 auto CalculateTravelExpenseSummaryLargest(std::vector<Journey>* vecJourneyCollection);
 
 // Testing function : Automatically adds some journeys to save time when testing.
-void TestFunction(std::vector<Journey> *vecJourneyCollection);
+void TestFunction(std::vector<Journey>* vecJourneyCollection);
 
 // Menu action functinons
 void AddNewJourney(std::vector<Journey>* vecJourneyCollection, int* intWidth);
@@ -240,7 +240,7 @@ auto CalculateTravelExpenseSummaryTotals(std::vector<Journey>* vecJourneyCollect
 				SummaryTotals.ExpenseNotCovered += vecJourneyCollection->at(i).expenseNotCovered;
 				SummaryTotals.TotalFinalPay += vecJourneyCollection->at(i).finalPayment;
 			}
-				
+
 		}
 		return SummaryTotals;
 	}
@@ -331,7 +331,7 @@ auto CalculateTravelExpenseSummaryAverage(std::vector<Journey>* vecJourneyCollec
 				SummaryTotals.AverageNotCovered += vecJourneyCollection->at(i).expenseNotCovered;
 				SummaryTotals.AverageFinalPay += vecJourneyCollection->at(i).finalPayment;
 			}
-		} 
+		}
 		SummaryTotals.AverageTravel /= NumOfRecords;
 		SummaryTotals.AverageExpense /= NumOfRecords;
 		SummaryTotals.AverageOfTotals /= NumOfRecords;
@@ -344,16 +344,83 @@ auto CalculateTravelExpenseSummaryAverage(std::vector<Journey>* vecJourneyCollec
 }
 
 auto CalculateAllSummaryLargest(std::vector<Journey>* vecJourneyCollection) {
+	struct result { double LargestTravel; double LargestExpense; double LargestOfTotals; double LargestExpensePay; double LargestTaxReclaim; double LargestNotCovered; double LargestFinalPay; };
+	result SummaryTotals = result();
+	double dTravelLargest = 0, dExpenseLargest = 0, dTotalsLargest = 0, dExpensePayLargest = 0, dTaxReclaimLargest = 0, dNotCoveredLargest = 0, dFinalPayLargest = 0;
 
+	if (vecJourneyCollection->size() <= 0) {
+		std::cout << "There are currently no stored journeys\n";
+		return SummaryTotals;
+	}
+	else {
+		for (std::size_t i = 0; i < vecJourneyCollection->size(); ++i) {
+			if (vecJourneyCollection->at(i).travelCost > dTravelLargest) {
+				dTravelLargest =vecJourneyCollection->at(i).travelCost;
+			}
+			if (vecJourneyCollection->at(i).expenseCost > dExpenseLargest) {
+				dExpenseLargest = vecJourneyCollection->at(i).expenseCost;
+			}
+			if (vecJourneyCollection->at(i).totalCost > dTotalsLargest) {
+				dTotalsLargest = vecJourneyCollection->at(i).totalCost;
+			}
+			if (vecJourneyCollection->at(i).expensePayable > dExpensePayLargest) {
+				dExpensePayLargest = vecJourneyCollection->at(i).expensePayable;
+			}
+			if (vecJourneyCollection->at(i).taxReclaim > dTaxReclaimLargest) {
+				dTaxReclaimLargest = vecJourneyCollection->at(i).taxReclaim;
+			}
+			if (vecJourneyCollection->at(i).expenseNotCovered > dNotCoveredLargest) {
+				dNotCoveredLargest = vecJourneyCollection->at(i).expenseNotCovered;
+			}
+			if (vecJourneyCollection->at(i).finalPayment > dFinalPayLargest) {
+				dFinalPayLargest = vecJourneyCollection->at(i).finalPayment;
+			}
+		}
+		SummaryTotals.LargestTravel = dTravelLargest;
+		SummaryTotals.LargestExpense = dExpenseLargest;
+		SummaryTotals.LargestOfTotals = dTotalsLargest;
+		SummaryTotals.LargestExpensePay = dExpensePayLargest;
+		SummaryTotals.LargestTaxReclaim = dTaxReclaimLargest;
+		SummaryTotals.LargestNotCovered = dNotCoveredLargest;
+		SummaryTotals.LargestFinalPay = dFinalPayLargest;
+		return SummaryTotals;
+	}
 }
 
 auto CalculateTravelSummaryLargest(std::vector<Journey>* vecJourneyCollection) {
+	struct result { double LargestTravel; double LargestTaxReclaim; double LargestFinalPay; };
+	result SummaryTotals = result();
+	double dTravelLargest = 0, dTaxReclaimLargest = 0, dFinalPayLargest = 0;
 
+	if (vecJourneyCollection->size() <= 0) {
+		std::cout << "There are currently no stored journeys\n";
+		return SummaryTotals;
+	}
+	else {
+		for (std::size_t i = 0; i < vecJourneyCollection->size(); ++i) {
+			if (vecJourneyCollection->at(i).travelType == TravelType::Travel) {
+				if (vecJourneyCollection->at(i).travelCost > dTravelLargest) {
+					dTravelLargest = vecJourneyCollection->at(i).travelCost;
+				}
+				if (vecJourneyCollection->at(i).taxReclaim > dTaxReclaimLargest) {
+					dTaxReclaimLargest = vecJourneyCollection->at(i).taxReclaim;
+				}
+				if (vecJourneyCollection->at(i).finalPayment > dFinalPayLargest) {
+					dFinalPayLargest = vecJourneyCollection->at(i).finalPayment;
+				}
+			}
+		}
+		SummaryTotals.LargestTravel = dTravelLargest;
+		SummaryTotals.LargestTaxReclaim = dTaxReclaimLargest;
+		SummaryTotals.LargestFinalPay = dFinalPayLargest;
+		return SummaryTotals;
+	}
 }
 
 auto CalculateTravelExpenseSummaryLargest(std::vector<Journey>* vecJourneyCollection) {
-	struct result { double AverageTravel; double AverageExpense; double AverageOfTotals; double AverageExpensePay; double AverageTaxReclaim; double AverageNotCovered; double AverageFinalPay; };
+	struct result { double LargestTravel; double LargestExpense; double LargestOfTotals; double LargestExpensePay; double LargestTaxReclaim; double LargestNotCovered; double LargestFinalPay; };
 	result SummaryTotals = result();
+	double dTravelLargest = 0, dExpenseLargest = 0, dTotalsLargest = 0, dExpensePayLargest = 0, dTaxReclaimLargest = 0, dNotCoveredLargest = 0, dFinalPayLargest = 0;
 
 	if (vecJourneyCollection->size() <= 0) {
 		std::cout << "There are currently no stored journeys\n";
@@ -362,9 +429,37 @@ auto CalculateTravelExpenseSummaryLargest(std::vector<Journey>* vecJourneyCollec
 	else {
 		for (std::size_t i = 0; i < vecJourneyCollection->size(); ++i) {
 			if (vecJourneyCollection->at(i).travelType == TravelType::TravelAndExpense) {
-
+				if (vecJourneyCollection->at(i).travelCost > dTravelLargest) {
+					dTravelLargest = vecJourneyCollection->at(i).travelCost;
+				}
+				if (vecJourneyCollection->at(i).expenseCost > dExpenseLargest) {
+					dExpenseLargest = vecJourneyCollection->at(i).expenseCost;
+				}
+				if (vecJourneyCollection->at(i).totalCost > dTotalsLargest) {
+					dTotalsLargest = vecJourneyCollection->at(i).totalCost;
+				}
+				if (vecJourneyCollection->at(i).expensePayable > dExpensePayLargest) {
+					dExpensePayLargest = vecJourneyCollection->at(i).expensePayable;
+				}
+				if (vecJourneyCollection->at(i).taxReclaim > dTaxReclaimLargest) {
+					dTaxReclaimLargest = vecJourneyCollection->at(i).taxReclaim;
+				}
+				if (vecJourneyCollection->at(i).expenseNotCovered > dNotCoveredLargest) {
+					dNotCoveredLargest = vecJourneyCollection->at(i).expenseNotCovered;
+				}
+				if (vecJourneyCollection->at(i).finalPayment > dFinalPayLargest) {
+					dFinalPayLargest = vecJourneyCollection->at(i).finalPayment;
+				}
 			}
 		}
+		SummaryTotals.LargestTravel = dTravelLargest;
+		SummaryTotals.LargestExpense = dExpenseLargest;
+		SummaryTotals.LargestOfTotals = dTotalsLargest;
+		SummaryTotals.LargestExpensePay = dExpensePayLargest;
+		SummaryTotals.LargestTaxReclaim = dTaxReclaimLargest;
+		SummaryTotals.LargestNotCovered = dNotCoveredLargest;
+		SummaryTotals.LargestFinalPay = dFinalPayLargest;
+		return SummaryTotals;
 	}
 }
 
@@ -406,7 +501,7 @@ void AddNewJourney(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	double dExpenseCost = 0;
 
 	do {
-		PrintAddJourneyScreen( vecJourneyCollection );
+		PrintAddJourneyScreen(vecJourneyCollection);
 
 		while (boolExitWhile != true) {
 			std::cout << "Enter choice  : ";
@@ -523,34 +618,34 @@ void ViewSummary(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 			// TODO : Implement functionality that allows summaries of items
 			try {
 				switch (intSummaryChoiceInput) {
-					case 1: {
-						boolExitWhile = true;
-						ViewCombinedSummary(vecJourneyCollection, intWidth);
-						break;
-					}
-					case 2: {
-						boolExitWhile = true;
-						ViewTravelOnlySummary(vecJourneyCollection, intWidth);
-						break;
-					} 
-					case 3: {
-						boolExitWhile = true;
-						ViewTravelExpensesOnlySummary(vecJourneyCollection, intWidth);
-						break;
-					} 
-					case 4: {
-						boolExitWhile = true;
-						ViewSaveSummary(vecJourneyCollection, intWidth);
-						break;
-					}
-					case 5: {
-						boolExitWhile = true;
-						break;
-					}
-					default: {
-						throw std::exception("Not recognised as valid input.");
-						break;
-					}
+				case 1: {
+					boolExitWhile = true;
+					ViewCombinedSummary(vecJourneyCollection, intWidth);
+					break;
+				}
+				case 2: {
+					boolExitWhile = true;
+					ViewTravelOnlySummary(vecJourneyCollection, intWidth);
+					break;
+				}
+				case 3: {
+					boolExitWhile = true;
+					ViewTravelExpensesOnlySummary(vecJourneyCollection, intWidth);
+					break;
+				}
+				case 4: {
+					boolExitWhile = true;
+					ViewSaveSummary(vecJourneyCollection, intWidth);
+					break;
+				}
+				case 5: {
+					boolExitWhile = true;
+					break;
+				}
+				default: {
+					throw std::exception("Not recognised as valid input.");
+					break;
+				}
 				}
 
 			}
@@ -606,10 +701,28 @@ void ViewCombinedSummary(std::vector<Journey>* vecJourneyCollection, int* intWid
 			<< std::fixed << std::setw(*intWidth) << average.AverageNotCovered
 			<< std::fixed << std::setw(*intWidth) << average.AverageFinalPay << "\n";
 	}
-	catch (std::exception& exp) {
+	catch (std::exception & exp) {
 		std::cout << "Error : " << exp.what() << "\n";
 	}
-	
+
+	try {
+		auto largest = CalculateAllSummaryLargest(vecJourneyCollection);
+		std::cout << "\n";
+		std::cout.precision(2);
+		std::cout
+			<< std::fixed << std::setw(*intWidth) << "Largest :"
+			<< std::fixed << std::setw(*intWidth) << largest.LargestTravel
+			<< std::fixed << std::setw(*intWidth) << largest.LargestExpense
+			<< std::fixed << std::setw(*intWidth) << largest.LargestOfTotals
+			<< std::fixed << std::setw(*intWidth) << largest.LargestExpensePay
+			<< std::fixed << std::setw(*intWidth) << largest.LargestTaxReclaim
+			<< std::fixed << std::setw(*intWidth) << largest.LargestNotCovered
+			<< std::fixed << std::setw(*intWidth) << largest.LargestFinalPay << "\n";
+	}
+	catch (std::exception & exp) {
+		std::cout << "Error : " << exp.what() << "\n";
+	}
+
 	Pause();
 }
 
@@ -641,7 +754,21 @@ void ViewTravelOnlySummary(std::vector<Journey>* vecJourneyCollection, int* intW
 			<< std::fixed << std::setw(*intWidth) << average.AverageTaxReclaim
 			<< std::fixed << std::setw(*intWidth) << average.AverageFinalPay << "\n";
 	}
-	catch (std::exception& exp) {
+	catch (std::exception & exp) {
+		std::cout << "Error : " << exp.what() << "\n";
+	}
+
+	try {
+		auto largest = CalculateTravelSummaryLargest(vecJourneyCollection);
+		std::cout << "\n";
+		std::cout.precision(2);
+		std::cout
+			<< std::fixed << std::setw(*intWidth) << "Largest :"
+			<< std::fixed << std::setw(*intWidth) << largest.LargestTravel
+			<< std::fixed << std::setw(*intWidth) << largest.LargestTaxReclaim
+			<< std::fixed << std::setw(*intWidth) << largest.LargestFinalPay << "\n";
+	}
+	catch (std::exception & exp) {
 		std::cout << "Error : " << exp.what() << "\n";
 	}
 
@@ -684,7 +811,25 @@ void ViewTravelExpensesOnlySummary(std::vector<Journey>* vecJourneyCollection, i
 			<< std::fixed << std::setw(*intWidth) << average.AverageNotCovered
 			<< std::fixed << std::setw(*intWidth) << average.AverageFinalPay << "\n";
 	}
-	catch (std::exception& exp) {
+	catch (std::exception & exp) {
+		std::cout << "Error : " << exp.what() << "\n";
+	}
+
+	try {
+		auto largest = CalculateTravelExpenseSummaryLargest(vecJourneyCollection);
+		std::cout << "\n";
+		std::cout.precision(2);
+		std::cout
+			<< std::fixed << std::setw(*intWidth) << "Largest :"
+			<< std::fixed << std::setw(*intWidth) << largest.LargestTravel
+			<< std::fixed << std::setw(*intWidth) << largest.LargestExpense
+			<< std::fixed << std::setw(*intWidth) << largest.LargestOfTotals
+			<< std::fixed << std::setw(*intWidth) << largest.LargestExpensePay
+			<< std::fixed << std::setw(*intWidth) << largest.LargestTaxReclaim
+			<< std::fixed << std::setw(*intWidth) << largest.LargestNotCovered
+			<< std::fixed << std::setw(*intWidth) << largest.LargestFinalPay << "\n";
+	}
+	catch (std::exception & exp) {
 		std::cout << "Error : " << exp.what() << "\n";
 	}
 
