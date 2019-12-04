@@ -72,6 +72,8 @@ void PrintAddJourneyScreen(std::vector<Journey>* vecJourneyCollection);
 void PrintMainMenuScreen(std::vector<Journey>* vecJourneyCollection);
 void PrintSummaryScreen();
 void PrintSummaryHeader(int* intWidth);
+void PrintComparisonScreen();
+
 
 // Misc helper functions
 void Pause();
@@ -98,6 +100,9 @@ void ViewCombinedSummary(std::vector<Journey>* vecJourneyCollection, int* intWid
 void ViewTravelOnlySummary(std::vector<Journey>* vecJourneyCollection, int* intWidth);
 void ViewTravelExpensesOnlySummary(std::vector<Journey>* vecJourneyCollection, int* intWidth);
 void ViewSaveSummary(std::vector<Journey>* vecJourneyCollection, int* intWidth);
+void ViewComparison(std::vector<Journey>* vecJourneyCollection, int* intWidth);
+void ViewCompareTwoJourneys(std::vector<Journey>* vecJourneyCollection, int* intWidth);
+void ViewTotalTwoJourneys(std::vector<Journey>* vecJourneyCollection, int* intWidth);
 
 //Function namespace declaration end
 
@@ -151,6 +156,17 @@ int main()
 						boolExitWhile = true;
 					}
 					break;
+				}
+				case 4: {
+					if (vecJourneyCollection.size() <= 2) {
+						boolExitWhile = false;
+						throw std::exception("You have not yet added any journeys, or there are not at least two journeys. This menu option is not available yet.");
+						break;
+					}
+					else {
+						ViewComparison(&vecJourneyCollection, &intWidth);
+						boolExitWhile = true;
+					}
 				}
 				case 9: {
 					boolExitWhile = true;
@@ -615,7 +631,6 @@ void ViewSummary(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 			std::cout << "Enter choice : ";
 			intSummaryChoiceInput = ValidateIntInput();
 
-			// TODO : Implement functionality that allows summaries of items
 			try {
 				switch (intSummaryChoiceInput) {
 				case 1: {
@@ -839,6 +854,77 @@ void ViewTravelExpensesOnlySummary(std::vector<Journey>* vecJourneyCollection, i
 void ViewSaveSummary(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	system("cls");
 	std::cout << "Sorry, this function has not been implemented yet\n";
+	Pause();
+}
+
+void ViewComparison(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
+	int intComparisonChoiceInput = 0;
+	bool boolExitWhile = false;
+
+	do {
+		PrintComparisonScreen();
+		boolExitWhile = false;
+
+		while (boolExitWhile == false) {
+			std::cout << "Enter choice : ";
+			intComparisonChoiceInput = ValidateIntInput();
+
+			try {
+				switch (intComparisonChoiceInput) {
+				case 1: {
+					boolExitWhile = true;
+					ViewCompareTwoJourneys(vecJourneyCollection, intWidth);
+					break;
+				}
+				case 2: {
+					boolExitWhile = true;
+					ViewTotalTwoJourneys(vecJourneyCollection, intWidth);
+					break;
+				}
+				case 9: {
+					boolExitWhile = true;
+					intComparisonChoiceInput = 9;
+					break;
+				}
+				default: {
+					throw std::exception("Not recognised as valid input.");
+					break;
+				}
+				}
+
+			}
+			catch (std::exception& exp) {
+				std::cout << "Error : " << exp.what() << "\n";
+			}
+		}
+
+	} while (intComparisonChoiceInput != 9);
+
+	intComparisonChoiceInput = 0;
+	boolExitWhile = false;
+}
+
+void ViewCompareTwoJourneys(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
+	// TODO: Implement ability to compare two user selected journeys.
+	// Implement this by presenting list of journeys, in order that they are in the vector, then allow user to make two choices (take 1 from their input so that it matches up to the array item).
+	// Add the two specified vector items to a new vector and pass this to a comparison function.
+	// Comparison function will print out both items, using the already existing print functions, and print out the same "summaries" values as seen in the main summaries section
+	// Add aditional "Price difference" row that shows the price difference between the two invoices.
+	// Plan to allow this to be exported as a file if user specifies.
+	system("cls");
+	std::cout << "Function not yet implemented.\n";
+	Pause();
+}
+
+void ViewTotalTwoJourneys(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
+	// TODO: Implement ability to total two user selected journeys.
+	// Implement this by presenting list of journeys, in order that they are in the vector, then allow user to make two choices (take 1 from their input so that it matches up to the array item).
+	// Add the two specified vector items to a new vector and pass this to a totalling function.
+	// Total function will add both together and present as row.
+	// Plan to allow this to exported as a file if user specifies.
+	system("cls");
+	std::cout << "Function not yet implemented.\n";
+	Pause();
 }
 
 // Views/Menu screens end
@@ -846,7 +932,7 @@ void ViewSaveSummary(std::vector<Journey>* vecJourneyCollection, int* intWidth) 
 // Print out functions
 
 /// <summary>
-/// Prints the summary header for
+/// Prints the summary header for generic journey view screens
 /// </summary>
 /// <param name="intWidth"></param>
 void PrintSummaryHeader(int* intWidth) {
@@ -959,6 +1045,9 @@ void PrintMainMenuScreen(std::vector<Journey>* vecJourneyCollection) {
 	if (vecJourneyCollection->size() > 0) {
 		std::cout << "Option 3: Summaries\n";
 	}
+	if (vecJourneyCollection->size() > 0) {
+		std::cout << "Option 4: Comparisons and itemised summary\n";
+	}
 	std::cout << "Option 9: Exit\n";
 	std::cout << "\n";
 	std::cout << "-------------------------------------------\n";
@@ -987,7 +1076,7 @@ void PrintSummaryScreen() {
 	system("cls");
 	std::cout << "-------------------------------------------\n";
 	std::cout << "\n";
-	std::cout << "View and interact with summary.\n";
+	std::cout << "View and interact with summaries\n";
 	std::cout << "Please specify your option:\n";
 	std::cout << "\n";
 	std::cout << "Option 1 : View Combined Summary\n";
@@ -995,6 +1084,21 @@ void PrintSummaryScreen() {
 	std::cout << "Option 3 : View Travel and Expenses only Summary\n";
 	std::cout << "Option 4 : Export Summary to file\n";
 	std::cout << "Option 5 : Return to menu\n";
+	std::cout << "\n";
+	std::cout << "-------------------------------------------\n";
+	std::cout << "\n";
+}
+
+void PrintComparisonScreen() {
+	system("cls");
+	std::cout << "-------------------------------------------\n";
+	std::cout << "\n";
+	std::cout << "Make Comparisons and total invoices\n";
+	std::cout << "Please specify your option:\n";
+	std::cout << "\n";
+	std::cout << "Option 1 : Compare two journeys\n";
+	std::cout << "Option 2 : Total two journeys\n";
+	std::cout << "Option 9 : Return to menu\n";
 	std::cout << "\n";
 	std::cout << "-------------------------------------------\n";
 	std::cout << "\n";
