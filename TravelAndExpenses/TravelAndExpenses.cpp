@@ -11,6 +11,7 @@
 #include <iomanip>
 #include <conio.h>
 #include <algorithm>
+#include <stdexcept>
 
 enum class TravelType
 {
@@ -73,6 +74,8 @@ void PrintMainMenuScreen(std::vector<Journey>* vecJourneyCollection);
 void PrintSummaryScreen();
 void PrintSummaryHeader(int* intWidth);
 void PrintComparisonScreen();
+void PrintAllJourneyNumberedHeader(int* intWidth);
+void PrintAllJourneysInOrder(std::vector<Journey>* vecJourneyCollection, int* intWidth);
 
 
 // Misc helper functions
@@ -88,6 +91,7 @@ auto CalculateTravelExpenseSummaryAverage(std::vector<Journey>* vecJourneyCollec
 auto CalculateAllSummaryLargest(std::vector<Journey>* vecJourneyCollection);
 auto CalculateTravelSummaryLargest(std::vector<Journey>* vecJourneyCollection);
 auto CalculateTravelExpenseSummaryLargest(std::vector<Journey>* vecJourneyCollection);
+bool InRange(int low, int high, int compare);
 
 // Testing function : Automatically adds some journeys to save time when testing.
 void TestFunction(std::vector<Journey>* vecJourneyCollection);
@@ -503,6 +507,17 @@ double ValidateDoubleInput() {
 	return DoubleValue;
 }
 
+/// <summary>
+/// Returns true if compare integer passed into function is within range of low and high, false if not.
+/// </summary>
+/// <param name="low"></param>
+/// <param name="high"></param>
+/// <param name="compare"></param>
+/// <returns></returns>
+bool InRange(int low, int high, int compare) {
+	return ((compare - high) * (compare - low) <= 0);
+}
+
 // Calculation functions end
 
 // Views/Menu screens
@@ -653,7 +668,7 @@ void ViewSummary(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 					ViewSaveSummary(vecJourneyCollection, intWidth);
 					break;
 				}
-				case 5: {
+				case 9: {
 					boolExitWhile = true;
 					break;
 				}
@@ -669,7 +684,7 @@ void ViewSummary(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 			}
 		}
 
-	} while (intSummaryChoiceInput != 5);
+	} while (intSummaryChoiceInput != 9);
 
 	intSummaryChoiceInput = 0;
 	boolExitWhile = false;
@@ -911,8 +926,49 @@ void ViewCompareTwoJourneys(std::vector<Journey>* vecJourneyCollection, int* int
 	// Comparison function will print out both items, using the already existing print functions, and print out the same "summaries" values as seen in the main summaries section
 	// Add aditional "Price difference" row that shows the price difference between the two invoices.
 	// Plan to allow this to be exported as a file if user specifies.
+	int intCompareFirst = 0, intCompareSecond = 0;
+	std::vector<Journey> vecJourneyCompare;
+
 	system("cls");
-	std::cout << "Function not yet implemented.\n";
+	PrintAllJourneyNumberedHeader(intWidth);
+	PrintAllJourneysInOrder(vecJourneyCollection, intWidth);
+
+	std::cout << "\n";
+	std::cout << "Please specify number of the first journey you would like to compare.\n";
+	do {
+		std::cout << "Enter Choice : ";
+		intCompareFirst = ValidateIntInput() - 1;
+
+		try {
+			vecJourneyCompare.push_back(vecJourneyCollection->at(intCompareFirst));
+		}
+		catch (std::exception ex) {
+			std::cout << "The number you specified is not a valid item currently in the list.\n";
+		}
+	} while (!InRange(0, (int)vecJourneyCollection->size() - 1, intCompareFirst));
+
+	std::cout << "\n";
+	std::cout << "Please specify number of the second journey you would like to compare.\n";
+	do {
+		std::cout << "Enter Choice : ";
+		intCompareSecond = (ValidateIntInput() - 1);
+
+		try {
+			if (intCompareSecond == intCompareFirst) {
+				throw std::runtime_error("You cannot compare two of the same item.");
+			}
+			else {
+				vecJourneyCompare.push_back(vecJourneyCollection->at(intCompareSecond));
+			}
+		}
+		catch (std::out_of_range& ex) {
+			std::cout << "The number you specified is not a valid item currently in the list.\n";
+		}
+		catch (std::runtime_error& ex) {
+			std::cout << ex.what() << "\n";
+		}
+	} while (!InRange(0, (int)vecJourneyCollection->size() - 1, intCompareFirst) || intCompareFirst == intCompareSecond);
+
 	Pause();
 }
 
@@ -922,8 +978,8 @@ void ViewTotalTwoJourneys(std::vector<Journey>* vecJourneyCollection, int* intWi
 	// Add the two specified vector items to a new vector and pass this to a totalling function.
 	// Total function will add both together and present as row.
 	// Plan to allow this to exported as a file if user specifies.
-	system("cls");
-	std::cout << "Function not yet implemented.\n";
+	PrintAllJourneyNumberedHeader(intWidth);
+	PrintAllJourneysInOrder(vecJourneyCollection, intWidth);
 	Pause();
 }
 
@@ -940,6 +996,17 @@ void PrintSummaryHeader(int* intWidth) {
 	std::cout << "------------------------------------------------------------------------------------------------------------------------\n";
 	std::cout << std::setw(*intWidth) << "Travel Type" << std::setw(*intWidth) << "Travel Cost" << std::setw(*intWidth) << "Exp Cost" << std::setw(*intWidth) << "Total Cost" << std::setw(*intWidth) << "Exp Payable" << std::setw(*intWidth) << "Tax Reclaim" << std::setw(*intWidth) << "Exp not Cvrd" << std::setw(*intWidth) << "Final Pay\n";
 	std::cout << "------------------------------------------------------------------------------------------------------------------------\n";
+}
+
+/// <summary>
+/// Prints out a header for when a numbered list of all journeys currently stored in the vector are needed (for selection etc).
+/// </summary>
+/// <param name="intWidth"></param>
+void PrintAllJourneyNumberedHeader(int* intWidth) {
+	std::cout << "All Journeys" << "\n";
+	std::cout << "------------------------------------------------------------------------------------------------------------------------------\n";
+	std::cout << std::setw(5) << "Number" << std::setw(*intWidth) << "Travel Type" << std::setw(*intWidth) << "Travel Cost" << std::setw(*intWidth) << "Exp Cost" << std::setw(*intWidth) << "Total Cost" << std::setw(*intWidth) << "Exp Payable" << std::setw(*intWidth) << "Tax Reclaim" << std::setw(*intWidth) << "Exp not Cvrd" << std::setw(*intWidth) << "Final Pay\n";
+	std::cout << "------------------------------------------------------------------------------------------------------------------------------\n";
 }
 
 /// <summary>
@@ -1020,9 +1087,11 @@ void PrintCurrentJourneysTravelExpense(std::vector<Journey>* vecJourneyCollectio
 /// </summary>
 void PrintIntro() {
 	// Notice for users about setup needed to ensure proper formatted output.
-	std::cout << "Notice: To ensure proper text formatting while in use, please make sure you right click on the console window header, \n";
-	std::cout << "then go to defaults and disable the 'Wrap text output on resize' option. Without doing this, text will end up sat on the\n";
-	std::cout << "same line ruining some of the output tables.\n";
+	std::cout << "### NOTICE ###\n";
+	std::cout << "To ensure proper text formatting while in use, please make sure you right click on the console window header, ";
+	std::cout << "then go to properties and the layout tab. Please ensure that the console width is set to at least 127. Not doing this could result in text being wrapped ";
+	std::cout << "ruining some of the output tables.\n";
+	std::cout << "### NOTICE ###\n";
 
 	Pause();
 }
@@ -1083,7 +1152,7 @@ void PrintSummaryScreen() {
 	std::cout << "Option 2 : View Travel only Summary\n";
 	std::cout << "Option 3 : View Travel and Expenses only Summary\n";
 	std::cout << "Option 4 : Export Summary to file\n";
-	std::cout << "Option 5 : Return to menu\n";
+	std::cout << "Option 9 : Return to menu\n";
 	std::cout << "\n";
 	std::cout << "-------------------------------------------\n";
 	std::cout << "\n";
@@ -1102,6 +1171,27 @@ void PrintComparisonScreen() {
 	std::cout << "\n";
 	std::cout << "-------------------------------------------\n";
 	std::cout << "\n";
+}
+
+void PrintAllJourneysInOrder(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
+	if (vecJourneyCollection->size() <= 0) {
+		std::cout << "There are currently no stored journeys\n";
+	}
+	else {
+		for (std::size_t i = 0; i < vecJourneyCollection->size(); ++i) {
+				std::cout.precision(2);
+				std::cout
+					<< std::setw(5) << (i + 1)
+					<< std::setw(*intWidth) << ((((int)vecJourneyCollection->at(i).travelType) == 0) ? "Travel" : "Travel & Exp")
+					<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).travelCost
+					<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).expenseCost
+					<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).totalCost
+					<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).expensePayable
+					<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).taxReclaim
+					<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).expenseNotCovered
+					<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).finalPayment << "\n";
+		}
+	}
 }
 
 // Print out functions end
