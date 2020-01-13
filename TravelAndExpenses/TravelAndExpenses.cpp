@@ -375,7 +375,7 @@ auto CalculateAllSummaryLargest(std::vector<Journey>* vecJourneyCollection) {
 	else {
 		for (std::size_t i = 0; i < vecJourneyCollection->size(); ++i) {
 			if (vecJourneyCollection->at(i).travelCost > dTravelLargest) {
-				dTravelLargest =vecJourneyCollection->at(i).travelCost;
+				dTravelLargest = vecJourneyCollection->at(i).travelCost;
 			}
 			if (vecJourneyCollection->at(i).expenseCost > dExpenseLargest) {
 				dExpenseLargest = vecJourneyCollection->at(i).expenseCost;
@@ -480,6 +480,39 @@ auto CalculateTravelExpenseSummaryLargest(std::vector<Journey>* vecJourneyCollec
 		SummaryTotals.LargestNotCovered = dNotCoveredLargest;
 		SummaryTotals.LargestFinalPay = dFinalPayLargest;
 		return SummaryTotals;
+	}
+}
+
+/// <summary>
+/// Expects pass of only two items, since function only compares first two items regardless, will ignore any extra items if they end up (somehow) being passed.
+/// Items are compared, lower value is taken from higher value. This provides difference of items. If both match, 0 is returned as there is no difference.
+///	Wrap in try/catch statement, to handle possiblility of only one vector item being passed.
+/// </summary>
+/// <param name="vecJourneyCollection"></param>
+/// <returns></returns>
+auto CalculateTwoItemComparison(std::vector<Journey>* vecJourneyCollection) {
+	
+	struct result { double DiffTravel; double DiffExpense; double DiffOfTotals; double DiffExpensePay; double DiffTaxReclaim; double Dif5fNotCovered; double DiffFinalPay; };
+	result SummaryTotals = result();
+	double dTravelDiff = 0, dExpenseDiff = 0, dTotalsDiff = 0, dExpensePayDiff = 0, dTaxReclaimDiff = 0, dNotCoveredDiff = 0, dFinalPayDiff = 0;
+
+
+	// Implement this for the rest of the functions.
+	if (vecJourneyCollection->at(0).travelCost == 0 && vecJourneyCollection->at(1).travelCost == 0) {
+		dTravelDiff = 0;
+	}
+	else {
+		if (vecJourneyCollection->at(0).travelCost == vecJourneyCollection->at(1).travelCost) {
+			dTravelDiff = 0;
+		}
+		else {
+			if (vecJourneyCollection->at(0).travelCost > vecJourneyCollection->at(1).travelCost) {
+				dTravelDiff = vecJourneyCollection->at(0).travelCost - vecJourneyCollection->at(1).travelCost;
+			}
+			else {
+				dTravelDiff = vecJourneyCollection->at(1).travelCost - vecJourneyCollection->at(0).travelCost;
+			}
+		}
 	}
 }
 
@@ -756,6 +789,57 @@ void ViewCombinedSummary(std::vector<Journey>* vecJourneyCollection, int* intWid
 	Pause();
 }
 
+void ViewCombinedSummaryTwoItems(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
+	system("cls");
+	PrintSummaryHeader(intWidth);
+	if (vecJourneyCollection->size() > 0) {
+		PrintCurrentJourneysTravel(vecJourneyCollection, intWidth);
+		PrintCurrentJourneysTravelExpense(vecJourneyCollection, intWidth);
+	}
+
+	try {
+		auto totals = CalculateAllSummaryTotals(vecJourneyCollection);
+		std::cout << "\n";
+		std::cout.precision(2);
+		std::cout
+			<< std::fixed << std::setw(*intWidth) << "Totals :"
+			<< std::fixed << std::setw(*intWidth) << totals.TotalTravel
+			<< std::fixed << std::setw(*intWidth) << totals.TotalExpense
+			<< std::fixed << std::setw(*intWidth) << totals.TotalOfTotals
+			<< std::fixed << std::setw(*intWidth) << totals.TotalExpensePay
+			<< std::fixed << std::setw(*intWidth) << totals.TotalTaxReclaim
+			<< std::fixed << std::setw(*intWidth) << totals.ExpenseNotCovered
+			<< std::fixed << std::setw(*intWidth) << totals.TotalFinalPay << "\n";
+	}
+	catch (std::exception & exp) {
+		std::cout << "Error : " << exp.what() << "\n";
+	}
+
+	try {
+		auto largest = CalculateAllSummaryLargest(vecJourneyCollection);
+		std::cout << "\n";
+		std::cout.precision(2);
+		std::cout
+			<< std::fixed << std::setw(*intWidth) << "Largest :"
+			<< std::fixed << std::setw(*intWidth) << largest.LargestTravel
+			<< std::fixed << std::setw(*intWidth) << largest.LargestExpense
+			<< std::fixed << std::setw(*intWidth) << largest.LargestOfTotals
+			<< std::fixed << std::setw(*intWidth) << largest.LargestExpensePay
+			<< std::fixed << std::setw(*intWidth) << largest.LargestTaxReclaim
+			<< std::fixed << std::setw(*intWidth) << largest.LargestNotCovered
+			<< std::fixed << std::setw(*intWidth) << largest.LargestFinalPay << "\n";
+	}
+	catch (std::exception & exp) {
+		std::cout << "Error : " << exp.what() << "\n";
+	}
+
+	Pause();
+}
+
+void ViewComparisonTwoItems(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
+
+}
+
 void ViewTravelOnlySummary(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	system("cls");
 	PrintTravelHeader(intWidth);
@@ -908,7 +992,7 @@ void ViewComparison(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 				}
 
 			}
-			catch (std::exception& exp) {
+			catch (std::exception & exp) {
 				std::cout << "Error : " << exp.what() << "\n";
 			}
 		}
@@ -916,6 +1000,53 @@ void ViewComparison(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	} while (intComparisonChoiceInput != 9);
 
 	intComparisonChoiceInput = 0;
+	boolExitWhile = false;
+}
+
+void ViewSaveExport(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
+	int intSaveExportChoiceInput = 0;
+	bool boolExitWhile = false;
+
+	do {
+		PrintComparisonScreen();
+		boolExitWhile = false;
+
+		while (boolExitWhile == false) {
+			std::cout << "Enter choice : ";
+			intSaveExportChoiceInput = ValidateIntInput();
+
+			try {
+				switch (intSaveExportChoiceInput) {
+				case 1: {
+					boolExitWhile = true;
+					ViewCompareTwoJourneys(vecJourneyCollection, intWidth);
+					break;
+				}
+				case 2: {
+					boolExitWhile = true;
+					ViewTotalTwoJourneys(vecJourneyCollection, intWidth);
+					break;
+				}
+				case 9: {
+					boolExitWhile = true;
+					intSaveExportChoiceInput = 9;
+					break;
+				}
+				default: {
+					throw std::exception("Not recognised as valid input.");
+					break;
+				}
+				}
+
+			}
+			catch (std::exception & exp) {
+				std::cout << "Error : " << exp.what() << "\n";
+			}
+		}
+
+	} while (intSaveExportChoiceInput != 9);
+
+	intSaveExportChoiceInput = 0;
 	boolExitWhile = false;
 }
 
@@ -961,15 +1092,15 @@ void ViewCompareTwoJourneys(std::vector<Journey>* vecJourneyCollection, int* int
 				vecJourneyCompare.push_back(vecJourneyCollection->at(intCompareSecond));
 			}
 		}
-		catch (std::out_of_range& ex) {
+		catch (std::out_of_range & ex) {
 			std::cout << "The number you specified is not a valid item currently in the list.\n";
 		}
-		catch (std::runtime_error& ex) {
+		catch (std::runtime_error & ex) {
 			std::cout << ex.what() << "\n";
 		}
 	} while (!InRange(0, (int)vecJourneyCollection->size() - 1, intCompareFirst) || intCompareFirst == intCompareSecond);
 
-	Pause();
+	ViewComparisonTwoItems(&vecJourneyCompare, intWidth);
 }
 
 void ViewTotalTwoJourneys(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
@@ -978,9 +1109,52 @@ void ViewTotalTwoJourneys(std::vector<Journey>* vecJourneyCollection, int* intWi
 	// Add the two specified vector items to a new vector and pass this to a totalling function.
 	// Total function will add both together and present as row.
 	// Plan to allow this to exported as a file if user specifies.
+	int intTotalFirst = 0, intTotalSecond = 0;
+	std::vector<Journey> vecJourneyTotal;
+
+	system("cls");
 	PrintAllJourneyNumberedHeader(intWidth);
 	PrintAllJourneysInOrder(vecJourneyCollection, intWidth);
-	Pause();
+
+	std::cout << "\n";
+	std::cout << "Please specify number of the first journey you would like to total.\n";
+	do {
+		std::cout << "Enter Choice : ";
+		intTotalFirst = ValidateIntInput() - 1;
+
+		try {
+			vecJourneyTotal.push_back(vecJourneyCollection->at(intTotalFirst));
+		}
+		catch (std::exception ex) {
+			std::cout << "The number you specified is not a valid item currently in the list.\n";
+		}
+	} while (!InRange(0, (int)vecJourneyCollection->size() - 1, intTotalFirst));
+
+	std::cout << "\n";
+	std::cout << "Please specify number of the second journey you would like to total.\n";
+	do {
+		std::cout << "Enter Choice : ";
+		intTotalSecond = (ValidateIntInput() - 1);
+
+		try {
+			if (intTotalSecond == intTotalFirst) {
+				throw std::runtime_error("You cannot compare two of the same item.");
+			}
+			else {
+				vecJourneyTotal.push_back(vecJourneyCollection->at(intTotalSecond));
+			}
+		}
+		catch (std::out_of_range & ex) {
+			std::cout << "The number you specified is not a valid item currently in the list.\n";
+		}
+		catch (std::runtime_error & ex) {
+			std::cout << ex.what() << "\n";
+		}
+	} while (!InRange(0, (int)vecJourneyCollection->size() - 1, intTotalFirst) || intTotalFirst == intTotalSecond);
+
+	ViewCombinedSummaryTwoItems(&vecJourneyTotal, intWidth);
+
+
 }
 
 // Views/Menu screens end
@@ -1173,28 +1347,61 @@ void PrintComparisonScreen() {
 	std::cout << "\n";
 }
 
+void PrintSaveExportScreen() {
+	std::cout << "\n";
+	std::cout << "You can now either choose to Save these items for future importing (.CSV file) or return to the previous screen.\n";
+	std::cout << "Please specify your option:\n";
+	std::cout << "\n";
+	std::cout << "Option 1 : Export list as CSV\n";
+	std::cout << "Option 9 : Return to menu\n";
+	std::cout << "\n";
+}
+
 void PrintAllJourneysInOrder(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	if (vecJourneyCollection->size() <= 0) {
 		std::cout << "There are currently no stored journeys\n";
 	}
 	else {
 		for (std::size_t i = 0; i < vecJourneyCollection->size(); ++i) {
-				std::cout.precision(2);
-				std::cout
-					<< std::setw(5) << (i + 1)
-					<< std::setw(*intWidth) << ((((int)vecJourneyCollection->at(i).travelType) == 0) ? "Travel" : "Travel & Exp")
-					<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).travelCost
-					<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).expenseCost
-					<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).totalCost
-					<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).expensePayable
-					<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).taxReclaim
-					<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).expenseNotCovered
-					<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).finalPayment << "\n";
+			std::cout.precision(2);
+			std::cout
+				<< std::setw(5) << (i + 1)
+				<< std::setw(*intWidth) << ((((int)vecJourneyCollection->at(i).travelType) == 0) ? "Travel" : "Travel & Exp")
+				<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).travelCost
+				<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).expenseCost
+				<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).totalCost
+				<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).expensePayable
+				<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).taxReclaim
+				<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).expenseNotCovered
+				<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).finalPayment << "\n";
 		}
 	}
 }
 
 // Print out functions end
+
+// I/O Functions
+
+void ExportVectorAsCSV(std::vector<Journey>* vecJourneyCollection) {
+	// TODO : First need to print column headers, Will then need to do a for loop. For each item in the passed vector array, will write value to a CSV row then do new line.
+	system("cls");
+	std::cout << "TODO: Implement exporting of the object vector array, this function is not yet implemented.";
+	Pause();
+}
+
+auto ImportVectorFromCSV(std::vector<Journey>* vecJourneyCollection) {
+	// TODO : Need to allow user to specify file path (full file path, from C: drive), file is then read, error displayed if unable to read. Each row is read and pushed as an item into vector, then returned.
+	std::vector<Journey> vecImportedJourney;
+	int intNumItemsImported = 0;
+
+	system("cls");
+	std::cout << "TODO: Implement exporting of the object vector array, this function is not yet implemented.";
+	Pause();
+
+	return vecImportedJourney;
+}
+
+// I/O Functions end
 
 // Misc functions
 
