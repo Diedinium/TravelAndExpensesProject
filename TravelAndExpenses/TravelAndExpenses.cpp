@@ -492,12 +492,10 @@ auto CalculateTravelExpenseSummaryLargest(std::vector<Journey>* vecJourneyCollec
 /// <returns></returns>
 auto CalculateTwoItemComparison(std::vector<Journey>* vecJourneyCollection) {
 	
-	struct result { double DiffTravel; double DiffExpense; double DiffOfTotals; double DiffExpensePay; double DiffTaxReclaim; double Dif5fNotCovered; double DiffFinalPay; };
+	struct result { double DiffTravel; double DiffExpense; double DiffOfTotals; double DiffExpensePay; double DiffTaxReclaim; double DifffNotCovered; double DiffFinalPay; };
 	result SummaryTotals = result();
 	double dTravelDiff = 0, dExpenseDiff = 0, dTotalsDiff = 0, dExpensePayDiff = 0, dTaxReclaimDiff = 0, dNotCoveredDiff = 0, dFinalPayDiff = 0;
 
-
-	// Implement this for the rest of the functions.
 	if (vecJourneyCollection->at(0).travelCost == 0 && vecJourneyCollection->at(1).travelCost == 0) {
 		dTravelDiff = 0;
 	}
@@ -514,6 +512,118 @@ auto CalculateTwoItemComparison(std::vector<Journey>* vecJourneyCollection) {
 			}
 		}
 	}
+
+	if (vecJourneyCollection->at(0).expenseCost == 0 && vecJourneyCollection->at(1).expenseCost == 0) {
+		dExpenseDiff = 0;
+	}
+	else {
+		if (vecJourneyCollection->at(0).expenseCost == vecJourneyCollection->at(1).expenseCost) {
+			dExpenseDiff = 0;
+		}
+		else {
+			if (vecJourneyCollection->at(0).expenseCost > vecJourneyCollection->at(1).expenseCost) {
+				dExpenseDiff = vecJourneyCollection->at(0).expenseCost - vecJourneyCollection->at(1).expenseCost;
+			}
+			else {
+				dExpenseDiff = vecJourneyCollection->at(1).expenseCost - vecJourneyCollection->at(0).expenseCost;
+			}
+		}
+	}
+
+	if (vecJourneyCollection->at(0).totalCost == 0 && vecJourneyCollection->at(1).totalCost == 0) {
+		dTotalsDiff = 0;
+	}
+	else {
+		if (vecJourneyCollection->at(0).totalCost == vecJourneyCollection->at(1).totalCost) {
+			dTotalsDiff = 0;
+		}
+		else {
+			if (vecJourneyCollection->at(0).totalCost > vecJourneyCollection->at(1).totalCost) {
+				dTotalsDiff = vecJourneyCollection->at(0).totalCost - vecJourneyCollection->at(1).totalCost;
+			}
+			else {
+				dTotalsDiff = vecJourneyCollection->at(1).totalCost - vecJourneyCollection->at(0).totalCost;
+			}
+		}
+	}
+
+	if (vecJourneyCollection->at(0).expensePayable == 0 && vecJourneyCollection->at(1).expensePayable == 0) {
+		dExpensePayDiff = 0;
+	}
+	else {
+		if (vecJourneyCollection->at(0).expensePayable == vecJourneyCollection->at(1).expensePayable) {
+			dExpensePayDiff = 0;
+		}
+		else {
+			if (vecJourneyCollection->at(0).expensePayable > vecJourneyCollection->at(1).expensePayable) {
+				dExpensePayDiff = vecJourneyCollection->at(0).expensePayable - vecJourneyCollection->at(1).expensePayable;
+			}
+			else {
+				dExpensePayDiff = vecJourneyCollection->at(1).expensePayable - vecJourneyCollection->at(0).expensePayable;
+			}
+		}
+	}
+
+	if (vecJourneyCollection->at(0).taxReclaim == 0 && vecJourneyCollection->at(1).taxReclaim == 0) {
+		dTaxReclaimDiff = 0;
+	}
+	else {
+		if (vecJourneyCollection->at(0).taxReclaim == vecJourneyCollection->at(1).taxReclaim) {
+			dTaxReclaimDiff = 0;
+		}
+		else {
+			if (vecJourneyCollection->at(0).taxReclaim > vecJourneyCollection->at(1).taxReclaim) {
+				dTaxReclaimDiff = vecJourneyCollection->at(0).taxReclaim - vecJourneyCollection->at(1).taxReclaim;
+			}
+			else {
+				dTaxReclaimDiff = vecJourneyCollection->at(1).taxReclaim - vecJourneyCollection->at(0).taxReclaim;
+			}
+		}
+	}
+
+	if (vecJourneyCollection->at(0).expenseNotCovered == 0 && vecJourneyCollection->at(1).expenseNotCovered == 0) {
+		dNotCoveredDiff = 0;
+	}
+	else {
+		if (vecJourneyCollection->at(0).expenseNotCovered == vecJourneyCollection->at(1).expenseNotCovered) {
+			dNotCoveredDiff = 0;
+		}
+		else {
+			if (vecJourneyCollection->at(0).expenseNotCovered > vecJourneyCollection->at(1).expenseNotCovered) {
+				dNotCoveredDiff = vecJourneyCollection->at(0).expenseNotCovered - vecJourneyCollection->at(1).expenseNotCovered;
+			}
+			else {
+				dNotCoveredDiff = vecJourneyCollection->at(1).expenseNotCovered - vecJourneyCollection->at(0).expenseNotCovered;
+			}
+		}
+	}
+
+	if (vecJourneyCollection->at(0).finalPayment == 0 && vecJourneyCollection->at(1).finalPayment == 0) {
+		dFinalPayDiff = 0;
+	}
+	else {
+		if (vecJourneyCollection->at(0).finalPayment == vecJourneyCollection->at(1).finalPayment) {
+			dFinalPayDiff = 0;
+		}
+		else {
+			if (vecJourneyCollection->at(0).finalPayment > vecJourneyCollection->at(1).finalPayment) {
+				dFinalPayDiff = vecJourneyCollection->at(0).finalPayment - vecJourneyCollection->at(1).finalPayment;
+			}
+			else {
+				dFinalPayDiff = vecJourneyCollection->at(1).finalPayment - vecJourneyCollection->at(0).finalPayment;
+			}
+		}
+	}
+
+	SummaryTotals.DiffTravel = dTravelDiff;
+	SummaryTotals.DiffExpense = dExpenseDiff;
+	SummaryTotals.DiffOfTotals = dTotalsDiff;
+	SummaryTotals.DiffExpensePay = dExpensePayDiff;
+	SummaryTotals.DiffTaxReclaim = dTaxReclaimDiff;
+	SummaryTotals.DifffNotCovered = dNotCoveredDiff;
+	SummaryTotals.DiffFinalPay = dFinalPayDiff;
+
+	return SummaryTotals;
 }
 
 int ValidateIntInput() {
@@ -833,6 +943,24 @@ void ViewCombinedSummaryTwoItems(std::vector<Journey>* vecJourneyCollection, int
 		std::cout << "Error : " << exp.what() << "\n";
 	}
 
+	try {
+		auto difference = CalculateTwoItemComparison(vecJourneyCollection);
+		std::cout << "\n";
+		std::cout.precision(2);
+		std::cout
+			<< std::fixed << std::setw(*intWidth) << "Difference :"
+			<< std::fixed << std::setw(*intWidth) << difference.DiffTravel
+			<< std::fixed << std::setw(*intWidth) << difference.DiffExpense
+			<< std::fixed << std::setw(*intWidth) << difference.DiffOfTotals
+			<< std::fixed << std::setw(*intWidth) << difference.DiffExpensePay
+			<< std::fixed << std::setw(*intWidth) << difference.DiffTaxReclaim
+			<< std::fixed << std::setw(*intWidth) << difference.DifffNotCovered
+			<< std::fixed << std::setw(*intWidth) << difference.DiffFinalPay << "\n";
+	}
+	catch (std::exception& exp) {
+		std::cout << "Error : " << exp.what() << "\n";
+	}
+
 	Pause();
 }
 
@@ -1098,7 +1226,7 @@ void ViewCompareTwoJourneys(std::vector<Journey>* vecJourneyCollection, int* int
 		catch (std::runtime_error & ex) {
 			std::cout << ex.what() << "\n";
 		}
-	} while (!InRange(0, (int)vecJourneyCollection->size() - 1, intCompareFirst) || intCompareFirst == intCompareSecond);
+	} while (!InRange(0, (int)vecJourneyCollection->size() - 1, intCompareSecond) || intCompareFirst == intCompareSecond);
 
 	ViewComparisonTwoItems(&vecJourneyCompare, intWidth);
 }
@@ -1150,10 +1278,9 @@ void ViewTotalTwoJourneys(std::vector<Journey>* vecJourneyCollection, int* intWi
 		catch (std::runtime_error & ex) {
 			std::cout << ex.what() << "\n";
 		}
-	} while (!InRange(0, (int)vecJourneyCollection->size() - 1, intTotalFirst) || intTotalFirst == intTotalSecond);
+	} while (!InRange(0, (int)vecJourneyCollection->size() - 1, intTotalSecond) || intTotalFirst == intTotalSecond);
 
 	ViewCombinedSummaryTwoItems(&vecJourneyTotal, intWidth);
-
 
 }
 
