@@ -75,7 +75,9 @@ void PrintSummaryScreen();
 void PrintSummaryHeader(int* intWidth);
 void PrintComparisonScreen();
 void PrintAllJourneyNumberedHeader(int* intWidth);
+void PrintAllJourneyNumberedHeader(int* intWidth, std::string message);
 void PrintAllJourneysInOrder(std::vector<Journey>* vecJourneyCollection, int* intWidth);
+void PrintSaveExportScreen();
 
 
 // Misc helper functions
@@ -103,6 +105,7 @@ void ViewSummary(std::vector<Journey>* vecJourneyCollection, int* intWidth);
 void ViewCombinedSummary(std::vector<Journey>* vecJourneyCollection, int* intWidth);
 void ViewTravelOnlySummary(std::vector<Journey>* vecJourneyCollection, int* intWidth);
 void ViewTravelExpensesOnlySummary(std::vector<Journey>* vecJourneyCollection, int* intWidth);
+void ViewSaveExport(std::vector<Journey>* vecJourneyCollection, int* intWidth);
 void ViewSaveSummary(std::vector<Journey>* vecJourneyCollection, int* intWidth);
 void ViewComparison(std::vector<Journey>* vecJourneyCollection, int* intWidth);
 void ViewCompareTwoJourneys(std::vector<Journey>* vecJourneyCollection, int* intWidth);
@@ -116,7 +119,7 @@ int main()
 	std::vector<Journey> vecJourneyCollection;
 
 	PrintIntro();
-
+	
 	int intMenuMainChoice = 0;
 	bool boolExitWhile = false;
 
@@ -491,7 +494,7 @@ auto CalculateTravelExpenseSummaryLargest(std::vector<Journey>* vecJourneyCollec
 /// <param name="vecJourneyCollection"></param>
 /// <returns></returns>
 auto CalculateTwoItemComparison(std::vector<Journey>* vecJourneyCollection) {
-	
+
 	struct result { double DiffTravel; double DiffExpense; double DiffOfTotals; double DiffExpensePay; double DiffTaxReclaim; double DifffNotCovered; double DiffFinalPay; };
 	result SummaryTotals = result();
 	double dTravelDiff = 0, dExpenseDiff = 0, dTotalsDiff = 0, dExpensePayDiff = 0, dTaxReclaimDiff = 0, dNotCoveredDiff = 0, dFinalPayDiff = 0;
@@ -899,12 +902,11 @@ void ViewCombinedSummary(std::vector<Journey>* vecJourneyCollection, int* intWid
 	Pause();
 }
 
-void ViewCombinedSummaryTwoItems(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
+void ViewTotalSummaryTwoItems(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	system("cls");
-	PrintSummaryHeader(intWidth);
+	PrintAllJourneyNumberedHeader(intWidth, "Two item comparison : Totals");
 	if (vecJourneyCollection->size() > 0) {
-		PrintCurrentJourneysTravel(vecJourneyCollection, intWidth);
-		PrintCurrentJourneysTravelExpense(vecJourneyCollection, intWidth);
+		PrintAllJourneysInOrder(vecJourneyCollection, intWidth);
 	}
 
 	try {
@@ -912,7 +914,35 @@ void ViewCombinedSummaryTwoItems(std::vector<Journey>* vecJourneyCollection, int
 		std::cout << "\n";
 		std::cout.precision(2);
 		std::cout
-			<< std::fixed << std::setw(*intWidth) << "Totals :"
+			<< std::fixed << std::setw(20) << "Totals :"
+			<< std::fixed << std::setw(*intWidth) << totals.TotalTravel
+			<< std::fixed << std::setw(*intWidth) << totals.TotalExpense
+			<< std::fixed << std::setw(*intWidth) << totals.TotalOfTotals
+			<< std::fixed << std::setw(*intWidth) << totals.TotalExpensePay
+			<< std::fixed << std::setw(*intWidth) << totals.TotalTaxReclaim
+			<< std::fixed << std::setw(*intWidth) << totals.ExpenseNotCovered
+			<< std::fixed << std::setw(*intWidth) << totals.TotalFinalPay << "\n";
+	}
+	catch (std::exception & exp) {
+		std::cout << "Error : " << exp.what() << "\n";
+	}
+
+	ViewSaveExport(vecJourneyCollection, intWidth);
+}
+
+void ViewCompareSummaryTwoItems(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
+	system("cls");
+	PrintAllJourneyNumberedHeader(intWidth, "Two item comparison : Comparison");
+	if (vecJourneyCollection->size() > 0) {
+		PrintAllJourneysInOrder(vecJourneyCollection, intWidth);
+	}
+
+	try {
+		auto totals = CalculateAllSummaryTotals(vecJourneyCollection);
+		std::cout << "\n";
+		std::cout.precision(2);
+		std::cout
+			<< std::fixed << std::setw(20) << "Totals :"
 			<< std::fixed << std::setw(*intWidth) << totals.TotalTravel
 			<< std::fixed << std::setw(*intWidth) << totals.TotalExpense
 			<< std::fixed << std::setw(*intWidth) << totals.TotalOfTotals
@@ -930,7 +960,7 @@ void ViewCombinedSummaryTwoItems(std::vector<Journey>* vecJourneyCollection, int
 		std::cout << "\n";
 		std::cout.precision(2);
 		std::cout
-			<< std::fixed << std::setw(*intWidth) << "Largest :"
+			<< std::fixed << std::setw(20) << "Largest :"
 			<< std::fixed << std::setw(*intWidth) << largest.LargestTravel
 			<< std::fixed << std::setw(*intWidth) << largest.LargestExpense
 			<< std::fixed << std::setw(*intWidth) << largest.LargestOfTotals
@@ -948,7 +978,7 @@ void ViewCombinedSummaryTwoItems(std::vector<Journey>* vecJourneyCollection, int
 		std::cout << "\n";
 		std::cout.precision(2);
 		std::cout
-			<< std::fixed << std::setw(*intWidth) << "Difference :"
+			<< std::fixed << std::setw(20) << "Difference :"
 			<< std::fixed << std::setw(*intWidth) << difference.DiffTravel
 			<< std::fixed << std::setw(*intWidth) << difference.DiffExpense
 			<< std::fixed << std::setw(*intWidth) << difference.DiffOfTotals
@@ -957,15 +987,11 @@ void ViewCombinedSummaryTwoItems(std::vector<Journey>* vecJourneyCollection, int
 			<< std::fixed << std::setw(*intWidth) << difference.DifffNotCovered
 			<< std::fixed << std::setw(*intWidth) << difference.DiffFinalPay << "\n";
 	}
-	catch (std::exception& exp) {
+	catch (std::exception & exp) {
 		std::cout << "Error : " << exp.what() << "\n";
 	}
 
-	Pause();
-}
-
-void ViewComparisonTwoItems(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
-
+	ViewSaveExport(vecJourneyCollection, intWidth);
 }
 
 void ViewTravelOnlySummary(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
@@ -1131,12 +1157,17 @@ void ViewComparison(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	boolExitWhile = false;
 }
 
+/// <summary>
+/// Save/Export menu view. Printed in particular places where saving/exporting needs to be only option. Importing and Saving handled in seperate View.
+/// </summary>
+/// <param name="vecJourneyCollection"></param>
+/// <param name="intWidth"></param>
 void ViewSaveExport(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	int intSaveExportChoiceInput = 0;
 	bool boolExitWhile = false;
 
 	do {
-		PrintComparisonScreen();
+		PrintSaveExportScreen();
 		boolExitWhile = false;
 
 		while (boolExitWhile == false) {
@@ -1145,25 +1176,20 @@ void ViewSaveExport(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 
 			try {
 				switch (intSaveExportChoiceInput) {
-				case 1: {
-					boolExitWhile = true;
-					ViewCompareTwoJourneys(vecJourneyCollection, intWidth);
-					break;
-				}
-				case 2: {
-					boolExitWhile = true;
-					ViewTotalTwoJourneys(vecJourneyCollection, intWidth);
-					break;
-				}
-				case 9: {
-					boolExitWhile = true;
-					intSaveExportChoiceInput = 9;
-					break;
-				}
-				default: {
-					throw std::exception("Not recognised as valid input.");
-					break;
-				}
+					case 1: {
+						ViewSaveSummary(vecJourneyCollection, intWidth);
+						boolExitWhile = true;
+						intSaveExportChoiceInput = 9;
+						break;
+					}
+					case 9: {
+						boolExitWhile = true;
+						break;
+					}
+					default: {
+						throw std::exception("Not recognised as valid input.");
+						break;
+					}
 				}
 
 			}
@@ -1178,13 +1204,12 @@ void ViewSaveExport(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	boolExitWhile = false;
 }
 
+/// <summary>
+/// Asks user to choose two items, presents comparison of two items.
+/// </summary>
+/// <param name="vecJourneyCollection"></param>
+/// <param name="intWidth"></param>
 void ViewCompareTwoJourneys(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
-	// TODO: Implement ability to compare two user selected journeys.
-	// Implement this by presenting list of journeys, in order that they are in the vector, then allow user to make two choices (take 1 from their input so that it matches up to the array item).
-	// Add the two specified vector items to a new vector and pass this to a comparison function.
-	// Comparison function will print out both items, using the already existing print functions, and print out the same "summaries" values as seen in the main summaries section
-	// Add aditional "Price difference" row that shows the price difference between the two invoices.
-	// Plan to allow this to be exported as a file if user specifies.
 	int intCompareFirst = 0, intCompareSecond = 0;
 	std::vector<Journey> vecJourneyCompare;
 
@@ -1228,15 +1253,15 @@ void ViewCompareTwoJourneys(std::vector<Journey>* vecJourneyCollection, int* int
 		}
 	} while (!InRange(0, (int)vecJourneyCollection->size() - 1, intCompareSecond) || intCompareFirst == intCompareSecond);
 
-	ViewComparisonTwoItems(&vecJourneyCompare, intWidth);
+	ViewCompareSummaryTwoItems(&vecJourneyCompare, intWidth);
 }
 
+/// <summary>
+/// Asks user to choose two items currently in system. Then displays comparison.
+/// </summary>
+/// <param name="vecJourneyCollection"></param>
+/// <param name="intWidth"></param>
 void ViewTotalTwoJourneys(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
-	// TODO: Implement ability to total two user selected journeys.
-	// Implement this by presenting list of journeys, in order that they are in the vector, then allow user to make two choices (take 1 from their input so that it matches up to the array item).
-	// Add the two specified vector items to a new vector and pass this to a totalling function.
-	// Total function will add both together and present as row.
-	// Plan to allow this to exported as a file if user specifies.
 	int intTotalFirst = 0, intTotalSecond = 0;
 	std::vector<Journey> vecJourneyTotal;
 
@@ -1280,8 +1305,7 @@ void ViewTotalTwoJourneys(std::vector<Journey>* vecJourneyCollection, int* intWi
 		}
 	} while (!InRange(0, (int)vecJourneyCollection->size() - 1, intTotalSecond) || intTotalFirst == intTotalSecond);
 
-	ViewCombinedSummaryTwoItems(&vecJourneyTotal, intWidth);
-
+	ViewTotalSummaryTwoItems(&vecJourneyTotal, intWidth);
 }
 
 // Views/Menu screens end
@@ -1305,6 +1329,13 @@ void PrintSummaryHeader(int* intWidth) {
 /// <param name="intWidth"></param>
 void PrintAllJourneyNumberedHeader(int* intWidth) {
 	std::cout << "All Journeys" << "\n";
+	std::cout << "------------------------------------------------------------------------------------------------------------------------------\n";
+	std::cout << std::setw(5) << "Number" << std::setw(*intWidth) << "Travel Type" << std::setw(*intWidth) << "Travel Cost" << std::setw(*intWidth) << "Exp Cost" << std::setw(*intWidth) << "Total Cost" << std::setw(*intWidth) << "Exp Payable" << std::setw(*intWidth) << "Tax Reclaim" << std::setw(*intWidth) << "Exp not Cvrd" << std::setw(*intWidth) << "Final Pay\n";
+	std::cout << "------------------------------------------------------------------------------------------------------------------------------\n";
+}
+
+void PrintAllJourneyNumberedHeader(int* intWidth, std::string message) {
+	std::cout << message << "\n";
 	std::cout << "------------------------------------------------------------------------------------------------------------------------------\n";
 	std::cout << std::setw(5) << "Number" << std::setw(*intWidth) << "Travel Type" << std::setw(*intWidth) << "Travel Cost" << std::setw(*intWidth) << "Exp Cost" << std::setw(*intWidth) << "Total Cost" << std::setw(*intWidth) << "Exp Payable" << std::setw(*intWidth) << "Tax Reclaim" << std::setw(*intWidth) << "Exp not Cvrd" << std::setw(*intWidth) << "Final Pay\n";
 	std::cout << "------------------------------------------------------------------------------------------------------------------------------\n";
@@ -1480,7 +1511,7 @@ void PrintSaveExportScreen() {
 	std::cout << "Please specify your option:\n";
 	std::cout << "\n";
 	std::cout << "Option 1 : Export list as CSV\n";
-	std::cout << "Option 9 : Return to menu\n";
+	std::cout << "Option 9 : Return to previous\n";
 	std::cout << "\n";
 }
 
