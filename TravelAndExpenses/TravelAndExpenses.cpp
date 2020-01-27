@@ -78,6 +78,7 @@ void PrintAllJourneyNumberedHeader(int* intWidth);
 void PrintAllJourneyNumberedHeader(int* intWidth, std::string message);
 void PrintAllJourneysInOrder(std::vector<Journey>* vecJourneyCollection, int* intWidth);
 void PrintSaveExportScreen();
+void PrintDeleteChoiceScreen();
 
 
 // Misc helper functions
@@ -110,6 +111,8 @@ void ViewSaveSummary(std::vector<Journey>* vecJourneyCollection, int* intWidth);
 void ViewComparison(std::vector<Journey>* vecJourneyCollection, int* intWidth);
 void ViewCompareTwoJourneys(std::vector<Journey>* vecJourneyCollection, int* intWidth);
 void ViewTotalTwoJourneys(std::vector<Journey>* vecJourneyCollection, int* intWidth);
+void ViewDeleteChoice(std::vector<Journey>* vecJourneyCollection, int* intWidth);
+void ViewDeleteJourney(std::vector<Journey>* vecJourneyCollection, int* intWidth);
 
 //Function namespace declaration end
 
@@ -174,6 +177,20 @@ int main()
 						ViewComparison(&vecJourneyCollection, &intWidth);
 						boolExitWhile = true;
 					}
+					break;
+				}
+				case 5: {
+					if (vecJourneyCollection.size() <= 0)
+					{
+						boolExitWhile = false;
+						throw std::exception("You have not yet added a journey, this option is not yet available. It will become a visible choice once you have added a journey.");
+						break;
+					} 
+					else {
+						ViewDeleteJourney(&vecJourneyCollection, &intWidth);
+						boolExitWhile = true;
+					}
+					break;
 				}
 				case 9: {
 					boolExitWhile = true;
@@ -720,7 +737,7 @@ void AddNewJourney(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 						boolExitWhile = true;
 					}
 				}
-				else if (intTravelChoiceInput == 4) {
+				else if (intTravelChoiceInput == 9) {
 					boolExitWhile = true;
 				}
 				else {
@@ -741,7 +758,7 @@ void AddNewJourney(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 			strContinueAddingJourneys = "yes";
 			break;
 		}
-		case 4: {
+		case 9: {
 			strContinueAddingJourneys = "no";
 			break;
 		}
@@ -777,7 +794,7 @@ void ViewJourneys(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	PrintTravelExpenseHeader(intWidth);
 	PrintCurrentJourneysTravelExpense(vecJourneyCollection, intWidth);
 	std::cout << "\n";
-	Pause();
+	ViewDeleteChoice(vecJourneyCollection, intWidth);
 }
 
 void ViewSummary(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
@@ -1308,6 +1325,98 @@ void ViewTotalTwoJourneys(std::vector<Journey>* vecJourneyCollection, int* intWi
 	ViewTotalSummaryTwoItems(&vecJourneyTotal, intWidth);
 }
 
+/// <summary>
+/// Delete choice menu, allows user to choose to delete an item, or to return to previous. Passes onto the more generic ViewDeleteJourney screen that handles deleteing a journey.
+/// </summary>
+/// <param name="vecJourneyCollection"></param>
+/// <param name="intWidth"></param>
+void ViewDeleteChoice(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
+	int intDeleteChoiceInput = 0;
+	bool boolExitWhile = false;
+
+	do {
+		PrintDeleteChoiceScreen();
+		boolExitWhile = false;
+
+		while (boolExitWhile == false) {
+			std::cout << "Enter choice : ";
+			intDeleteChoiceInput = ValidateIntInput();
+
+			try {
+				switch (intDeleteChoiceInput) {
+				case 1: {
+					ViewDeleteJourney(vecJourneyCollection, intWidth);
+					boolExitWhile = true;
+					intDeleteChoiceInput = 9;
+					break;
+				}
+				case 2: {
+					ViewSaveSummary(vecJourneyCollection, intWidth);
+					boolExitWhile = true;
+					intDeleteChoiceInput = 9;
+				}
+				case 9: {
+					boolExitWhile = true;
+					break;
+				}
+				default: {
+					throw std::exception("Not recognised as valid input.");
+					break;
+				}
+				}
+
+			}
+			catch (std::exception & exp) {
+				std::cout << "Error : " << exp.what() << "\n";
+			}
+		}
+
+	} while (intDeleteChoiceInput != 9);
+
+	intDeleteChoiceInput = 0;
+	boolExitWhile = false;
+}
+
+/// <summary>
+/// Asks user to choose a item to delete, removes item. Continues to loop until valid array item is given.
+/// </summary>
+/// <param name="vecJourneyCollection"></param>
+/// <param name="intWidth"></param>
+void ViewDeleteJourney(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
+	int intJourneyToDelete = 0, intCompareSecond = 0;
+
+	system("cls");
+	PrintAllJourneyNumberedHeader(intWidth);
+	PrintAllJourneysInOrder(vecJourneyCollection, intWidth);
+
+	std::cout << "\n";
+	std::cout << "Please specify number of the journey you would like to remove.\n";
+	do {
+		std::cout << "Enter Choice : ";
+		intJourneyToDelete = ValidateIntInput() - 1;
+
+		if (InRange(0, (int)vecJourneyCollection->size() - 1, intJourneyToDelete)) {
+			// Try to erase the specified choice.
+			try {
+				vecJourneyCollection->erase(vecJourneyCollection->begin() + intJourneyToDelete);
+			}
+			catch (std::exception ex) {
+				std::cout << "The number you specified is not a valid item currently in the list.\n";
+			}
+		}
+		else {
+			std::cout << "The number you specified is not a valid item currently in the list.\n";
+		}
+
+		
+	} while (!InRange(0, (int)vecJourneyCollection->size() - 1, intJourneyToDelete));
+
+	std::cout << "\n";
+	std::cout << "Journey " << (intJourneyToDelete + 1) << " successfully removed.\n";
+
+	Pause();
+}
+
 // Views/Menu screens end
 
 // Print out functions
@@ -1420,8 +1529,9 @@ void PrintCurrentJourneysTravelExpense(std::vector<Journey>* vecJourneyCollectio
 void PrintIntro() {
 	// Notice for users about setup needed to ensure proper formatted output.
 	std::cout << "### NOTICE ###\n";
-	std::cout << "To ensure proper text formatting while in use, please make sure you right click on the console window header, ";
-	std::cout << "then go to properties and the layout tab. Please ensure that the console width is set to at least 127. Not doing this could result in text being wrapped ";
+	std::cout << "To ensure proper text formatting while in use, please make sure you widen the console window. ";
+	std::cout << "You can do this by dragging the window larger or by right clicking on the top of this window then go to properties, ";
+	std::cout << "and the layout tab. Setting the console width to 127 is recommended. Not doing this could result in text being wrapped ";
 	std::cout << "ruining some of the output tables.\n";
 	std::cout << "### NOTICE ###\n";
 
@@ -1439,17 +1549,20 @@ void PrintMainMenuScreen(std::vector<Journey>* vecJourneyCollection) {
 	std::cout << "Welcome to the travel and expeses system.\n";
 	std::cout << "Please specify your option:\n";
 	std::cout << "\n";
-	std::cout << "Option 1: Enter a new Journey\n";
+	std::cout << "Option 1 : Enter a new Journey\n";
 	if (vecJourneyCollection->size() > 0) {
-		std::cout << "Option 2: View current journeys\n";
+		std::cout << "Option 2 : View current journeys\n";
 	}
 	if (vecJourneyCollection->size() > 0) {
-		std::cout << "Option 3: Summaries\n";
+		std::cout << "Option 3 : Summaries\n";
 	}
 	if (vecJourneyCollection->size() > 0) {
-		std::cout << "Option 4: Comparisons and itemised summary\n";
+		std::cout << "Option 4 : Comparisons and itemised summary\n";
 	}
-	std::cout << "Option 9: Exit\n";
+	if (vecJourneyCollection->size() > 0) {
+		std::cout << "Option 5 : Remove a Journey\n";
+	}
+	std::cout << "Option 9 : Exit\n";
 	std::cout << "\n";
 	std::cout << "-------------------------------------------\n";
 	std::cout << "\n";
@@ -1467,7 +1580,7 @@ void PrintAddJourneyScreen(std::vector<Journey>* vecJourneyCollection) {
 	if (vecJourneyCollection->size() > 0) {
 		std::cout << "Option 3 : View current journeys\n";
 	}
-	std::cout << "Option 4 : Return to menu\n";
+	std::cout << "Option 9 : Return to menu\n";
 	std::cout << "\n";
 	std::cout << "-------------------------------------------\n";
 	std::cout << "\n";
@@ -1511,6 +1624,17 @@ void PrintSaveExportScreen() {
 	std::cout << "Please specify your option:\n";
 	std::cout << "\n";
 	std::cout << "Option 1 : Export list as CSV\n";
+	std::cout << "Option 9 : Return to previous\n";
+	std::cout << "\n";
+}
+
+void PrintDeleteChoiceScreen() {
+	std::cout << "\n";
+	std::cout << "Please specifiy which of the following options you would like to do.\n";
+	std::cout << "Please specify your option:\n";
+	std::cout << "\n";
+	std::cout << "Option 1 : Delete a Journey\n";
+	std::cout << "Option 2 : Export List as CSV\n";
 	std::cout << "Option 9 : Return to previous\n";
 	std::cout << "\n";
 }
