@@ -3,6 +3,7 @@
 // installed in order for this functionality to work, this not being installed does not affect functionality, it simply results in less descriptive function descriptions.
 
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <cstdlib>
 #include <numeric>
@@ -78,7 +79,8 @@ void PrintAllJourneyNumberedHeader(int* intWidth);
 void PrintAllJourneyNumberedHeader(int* intWidth, std::string message);
 void PrintAllJourneysInOrder(std::vector<Journey>* vecJourneyCollection, int* intWidth);
 void PrintSaveExportScreen();
-void PrintDeleteChoiceScreen();
+void PrintDeleteSelectScreen();
+void PrintSaveImportSelectScreen();
 
 
 // Misc helper functions
@@ -107,12 +109,14 @@ void ViewCombinedSummary(std::vector<Journey>* vecJourneyCollection, int* intWid
 void ViewTravelOnlySummary(std::vector<Journey>* vecJourneyCollection, int* intWidth);
 void ViewTravelExpensesOnlySummary(std::vector<Journey>* vecJourneyCollection, int* intWidth);
 void ViewSaveExport(std::vector<Journey>* vecJourneyCollection, int* intWidth);
-void ViewSaveSummary(std::vector<Journey>* vecJourneyCollection, int* intWidth);
+void ViewSaveSummary(std::vector<Journey>* vecJourneyCollection);
 void ViewComparison(std::vector<Journey>* vecJourneyCollection, int* intWidth);
 void ViewCompareTwoJourneys(std::vector<Journey>* vecJourneyCollection, int* intWidth);
 void ViewTotalTwoJourneys(std::vector<Journey>* vecJourneyCollection, int* intWidth);
-void ViewDeleteChoice(std::vector<Journey>* vecJourneyCollection, int* intWidth);
+void ViewDeleteSelect(std::vector<Journey>* vecJourneyCollection, int* intWidth);
 void ViewDeleteJourney(std::vector<Journey>* vecJourneyCollection, int* intWidth);
+void ViewSaveImportSelect(std::vector<Journey>* vecJourneyCollection, int* intWidth);
+void ViewImportSummary(std::vector<Journey>* vecJourneyCollection);
 
 //Function namespace declaration end
 
@@ -191,6 +195,16 @@ int main()
 						boolExitWhile = true;
 					}
 					break;
+				}
+				case 6: {
+					if (vecJourneyCollection.size() <= 0) {
+						boolExitWhile = false;
+						throw std::exception("You have not yet added a journey, this option is not yet available. It will become a visible choice once you have added a journey.");
+						break;
+					}
+					else {
+						ViewSaveImportSelect(&vecJourneyCollection, &intWidth);
+					}
 				}
 				case 9: {
 					boolExitWhile = true;
@@ -681,6 +695,16 @@ bool InRange(int low, int high, int compare) {
 	return ((compare - high) * (compare - low) <= 0);
 }
 
+/// <summary>
+/// Checks if file name is already in use.
+/// </summary>
+/// <param name="fileName"></param>
+/// <returns></returns>
+bool fileExists(std::string fileName) {
+	std::ifstream ifile(fileName);
+	return ifile.good();
+}
+
 // Calculation functions end
 
 // Views/Menu screens
@@ -794,7 +818,7 @@ void ViewJourneys(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	PrintTravelExpenseHeader(intWidth);
 	PrintCurrentJourneysTravelExpense(vecJourneyCollection, intWidth);
 	std::cout << "\n";
-	ViewDeleteChoice(vecJourneyCollection, intWidth);
+	ViewDeleteSelect(vecJourneyCollection, intWidth);
 }
 
 void ViewSummary(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
@@ -828,7 +852,7 @@ void ViewSummary(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 				}
 				case 4: {
 					boolExitWhile = true;
-					ViewSaveSummary(vecJourneyCollection, intWidth);
+					ViewSaveSummary(vecJourneyCollection);
 					break;
 				}
 				case 9: {
@@ -1121,9 +1145,56 @@ void ViewTravelExpensesOnlySummary(std::vector<Journey>* vecJourneyCollection, i
 	Pause();
 }
 
-void ViewSaveSummary(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
+void ViewSaveSummary(std::vector<Journey>* vecJourneyCollection) {
 	system("cls");
-	std::cout << "Sorry, this function has not been implemented yet\n";
+
+	std::fstream fout;
+	std::string fnameOriginal = "journeyList.csv";
+	std::string fname = "journeyList.csv";
+	int intCount = 0;
+
+	while (fileExists(fname))
+	{
+		fname = fnameOriginal;
+		fname = fname.insert(11, std::to_string(intCount));
+		intCount++;
+	}
+
+	fout.open(fname, std::ios::out | std::ios::app);
+
+	fout << "Travel Type" << ", " 
+		<< "Travel Cost" << ", " 
+		<< "Expense Cost" << ", " 
+		<< "Total Cost" << ", " 
+		<< "Tax Reclaim" << ", " 
+		<< "Expense payable" << ", " 
+		<< "Final payment" << ", " 
+		<< "Expense Not Covered" 
+		<< "\n";
+
+	for (size_t i = 0; i < vecJourneyCollection->size(); i++)
+	{
+		fout << std::fixed << std::setprecision(2) << ((((int)vecJourneyCollection->at(i).travelType) == 0) ? "Travel" : "Travel & Exp") << ", "
+			<< vecJourneyCollection->at(i).travelCost << ", " 
+			<< vecJourneyCollection->at(i).expenseCost << ", "
+			<< vecJourneyCollection->at(i).totalCost << ", "
+			<< vecJourneyCollection->at(i).taxReclaim << ", "
+			<< vecJourneyCollection->at(i).expensePayable << ", "
+			<< vecJourneyCollection->at(i).finalPayment << ", "
+			<< vecJourneyCollection->at(i).expenseNotCovered
+			<< "\n";
+	}
+
+	fout.close();
+
+	std::cout << "Journeys written to file. Please check the directory that you ran this application from to find the file." << "\n";
+
+	Pause();
+}
+
+void ViewImportSummary(std::vector<Journey>* vecJourneyCollection) {
+	system("cls");
+	std::cout << "Sorry, this function has not yet been implemented.\n";
 	Pause();
 }
 
@@ -1194,7 +1265,7 @@ void ViewSaveExport(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 			try {
 				switch (intSaveExportChoiceInput) {
 					case 1: {
-						ViewSaveSummary(vecJourneyCollection, intWidth);
+						ViewSaveSummary(vecJourneyCollection);
 						boolExitWhile = true;
 						intSaveExportChoiceInput = 9;
 						break;
@@ -1262,10 +1333,10 @@ void ViewCompareTwoJourneys(std::vector<Journey>* vecJourneyCollection, int* int
 				vecJourneyCompare.push_back(vecJourneyCollection->at(intCompareSecond));
 			}
 		}
-		catch (std::out_of_range & ex) {
+		catch (std::out_of_range ex) {
 			std::cout << "The number you specified is not a valid item currently in the list.\n";
 		}
-		catch (std::runtime_error & ex) {
+		catch (std::runtime_error ex) {
 			std::cout << ex.what() << "\n";
 		}
 	} while (!InRange(0, (int)vecJourneyCollection->size() - 1, intCompareSecond) || intCompareFirst == intCompareSecond);
@@ -1314,10 +1385,10 @@ void ViewTotalTwoJourneys(std::vector<Journey>* vecJourneyCollection, int* intWi
 				vecJourneyTotal.push_back(vecJourneyCollection->at(intTotalSecond));
 			}
 		}
-		catch (std::out_of_range & ex) {
+		catch (std::out_of_range ex) {
 			std::cout << "The number you specified is not a valid item currently in the list.\n";
 		}
-		catch (std::runtime_error & ex) {
+		catch (std::runtime_error ex) {
 			std::cout << ex.what() << "\n";
 		}
 	} while (!InRange(0, (int)vecJourneyCollection->size() - 1, intTotalSecond) || intTotalFirst == intTotalSecond);
@@ -1330,12 +1401,12 @@ void ViewTotalTwoJourneys(std::vector<Journey>* vecJourneyCollection, int* intWi
 /// </summary>
 /// <param name="vecJourneyCollection"></param>
 /// <param name="intWidth"></param>
-void ViewDeleteChoice(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
+void ViewDeleteSelect(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	int intDeleteChoiceInput = 0;
 	bool boolExitWhile = false;
 
 	do {
-		PrintDeleteChoiceScreen();
+		PrintDeleteSelectScreen();
 		boolExitWhile = false;
 
 		while (boolExitWhile == false) {
@@ -1351,7 +1422,12 @@ void ViewDeleteChoice(std::vector<Journey>* vecJourneyCollection, int* intWidth)
 					break;
 				}
 				case 2: {
-					ViewSaveSummary(vecJourneyCollection, intWidth);
+					ViewSaveSummary(vecJourneyCollection);
+					boolExitWhile = true;
+					intDeleteChoiceInput = 9;
+				}
+				case 3: {
+					AddNewJourney(vecJourneyCollection, intWidth);
 					boolExitWhile = true;
 					intDeleteChoiceInput = 9;
 				}
@@ -1417,6 +1493,57 @@ void ViewDeleteJourney(std::vector<Journey>* vecJourneyCollection, int* intWidth
 	Pause();
 }
 
+void ViewSaveImportSelect(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
+	int intSaveImportChoiceInput = 0;
+	bool boolExitWhile = false;
+
+	do {
+		PrintSaveImportSelectScreen();
+		boolExitWhile = false;
+
+		while (boolExitWhile == false) {
+			std::cout << "Enter choice : ";
+			intSaveImportChoiceInput = ValidateIntInput();
+
+			try {
+				switch (intSaveImportChoiceInput) {
+				case 1: {
+					boolExitWhile = true;
+					ViewSaveSummary(vecJourneyCollection);
+					break;
+				}
+				case 2: {
+					boolExitWhile = true;
+					ViewImportSummary(vecJourneyCollection);
+					break;
+				}
+				case 3: {
+					boolExitWhile = true;
+					ViewJourneys(vecJourneyCollection, intWidth);
+					break;
+				}
+				case 9: {
+					boolExitWhile = true;
+					intSaveImportChoiceInput = 9;
+					break;
+				}
+				default: {
+					throw std::exception("Not recognised as valid input.");
+					break;
+				}
+				}
+
+			}
+			catch (std::exception & exp) {
+				std::cout << "Error : " << exp.what() << "\n";
+			}
+		}
+
+	} while (intSaveImportChoiceInput != 9);
+
+	intSaveImportChoiceInput = 0;
+	boolExitWhile = false;
+}
 // Views/Menu screens end
 
 // Print out functions
@@ -1556,11 +1683,14 @@ void PrintMainMenuScreen(std::vector<Journey>* vecJourneyCollection) {
 	if (vecJourneyCollection->size() > 0) {
 		std::cout << "Option 3 : Summaries\n";
 	}
-	if (vecJourneyCollection->size() > 0) {
+	if (vecJourneyCollection->size() >= 2) {
 		std::cout << "Option 4 : Comparisons and itemised summary\n";
 	}
-	if (vecJourneyCollection->size() > 0) {
+	if (vecJourneyCollection->size() >= 2) {
 		std::cout << "Option 5 : Remove a Journey\n";
+	}
+	if (vecJourneyCollection->size() > 0) {
+		std::cout << "Option 6 : Import/Export Journeys\n";
 	}
 	std::cout << "Option 9 : Exit\n";
 	std::cout << "\n";
@@ -1628,13 +1758,14 @@ void PrintSaveExportScreen() {
 	std::cout << "\n";
 }
 
-void PrintDeleteChoiceScreen() {
+void PrintDeleteSelectScreen() {
 	std::cout << "\n";
 	std::cout << "Please specifiy which of the following options you would like to do.\n";
 	std::cout << "Please specify your option:\n";
 	std::cout << "\n";
 	std::cout << "Option 1 : Delete a Journey\n";
 	std::cout << "Option 2 : Export List as CSV\n";
+	std::cout << "Option 3 : Add new Journey\n";
 	std::cout << "Option 9 : Return to previous\n";
 	std::cout << "\n";
 }
@@ -1660,30 +1791,20 @@ void PrintAllJourneysInOrder(std::vector<Journey>* vecJourneyCollection, int* in
 	}
 }
 
+void PrintSaveImportSelectScreen() {
+	system("cls");
+	std::cout << "\n";
+	std::cout << "Please specifiy which of the following options you would like to do.\n";
+	std::cout << "Please specify your option:\n";
+	std::cout << "\n";
+	std::cout << "Option 1 : Export current Journeys\n";
+	std::cout << "Option 2 : Import Journeys from CSV\n";
+	std::cout << "Option 3 : View current journeys\n";
+	std::cout << "Option 9 : Return to previous\n";
+	std::cout << "\n";
+}
+
 // Print out functions end
-
-// I/O Functions
-
-void ExportVectorAsCSV(std::vector<Journey>* vecJourneyCollection) {
-	// TODO : First need to print column headers, Will then need to do a for loop. For each item in the passed vector array, will write value to a CSV row then do new line.
-	system("cls");
-	std::cout << "TODO: Implement exporting of the object vector array, this function is not yet implemented.";
-	Pause();
-}
-
-auto ImportVectorFromCSV(std::vector<Journey>* vecJourneyCollection) {
-	// TODO : Need to allow user to specify file path (full file path, from C: drive), file is then read, error displayed if unable to read. Each row is read and pushed as an item into vector, then returned.
-	std::vector<Journey> vecImportedJourney;
-	int intNumItemsImported = 0;
-
-	system("cls");
-	std::cout << "TODO: Implement exporting of the object vector array, this function is not yet implemented.";
-	Pause();
-
-	return vecImportedJourney;
-}
-
-// I/O Functions end
 
 // Misc functions
 
