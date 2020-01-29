@@ -1187,7 +1187,7 @@ void ViewSaveSummary(std::vector<Journey>* vecJourneyCollection) {
 
 	fout.close();
 
-	std::cout << "Journeys written to file. Please check the directory that you ran this application from to find the file." << "\n";
+	std::cout << "Journeys written to '" << fname << "'. Please check the directory that you ran this application from to find this file." << "\n";
 
 	Pause();
 }
