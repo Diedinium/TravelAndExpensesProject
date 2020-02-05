@@ -1193,9 +1193,40 @@ void ViewSaveSummary(std::vector<Journey>* vecJourneyCollection) {
 }
 
 void ViewImportSummary(std::vector<Journey>* vecJourneyCollection) {
+
+	std::string strFilename = "";
+	std::fstream fin;
+	bool boolExitLoop = false;
+
 	system("cls");
-	std::cout << "Sorry, this function has not yet been implemented.\n";
-	Pause();
+	std::cout << "Please specify the name of the file you would like to import below\n";
+	std::cout << "Note : Please enter the full file name, such as 'JourneyList.csv', otherwise the file will not be found. The file must also be in the same directory that you are running this program from. Type 'exit' if you would like to cancel and return to the previous screen.\n";
+	std::cout << "\n";
+	
+	do {
+		try {
+			std::cout << "File name : ";
+			std::cin >> strFilename;
+			fin.open(strFilename, std::ios::in);
+			if (strFilename == "exit") {
+				boolExitLoop = true;
+			}
+			else {
+				if (fileExists(strFilename)) {
+					std::cout << "File successfully read\n";
+					boolExitLoop = true;
+				}
+				else {
+					std::cout << "\n";
+					std::cout << "Error : File could not be found. Please ensure you are specifying the filename correctly.\n";
+				}
+			}
+		}
+		catch (std::exception & ex) {
+			std::cout << "\n";
+			std::cout << "Error :" << ex.what() << "\n";
+		}
+	} while (boolExitLoop == false);
 }
 
 void ViewComparison(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
@@ -1425,11 +1456,13 @@ void ViewDeleteSelect(std::vector<Journey>* vecJourneyCollection, int* intWidth)
 					ViewSaveSummary(vecJourneyCollection);
 					boolExitWhile = true;
 					intDeleteChoiceInput = 9;
+					break;
 				}
 				case 3: {
 					AddNewJourney(vecJourneyCollection, intWidth);
 					boolExitWhile = true;
 					intDeleteChoiceInput = 9;
+					break;
 				}
 				case 9: {
 					boolExitWhile = true;
