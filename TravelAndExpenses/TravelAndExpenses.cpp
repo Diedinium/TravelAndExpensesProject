@@ -1221,6 +1221,50 @@ void ViewImportSummary(std::vector<Journey>* vecJourneyCollection) {
 					std::cout << "Error : File could not be found. Please ensure you are specifying the filename correctly.\n";
 				}
 			}
+
+			std::vector<std::string> vecRowTemp;
+			std::string strLine, strWord, strTemp;
+
+			try {
+				while (!fin.eof()) {
+					vecRowTemp.clear();
+
+					std::getline(fin, strLine);
+
+					std::stringstream s(strLine);
+					
+
+					while (std::getline(s, strWord, ',')) {
+						vecRowTemp.push_back(strWord);
+					}
+
+					if (vecRowTemp.size() != 0) {
+						if (vecRowTemp[0] != "Travel Type") {
+							Journey journeyTemp{ TravelType::Travel, 0 };
+							journeyTemp.travelType = (((vecRowTemp[0]) == "Travel") ? TravelType::Travel : TravelType::TravelAndExpense);
+							journeyTemp.travelCost = std::stod(vecRowTemp[1]);
+							journeyTemp.expenseCost = std::stod(vecRowTemp[2]);
+							journeyTemp.totalCost = std::stod(vecRowTemp[3]);
+							journeyTemp.taxReclaim = std::stod(vecRowTemp[4]);
+							journeyTemp.expensePayable = std::stod(vecRowTemp[5]);
+							journeyTemp.finalPayment = std::stod(vecRowTemp[6]);
+							journeyTemp.expenseNotCovered = std::stod(vecRowTemp[7]);
+
+							vecJourneyCollection->push_back(journeyTemp);
+						}
+					}
+				}
+			}
+			catch (std::exception & ex) {
+				std::cout << "\n";
+				std::cout << "Error :" << ex.what() << "\n";
+
+				Pause();
+			}
+
+			std::cout << "Journeys succssfully imported.\n";
+
+			Pause();
 		}
 		catch (std::exception & ex) {
 			std::cout << "\n";
