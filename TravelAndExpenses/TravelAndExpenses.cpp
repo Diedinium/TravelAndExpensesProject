@@ -197,14 +197,9 @@ int main()
 					break;
 				}
 				case 6: {
-					if (vecJourneyCollection.size() <= 0) {
-						boolExitWhile = false;
-						throw std::exception("You have not yet added a journey, this option is not yet available. It will become a visible choice once you have added a journey.");
-						break;
-					}
-					else {
-						ViewSaveImportSelect(&vecJourneyCollection, &intWidth);
-					}
+					ViewSaveImportSelect(&vecJourneyCollection, &intWidth);
+					boolExitWhile = true;
+					break;
 				}
 				case 9: {
 					boolExitWhile = true;
@@ -1197,6 +1192,7 @@ void ViewImportSummary(std::vector<Journey>* vecJourneyCollection) {
 	std::string strFilename = "";
 	std::fstream fin;
 	bool boolExitLoop = false;
+	bool boolHasReadFile = false;
 
 	system("cls");
 	std::cout << "Please specify the name of the file you would like to import below\n";
@@ -1210,67 +1206,72 @@ void ViewImportSummary(std::vector<Journey>* vecJourneyCollection) {
 			fin.open(strFilename, std::ios::in);
 			if (strFilename == "exit") {
 				boolExitLoop = true;
+				boolHasReadFile = false;
 			}
 			else {
 				if (fileExists(strFilename)) {
 					std::cout << "File successfully read\n";
 					boolExitLoop = true;
+					boolHasReadFile = true;
 				}
 				else {
 					std::cout << "\n";
 					std::cout << "Error : File could not be found. Please ensure you are specifying the filename correctly.\n";
+					boolHasReadFile = false;
 				}
 			}
-
-			std::vector<std::string> vecRowTemp;
-			std::string strLine, strWord, strTemp;
-
-			try {
-				while (!fin.eof()) {
-					vecRowTemp.clear();
-
-					std::getline(fin, strLine);
-
-					std::stringstream s(strLine);
-					
-
-					while (std::getline(s, strWord, ',')) {
-						vecRowTemp.push_back(strWord);
-					}
-
-					if (vecRowTemp.size() != 0) {
-						if (vecRowTemp[0] != "Travel Type") {
-							Journey journeyTemp{ TravelType::Travel, 0 };
-							journeyTemp.travelType = (((vecRowTemp[0]) == "Travel") ? TravelType::Travel : TravelType::TravelAndExpense);
-							journeyTemp.travelCost = std::stod(vecRowTemp[1]);
-							journeyTemp.expenseCost = std::stod(vecRowTemp[2]);
-							journeyTemp.totalCost = std::stod(vecRowTemp[3]);
-							journeyTemp.taxReclaim = std::stod(vecRowTemp[4]);
-							journeyTemp.expensePayable = std::stod(vecRowTemp[5]);
-							journeyTemp.finalPayment = std::stod(vecRowTemp[6]);
-							journeyTemp.expenseNotCovered = std::stod(vecRowTemp[7]);
-
-							vecJourneyCollection->push_back(journeyTemp);
-						}
-					}
-				}
-			}
-			catch (std::exception & ex) {
-				std::cout << "\n";
-				std::cout << "Error :" << ex.what() << "\n";
-
-				Pause();
-			}
-
-			std::cout << "Journeys succssfully imported.\n";
-
-			Pause();
 		}
 		catch (std::exception & ex) {
 			std::cout << "\n";
 			std::cout << "Error :" << ex.what() << "\n";
 		}
 	} while (boolExitLoop == false);
+
+	if (boolHasReadFile) {
+		std::vector<std::string> vecRowTemp;
+		std::string strLine, strWord, strTemp;
+
+		try {
+			while (!fin.eof()) {
+				vecRowTemp.clear();
+
+				std::getline(fin, strLine);
+
+				std::stringstream s(strLine);
+
+
+				while (std::getline(s, strWord, ',')) {
+					vecRowTemp.push_back(strWord);
+				}
+
+				if (!vecRowTemp.empty()) {
+					if (vecRowTemp[0] != "Travel Type") {
+						Journey journeyTemp{ TravelType::Travel, 0 };
+						journeyTemp.travelType = (((vecRowTemp[0]) == "Travel") ? TravelType::Travel : TravelType::TravelAndExpense);
+						journeyTemp.travelCost = std::stod(vecRowTemp[1]);
+						journeyTemp.expenseCost = std::stod(vecRowTemp[2]);
+						journeyTemp.totalCost = std::stod(vecRowTemp[3]);
+						journeyTemp.taxReclaim = std::stod(vecRowTemp[4]);
+						journeyTemp.expensePayable = std::stod(vecRowTemp[5]);
+						journeyTemp.finalPayment = std::stod(vecRowTemp[6]);
+						journeyTemp.expenseNotCovered = std::stod(vecRowTemp[7]);
+
+						vecJourneyCollection->push_back(journeyTemp);
+					}
+				}
+			}
+		}
+		catch (std::exception& ex) {
+			std::cout << "\n";
+			std::cout << "Error :" << ex.what() << "\n";
+
+			Pause();
+		}
+
+		std::cout << "Journeys succssfully imported.\n";
+
+		Pause();
+	}
 }
 
 void ViewComparison(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
@@ -1537,37 +1538,63 @@ void ViewDeleteSelect(std::vector<Journey>* vecJourneyCollection, int* intWidth)
 /// <param name="intWidth"></param>
 void ViewDeleteJourney(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	int intJourneyToDelete = 0, intCompareSecond = 0;
+	bool boolIsValid = false;
+	bool boolIsExiting = false;
 
 	system("cls");
 	PrintAllJourneyNumberedHeader(intWidth);
 	PrintAllJourneysInOrder(vecJourneyCollection, intWidth);
 
 	std::cout << "\n";
-	std::cout << "Please specify number of the journey you would like to remove.\n";
-	do {
+	std::cout << "Please specify number of the journey you would like to remove. Type '0' to cancel. \n";
+
+	while (boolIsValid == false) {
 		std::cout << "Enter Choice : ";
 		intJourneyToDelete = ValidateIntInput() - 1;
 
-		if (InRange(0, (int)vecJourneyCollection->size() - 1, intJourneyToDelete)) {
-			// Try to erase the specified choice.
-			try {
-				vecJourneyCollection->erase(vecJourneyCollection->begin() + intJourneyToDelete);
-			}
-			catch (std::exception ex) {
-				std::cout << "The number you specified is not a valid item currently in the list.\n";
-			}
+		if (intJourneyToDelete == -1) {
+			boolIsValid = true;
+			boolIsExiting = true;
+		}
+		else if (InRange(0, (int)vecJourneyCollection->size() - 1, intJourneyToDelete)) {
+			boolIsValid = true;
 		}
 		else {
 			std::cout << "The number you specified is not a valid item currently in the list.\n";
 		}
+	}
 
-		
-	} while (!InRange(0, (int)vecJourneyCollection->size() - 1, intJourneyToDelete));
+	if (!boolIsExiting) {
+		try {
+			vecJourneyCollection->erase(vecJourneyCollection->begin() + intJourneyToDelete);
+		}
+		catch (std::exception& ex) {
+			std::cout << "Sorry, something went wrong while removing this item.\n";
+		}
 
-	std::cout << "\n";
-	std::cout << "Journey " << (intJourneyToDelete + 1) << " successfully removed.\n";
+		std::cout << "\n";
+		std::cout << "Journey " << (intJourneyToDelete + 1) << " successfully removed.\n";
 
-	Pause();
+		Pause();
+	}
+
+	//do {
+	//	std::cout << "Enter Choice : ";
+	//	intJourneyToDelete = ValidateIntInput() - 1;
+
+	//	if (InRange(0, (int)vecJourneyCollection->size() - 1, intJourneyToDelete)) {
+	//		// Try to erase the specified choice.
+	//		try {
+	//			vecJourneyCollection->erase(vecJourneyCollection->begin() + intJourneyToDelete);
+	//		}
+	//		catch (std::exception ex) {
+	//			std::cout << "The number you specified is not a valid item currently in the list.\n";
+	//		}
+	//	}
+	//	else {
+	//		std::cout << "The number you specified is not a valid item currently in the list.\n";
+	//	}
+	//} while (!InRange(0, (int)vecJourneyCollection->size() - 1, intJourneyToDelete));
 }
 
 void ViewSaveImportSelect(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
@@ -1584,30 +1611,30 @@ void ViewSaveImportSelect(std::vector<Journey>* vecJourneyCollection, int* intWi
 
 			try {
 				switch (intSaveImportChoiceInput) {
-				case 1: {
-					boolExitWhile = true;
-					ViewSaveSummary(vecJourneyCollection);
-					break;
-				}
-				case 2: {
-					boolExitWhile = true;
-					ViewImportSummary(vecJourneyCollection);
-					break;
-				}
-				case 3: {
-					boolExitWhile = true;
-					ViewJourneys(vecJourneyCollection, intWidth);
-					break;
-				}
-				case 9: {
-					boolExitWhile = true;
-					intSaveImportChoiceInput = 9;
-					break;
-				}
-				default: {
-					throw std::exception("Not recognised as valid input.");
-					break;
-				}
+					case 1: {
+						boolExitWhile = true;
+						ViewSaveSummary(vecJourneyCollection);
+						break;
+					}
+					case 2: {
+						boolExitWhile = true;
+						ViewImportSummary(vecJourneyCollection);
+						break;
+					}
+					case 3: {
+						boolExitWhile = true;
+						ViewJourneys(vecJourneyCollection, intWidth);
+						break;
+					}
+					case 9: {
+						boolExitWhile = true;
+						intSaveImportChoiceInput = 9;
+						break;
+					}
+					default: {
+						throw std::exception("Not recognised as valid input.");
+						break;
+					}
 				}
 
 			}
@@ -1763,12 +1790,10 @@ void PrintMainMenuScreen(std::vector<Journey>* vecJourneyCollection) {
 	if (vecJourneyCollection->size() >= 2) {
 		std::cout << "Option 4 : Comparisons and itemised summary\n";
 	}
-	if (vecJourneyCollection->size() >= 2) {
+	if (vecJourneyCollection->size() >= 1) {
 		std::cout << "Option 5 : Remove a Journey\n";
 	}
-	if (vecJourneyCollection->size() > 0) {
-		std::cout << "Option 6 : Import/Export Journeys\n";
-	}
+	std::cout << "Option 6 : Import/Export Journeys\n";
 	std::cout << "Option 9 : Exit\n";
 	std::cout << "\n";
 	std::cout << "-------------------------------------------\n";
