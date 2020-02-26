@@ -1210,7 +1210,7 @@ void ViewImportSummary(std::vector<Journey>* vecJourneyCollection) {
 			}
 			else {
 				if (fileExists(strFilename)) {
-					std::cout << "File successfully read\n";
+					std::cout << "File exists.\n";
 					boolExitLoop = true;
 					boolHasReadFile = true;
 				}
@@ -1259,16 +1259,18 @@ void ViewImportSummary(std::vector<Journey>* vecJourneyCollection) {
 						vecJourneyCollection->push_back(journeyTemp);
 					}
 				}
+
+				std::cout << "Journeys succssfully imported.\n";
 			}
 		}
 		catch (std::exception& ex) {
 			std::cout << "\n";
-			std::cout << "Error :" << ex.what() << "\n";
+			std::cout << "Sorry, but the file could not be imported. This is likely because the file is not formatted correctly.\n";
+			std::cout << "Exception Generated : " << ex.what() << "\n";
 
 			Pause();
 		}
 
-		std::cout << "Journeys succssfully imported.\n";
 
 		Pause();
 	}
