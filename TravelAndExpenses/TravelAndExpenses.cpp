@@ -62,6 +62,26 @@ struct Journey {
 	}
 };
 
+struct MenuOption {
+	int OptionNumber;
+	std::string OptionText;
+	int OptionHideThreshold;
+
+	// Constructor for creating a Menu option with no HideThreshold (always visible)
+	MenuOption(int passOptionNumber, std::string passOptionText) {
+		OptionNumber = passOptionNumber;
+		OptionText = passOptionText;
+		OptionHideThreshold = 0;
+	}
+
+	// Constructor for creating a Menu option with a HideThreshold (always visible)
+	MenuOption(int passOptionNumber, std::string passOptionText, int passOptionHideThreshold) {
+		OptionNumber = passOptionNumber;
+		OptionText = passOptionText;
+		OptionHideThreshold = passOptionHideThreshold;
+	}
+};
+
 // Function namespace declaration
 
 // Ouput print help functions.
@@ -117,6 +137,7 @@ void ViewDeleteSelect(std::vector<Journey>* vecJourneyCollection, int* intWidth)
 void ViewDeleteJourney(std::vector<Journey>* vecJourneyCollection, int* intWidth);
 void ViewSaveImportSelect(std::vector<Journey>* vecJourneyCollection, int* intWidth);
 void ViewImportSummary(std::vector<Journey>* vecJourneyCollection);
+void OutputMenuOptions(std::vector<Journey>* vecJourneyCollection, std::vector<MenuOption>* vecMenuOptionCollection, std::string introText);
 
 //Function namespace declaration end
 
