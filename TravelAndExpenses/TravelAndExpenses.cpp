@@ -62,20 +62,20 @@ struct Journey {
 	}
 };
 
-struct MenuOption {
+struct ChoiceOption {
 	int OptionNumber;
 	std::string OptionText;
 	int OptionHideThreshold;
 
 	// Constructor for creating a Menu option with no HideThreshold (always visible)
-	MenuOption(int passOptionNumber, std::string passOptionText) {
+	ChoiceOption(int passOptionNumber, std::string passOptionText) {
 		OptionNumber = passOptionNumber;
 		OptionText = passOptionText;
-		OptionHideThreshold = 0;
+		OptionHideThreshold = 99;
 	}
 
 	// Constructor for creating a Menu option with a HideThreshold (always visible)
-	MenuOption(int passOptionNumber, std::string passOptionText, int passOptionHideThreshold) {
+	ChoiceOption(int passOptionNumber, std::string passOptionText, int passOptionHideThreshold) {
 		OptionNumber = passOptionNumber;
 		OptionText = passOptionText;
 		OptionHideThreshold = passOptionHideThreshold;
@@ -137,7 +137,7 @@ void ViewDeleteSelect(std::vector<Journey>* vecJourneyCollection, int* intWidth)
 void ViewDeleteJourney(std::vector<Journey>* vecJourneyCollection, int* intWidth);
 void ViewSaveImportSelect(std::vector<Journey>* vecJourneyCollection, int* intWidth);
 void ViewImportSummary(std::vector<Journey>* vecJourneyCollection);
-void OutputMenuOptions(std::vector<Journey>* vecJourneyCollection, std::vector<MenuOption>* vecMenuOptionCollection, std::string introText);
+void OutputMenu(std::vector<Journey>* vecJourneyCollection, std::vector<ChoiceOption>* vecChoiceCollection, std::string introText);
 
 //Function namespace declaration end
 
@@ -147,14 +147,22 @@ int main()
 	std::vector<Journey> vecJourneyCollection;
 
 	PrintIntro();
-	
+
 	int intMenuMainChoice = 0;
 	bool boolExitWhile = false;
 
 	TestFunction(&vecJourneyCollection);
 
 	do {
-		PrintMainMenuScreen(&vecJourneyCollection);
+		std::vector<ChoiceOption> vecChoiceCollection;
+		vecChoiceCollection.push_back(ChoiceOption{ 1, "Enter a new Journey" });
+		vecChoiceCollection.push_back(ChoiceOption{ 2, "View current journeys", 0 });
+		vecChoiceCollection.push_back(ChoiceOption{ 3, "Summaries", 2 });
+		vecChoiceCollection.push_back(ChoiceOption{ 4, "Comparisons and itemised summary", 2 });
+		vecChoiceCollection.push_back(ChoiceOption{ 5, "Remove a Journey", 0 });
+		vecChoiceCollection.push_back(ChoiceOption{ 6, "Import/Export Journeys", 0 });
+		vecChoiceCollection.push_back(ChoiceOption{ 9, "Exit" });
+		OutputMenu(&vecJourneyCollection, &vecChoiceCollection, "Welcome to the travel and expense system.");
 
 		while (boolExitWhile == false) {
 			std::cout << "Enter choice : ";
@@ -181,9 +189,9 @@ int main()
 					break;
 				}
 				case 3: {
-					if (vecJourneyCollection.size() <= 0) {
+					if (vecJourneyCollection.size() <= 1) {
 						boolExitWhile = false;
-						throw std::runtime_error("You have not yet added any journeys, this menu option is not available yet.");
+						throw std::runtime_error("You have not yet added enough journeys, this menu option is not available yet.");
 						break;
 					}
 					else {
@@ -210,7 +218,7 @@ int main()
 						boolExitWhile = false;
 						throw std::exception("You have not yet added a journey, this option is not yet available. It will become a visible choice once you have added a journey.");
 						break;
-					} 
+					}
 					else {
 						ViewDeleteJourney(&vecJourneyCollection, &intWidth);
 						boolExitWhile = true;
@@ -218,9 +226,17 @@ int main()
 					break;
 				}
 				case 6: {
-					ViewSaveImportSelect(&vecJourneyCollection, &intWidth);
-					boolExitWhile = true;
-					break;
+					if (vecJourneyCollection.size() <= 0)
+					{
+						boolExitWhile = false;
+						throw std::exception("You have not yet added a journey, this option is not yet available. It will become a visible choice once you have added a journey.");
+						break;
+					}
+					else {
+						ViewSaveImportSelect(&vecJourneyCollection, &intWidth);
+						boolExitWhile = true;
+						break;
+					}
 				}
 				case 9: {
 					boolExitWhile = true;
@@ -234,7 +250,7 @@ int main()
 					break;
 				}
 			}
-			catch (std::exception & exp) {
+			catch (std::exception& exp) {
 				std::cout << "Error : " << exp.what() << "\n";
 				boolExitWhile = false;
 			}
@@ -735,7 +751,14 @@ void AddNewJourney(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	double dExpenseCost = 0;
 
 	do {
-		PrintAddJourneyScreen(vecJourneyCollection);
+		std::vector<ChoiceOption> vecChoiceCollection;
+		vecChoiceCollection.push_back(ChoiceOption{ 1, "Travel only" });
+		vecChoiceCollection.push_back(ChoiceOption{ 2, "Travel and expenses" });
+		vecChoiceCollection.push_back(ChoiceOption{ 3, "View Current journeys", 0 });
+		vecChoiceCollection.push_back(ChoiceOption{ 9, "Return to menu" });
+		OutputMenu(vecJourneyCollection, &vecChoiceCollection, "Add a new journey screen.");
+
+		//PrintAddJourneyScreen(vecJourneyCollection);
 
 		while (boolExitWhile != true) {
 			std::cout << "Enter choice  : ";
@@ -785,7 +808,7 @@ void AddNewJourney(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 					boolExitWhile = false;
 				}
 			}
-			catch (std::exception & exp) {
+			catch (std::exception& exp) {
 				std::cout << "Error : " << exp.what() << "\n";
 			}
 		}
@@ -842,7 +865,15 @@ void ViewSummary(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	bool boolExitWhile = false;
 
 	do {
-		PrintSummaryScreen();
+		std::vector<ChoiceOption> vecChoiceCollection;
+		vecChoiceCollection.push_back(ChoiceOption{ 1, "View Combined Summary" });
+		vecChoiceCollection.push_back(ChoiceOption{ 2, "View Travel only Summary" });
+		vecChoiceCollection.push_back(ChoiceOption{ 3, "View Travel and Expenses only Summary" });
+		vecChoiceCollection.push_back(ChoiceOption{ 4, "Export Summary to file" });
+		vecChoiceCollection.push_back(ChoiceOption{ 9, "Return to menu" });
+		OutputMenu(vecJourneyCollection, &vecChoiceCollection, "View and interact with summaries.");
+
+		//PrintSummaryScreen();
 		boolExitWhile = false;
 
 		while (boolExitWhile == false) {
@@ -882,7 +913,7 @@ void ViewSummary(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 				}
 
 			}
-			catch (std::exception & exp) {
+			catch (std::exception& exp) {
 				std::cout << "Error : " << exp.what() << "\n";
 			}
 		}
@@ -916,7 +947,7 @@ void ViewCombinedSummary(std::vector<Journey>* vecJourneyCollection, int* intWid
 			<< std::fixed << std::setw(*intWidth) << totals.ExpenseNotCovered
 			<< std::fixed << std::setw(*intWidth) << totals.TotalFinalPay << "\n";
 	}
-	catch (std::exception & exp) {
+	catch (std::exception& exp) {
 		std::cout << "Error : " << exp.what() << "\n";
 	}
 
@@ -934,7 +965,7 @@ void ViewCombinedSummary(std::vector<Journey>* vecJourneyCollection, int* intWid
 			<< std::fixed << std::setw(*intWidth) << average.AverageNotCovered
 			<< std::fixed << std::setw(*intWidth) << average.AverageFinalPay << "\n";
 	}
-	catch (std::exception & exp) {
+	catch (std::exception& exp) {
 		std::cout << "Error : " << exp.what() << "\n";
 	}
 
@@ -952,7 +983,7 @@ void ViewCombinedSummary(std::vector<Journey>* vecJourneyCollection, int* intWid
 			<< std::fixed << std::setw(*intWidth) << largest.LargestNotCovered
 			<< std::fixed << std::setw(*intWidth) << largest.LargestFinalPay << "\n";
 	}
-	catch (std::exception & exp) {
+	catch (std::exception& exp) {
 		std::cout << "Error : " << exp.what() << "\n";
 	}
 
@@ -980,7 +1011,7 @@ void ViewTotalSummaryTwoItems(std::vector<Journey>* vecJourneyCollection, int* i
 			<< std::fixed << std::setw(*intWidth) << totals.ExpenseNotCovered
 			<< std::fixed << std::setw(*intWidth) << totals.TotalFinalPay << "\n";
 	}
-	catch (std::exception & exp) {
+	catch (std::exception& exp) {
 		std::cout << "Error : " << exp.what() << "\n";
 	}
 
@@ -1008,7 +1039,7 @@ void ViewCompareSummaryTwoItems(std::vector<Journey>* vecJourneyCollection, int*
 			<< std::fixed << std::setw(*intWidth) << totals.ExpenseNotCovered
 			<< std::fixed << std::setw(*intWidth) << totals.TotalFinalPay << "\n";
 	}
-	catch (std::exception & exp) {
+	catch (std::exception& exp) {
 		std::cout << "Error : " << exp.what() << "\n";
 	}
 
@@ -1026,7 +1057,7 @@ void ViewCompareSummaryTwoItems(std::vector<Journey>* vecJourneyCollection, int*
 			<< std::fixed << std::setw(*intWidth) << largest.LargestNotCovered
 			<< std::fixed << std::setw(*intWidth) << largest.LargestFinalPay << "\n";
 	}
-	catch (std::exception & exp) {
+	catch (std::exception& exp) {
 		std::cout << "Error : " << exp.what() << "\n";
 	}
 
@@ -1044,7 +1075,7 @@ void ViewCompareSummaryTwoItems(std::vector<Journey>* vecJourneyCollection, int*
 			<< std::fixed << std::setw(*intWidth) << difference.DifffNotCovered
 			<< std::fixed << std::setw(*intWidth) << difference.DiffFinalPay << "\n";
 	}
-	catch (std::exception & exp) {
+	catch (std::exception& exp) {
 		std::cout << "Error : " << exp.what() << "\n";
 	}
 
@@ -1065,7 +1096,7 @@ void ViewTravelOnlySummary(std::vector<Journey>* vecJourneyCollection, int* intW
 			<< std::fixed << std::setw(*intWidth) << totals.TotalTaxReclaim
 			<< std::fixed << std::setw(*intWidth) << totals.TotalFinalPay << "\n";
 	}
-	catch (std::exception & exp) {
+	catch (std::exception& exp) {
 		std::cout << "Error : " << exp.what() << "\n";
 	}
 
@@ -1079,7 +1110,7 @@ void ViewTravelOnlySummary(std::vector<Journey>* vecJourneyCollection, int* intW
 			<< std::fixed << std::setw(*intWidth) << average.AverageTaxReclaim
 			<< std::fixed << std::setw(*intWidth) << average.AverageFinalPay << "\n";
 	}
-	catch (std::exception & exp) {
+	catch (std::exception& exp) {
 		std::cout << "Error : " << exp.what() << "\n";
 	}
 
@@ -1093,7 +1124,7 @@ void ViewTravelOnlySummary(std::vector<Journey>* vecJourneyCollection, int* intW
 			<< std::fixed << std::setw(*intWidth) << largest.LargestTaxReclaim
 			<< std::fixed << std::setw(*intWidth) << largest.LargestFinalPay << "\n";
 	}
-	catch (std::exception & exp) {
+	catch (std::exception& exp) {
 		std::cout << "Error : " << exp.what() << "\n";
 	}
 
@@ -1118,7 +1149,7 @@ void ViewTravelExpensesOnlySummary(std::vector<Journey>* vecJourneyCollection, i
 			<< std::fixed << std::setw(*intWidth) << totals.ExpenseNotCovered
 			<< std::fixed << std::setw(*intWidth) << totals.TotalFinalPay << "\n";
 	}
-	catch (std::exception & exp) {
+	catch (std::exception& exp) {
 		std::cout << "Error : " << exp.what() << "\n";
 	}
 
@@ -1136,7 +1167,7 @@ void ViewTravelExpensesOnlySummary(std::vector<Journey>* vecJourneyCollection, i
 			<< std::fixed << std::setw(*intWidth) << average.AverageNotCovered
 			<< std::fixed << std::setw(*intWidth) << average.AverageFinalPay << "\n";
 	}
-	catch (std::exception & exp) {
+	catch (std::exception& exp) {
 		std::cout << "Error : " << exp.what() << "\n";
 	}
 
@@ -1154,7 +1185,7 @@ void ViewTravelExpensesOnlySummary(std::vector<Journey>* vecJourneyCollection, i
 			<< std::fixed << std::setw(*intWidth) << largest.LargestNotCovered
 			<< std::fixed << std::setw(*intWidth) << largest.LargestFinalPay << "\n";
 	}
-	catch (std::exception & exp) {
+	catch (std::exception& exp) {
 		std::cout << "Error : " << exp.what() << "\n";
 	}
 
@@ -1178,20 +1209,20 @@ void ViewSaveSummary(std::vector<Journey>* vecJourneyCollection) {
 
 	fout.open(fname, std::ios::out | std::ios::app);
 
-	fout << "Travel Type" << ", " 
-		<< "Travel Cost" << ", " 
-		<< "Expense Cost" << ", " 
-		<< "Total Cost" << ", " 
-		<< "Tax Reclaim" << ", " 
-		<< "Expense payable" << ", " 
-		<< "Final payment" << ", " 
-		<< "Expense Not Covered" 
+	fout << "Travel Type" << ", "
+		<< "Travel Cost" << ", "
+		<< "Expense Cost" << ", "
+		<< "Total Cost" << ", "
+		<< "Tax Reclaim" << ", "
+		<< "Expense payable" << ", "
+		<< "Final payment" << ", "
+		<< "Expense Not Covered"
 		<< "\n";
 
 	for (size_t i = 0; i < vecJourneyCollection->size(); i++)
 	{
 		fout << std::fixed << std::setprecision(2) << ((((int)vecJourneyCollection->at(i).travelType) == 0) ? "Travel" : "Travel & Exp") << ", "
-			<< vecJourneyCollection->at(i).travelCost << ", " 
+			<< vecJourneyCollection->at(i).travelCost << ", "
 			<< vecJourneyCollection->at(i).expenseCost << ", "
 			<< vecJourneyCollection->at(i).totalCost << ", "
 			<< vecJourneyCollection->at(i).taxReclaim << ", "
@@ -1219,7 +1250,7 @@ void ViewImportSummary(std::vector<Journey>* vecJourneyCollection) {
 	std::cout << "Please specify the name of the file you would like to import below\n";
 	std::cout << "Note : Please enter the full file name, such as 'JourneyList.csv', otherwise the file will not be found. The file must also be in the same directory that you are running this program from. Type 'exit' if you would like to cancel and return to the previous screen.\n";
 	std::cout << "\n";
-	
+
 	do {
 		try {
 			std::cout << "File name : ";
@@ -1242,7 +1273,7 @@ void ViewImportSummary(std::vector<Journey>* vecJourneyCollection) {
 				}
 			}
 		}
-		catch (std::exception & ex) {
+		catch (std::exception& ex) {
 			std::cout << "\n";
 			std::cout << "Error :" << ex.what() << "\n";
 		}
@@ -1280,9 +1311,9 @@ void ViewImportSummary(std::vector<Journey>* vecJourneyCollection) {
 						vecJourneyCollection->push_back(journeyTemp);
 					}
 				}
-
-				std::cout << "Journeys succssfully imported.\n";
 			}
+
+			std::cout << "Journeys succssfully imported.\n";
 		}
 		catch (std::exception& ex) {
 			std::cout << "\n";
@@ -1302,7 +1333,12 @@ void ViewComparison(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	bool boolExitWhile = false;
 
 	do {
-		PrintComparisonScreen();
+		std::vector<ChoiceOption> vecChoiceCollection;
+		vecChoiceCollection.push_back(ChoiceOption{ 1, "Compare two journeys", 2 });
+		vecChoiceCollection.push_back(ChoiceOption{ 2, "Total two journeys", 2 });
+		vecChoiceCollection.push_back(ChoiceOption{ 9, "Return to menu" });
+		OutputMenu(vecJourneyCollection, &vecChoiceCollection, "Make Comparisons and total invoices.");
+
 		boolExitWhile = false;
 
 		while (boolExitWhile == false) {
@@ -1333,7 +1369,7 @@ void ViewComparison(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 				}
 
 			}
-			catch (std::exception & exp) {
+			catch (std::exception& exp) {
 				std::cout << "Error : " << exp.what() << "\n";
 			}
 		}
@@ -1363,24 +1399,24 @@ void ViewSaveExport(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 
 			try {
 				switch (intSaveExportChoiceInput) {
-					case 1: {
-						ViewSaveSummary(vecJourneyCollection);
-						boolExitWhile = true;
-						intSaveExportChoiceInput = 9;
-						break;
-					}
-					case 9: {
-						boolExitWhile = true;
-						break;
-					}
-					default: {
-						throw std::exception("Not recognised as valid input.");
-						break;
-					}
+				case 1: {
+					ViewSaveSummary(vecJourneyCollection);
+					boolExitWhile = true;
+					intSaveExportChoiceInput = 9;
+					break;
+				}
+				case 9: {
+					boolExitWhile = true;
+					break;
+				}
+				default: {
+					throw std::exception("Not recognised as valid input.");
+					break;
+				}
 				}
 
 			}
-			catch (std::exception & exp) {
+			catch (std::exception& exp) {
 				std::cout << "Error : " << exp.what() << "\n";
 			}
 		}
@@ -1543,7 +1579,7 @@ void ViewDeleteSelect(std::vector<Journey>* vecJourneyCollection, int* intWidth)
 				}
 
 			}
-			catch (std::exception & exp) {
+			catch (std::exception& exp) {
 				std::cout << "Error : " << exp.what() << "\n";
 			}
 		}
@@ -1625,7 +1661,14 @@ void ViewSaveImportSelect(std::vector<Journey>* vecJourneyCollection, int* intWi
 	bool boolExitWhile = false;
 
 	do {
-		PrintSaveImportSelectScreen();
+		std::vector<ChoiceOption> vecChoiceCollection;
+		vecChoiceCollection.push_back(ChoiceOption{ 1, "Export current Journeys" });
+		vecChoiceCollection.push_back(ChoiceOption{ 2, "Import Journeys from CSV" });
+		vecChoiceCollection.push_back(ChoiceOption{ 3, "View current journeys" });
+		vecChoiceCollection.push_back(ChoiceOption{ 9, "Return to previous" });
+		OutputMenu(vecJourneyCollection, &vecChoiceCollection, "Import or export journeys.");
+
+		//PrintSaveImportSelectScreen();
 		boolExitWhile = false;
 
 		while (boolExitWhile == false) {
@@ -1634,34 +1677,34 @@ void ViewSaveImportSelect(std::vector<Journey>* vecJourneyCollection, int* intWi
 
 			try {
 				switch (intSaveImportChoiceInput) {
-					case 1: {
-						boolExitWhile = true;
-						ViewSaveSummary(vecJourneyCollection);
-						break;
-					}
-					case 2: {
-						boolExitWhile = true;
-						ViewImportSummary(vecJourneyCollection);
-						break;
-					}
-					case 3: {
-						boolExitWhile = true;
-						ViewJourneys(vecJourneyCollection, intWidth);
-						break;
-					}
-					case 9: {
-						boolExitWhile = true;
-						intSaveImportChoiceInput = 9;
-						break;
-					}
-					default: {
-						throw std::exception("Not recognised as valid input.");
-						break;
-					}
+				case 1: {
+					boolExitWhile = true;
+					ViewSaveSummary(vecJourneyCollection);
+					break;
+				}
+				case 2: {
+					boolExitWhile = true;
+					ViewImportSummary(vecJourneyCollection);
+					break;
+				}
+				case 3: {
+					boolExitWhile = true;
+					ViewJourneys(vecJourneyCollection, intWidth);
+					break;
+				}
+				case 9: {
+					boolExitWhile = true;
+					intSaveImportChoiceInput = 9;
+					break;
+				}
+				default: {
+					throw std::exception("Not recognised as valid input.");
+					break;
+				}
 				}
 
 			}
-			catch (std::exception & exp) {
+			catch (std::exception& exp) {
 				std::cout << "Error : " << exp.what() << "\n";
 			}
 		}
@@ -1792,87 +1835,6 @@ void PrintIntro() {
 	Pause();
 }
 
-/// <summary>
-/// Prints the main menu screen intro, takes the Journey vector in order to hide options if they are not availale yet.
-/// </summary>
-/// <param name="vecJourneyCollection"></param>
-void PrintMainMenuScreen(std::vector<Journey>* vecJourneyCollection) {
-	system("cls");
-	std::cout << "-------------------------------------------\n";
-	std::cout << "\n";
-	std::cout << "Welcome to the travel and expeses system.\n";
-	std::cout << "Please specify your option:\n";
-	std::cout << "\n";
-	std::cout << "Option 1 : Enter a new Journey\n";
-	if (vecJourneyCollection->size() > 0) {
-		std::cout << "Option 2 : View current journeys\n";
-	}
-	if (vecJourneyCollection->size() > 0) {
-		std::cout << "Option 3 : Summaries\n";
-	}
-	if (vecJourneyCollection->size() >= 2) {
-		std::cout << "Option 4 : Comparisons and itemised summary\n";
-	}
-	if (vecJourneyCollection->size() >= 1) {
-		std::cout << "Option 5 : Remove a Journey\n";
-	}
-	std::cout << "Option 6 : Import/Export Journeys\n";
-	std::cout << "Option 9 : Exit\n";
-	std::cout << "\n";
-	std::cout << "-------------------------------------------\n";
-	std::cout << "\n";
-}
-
-void PrintAddJourneyScreen(std::vector<Journey>* vecJourneyCollection) {
-	system("cls");
-	std::cout << "-------------------------------------------\n";
-	std::cout << "\n";
-	std::cout << "Add new journey screen\n";
-	std::cout << "Please specify your option:\n";
-	std::cout << "\n";
-	std::cout << "Option 1 : Travel only\n";
-	std::cout << "Option 2 : Travel and expenses\n";
-	if (vecJourneyCollection->size() > 0) {
-		std::cout << "Option 3 : View current journeys\n";
-	}
-	std::cout << "Option 9 : Return to menu\n";
-	std::cout << "\n";
-	std::cout << "-------------------------------------------\n";
-	std::cout << "\n";
-}
-
-void PrintSummaryScreen() {
-	system("cls");
-	std::cout << "-------------------------------------------\n";
-	std::cout << "\n";
-	std::cout << "View and interact with summaries\n";
-	std::cout << "Please specify your option:\n";
-	std::cout << "\n";
-	std::cout << "Option 1 : View Combined Summary\n";
-	std::cout << "Option 2 : View Travel only Summary\n";
-	std::cout << "Option 3 : View Travel and Expenses only Summary\n";
-	std::cout << "Option 4 : Export Summary to file\n";
-	std::cout << "Option 9 : Return to menu\n";
-	std::cout << "\n";
-	std::cout << "-------------------------------------------\n";
-	std::cout << "\n";
-}
-
-void PrintComparisonScreen() {
-	system("cls");
-	std::cout << "-------------------------------------------\n";
-	std::cout << "\n";
-	std::cout << "Make Comparisons and total invoices\n";
-	std::cout << "Please specify your option:\n";
-	std::cout << "\n";
-	std::cout << "Option 1 : Compare two journeys\n";
-	std::cout << "Option 2 : Total two journeys\n";
-	std::cout << "Option 9 : Return to menu\n";
-	std::cout << "\n";
-	std::cout << "-------------------------------------------\n";
-	std::cout << "\n";
-}
-
 void PrintSaveExportScreen() {
 	std::cout << "\n";
 	std::cout << "You can now either choose to Save these items for future importing (.CSV file) or return to the previous screen.\n";
@@ -1929,6 +1891,36 @@ void PrintSaveImportSelectScreen() {
 	std::cout << "\n";
 }
 
+
+void OutputMenu(std::vector<Journey>* vecJourneyCollection, std::vector<ChoiceOption>* vecChoiceCollection, std::string introText) {
+	system("cls");
+	std::cout << "-------------------------------------------\n";
+	std::cout << "\n";
+	std::cout << introText;
+	std::cout << "\nPlease specify your option :\n";
+	std::cout << "\n";
+	for (size_t i = 0; i < vecChoiceCollection->size(); i++)
+	{
+		if (vecChoiceCollection->at(i).OptionHideThreshold != 99) {
+			if (vecChoiceCollection->at(i).OptionHideThreshold == 0) {
+				if (vecJourneyCollection->size() > vecChoiceCollection->at(i).OptionHideThreshold) {
+					std::cout << "Option " << vecChoiceCollection->at(i).OptionNumber << " : " << vecChoiceCollection->at(i).OptionText << "\n";
+				}
+			}
+			else {
+				if (vecJourneyCollection->size() >= vecChoiceCollection->at(i).OptionHideThreshold) {
+					std::cout << "Option " << vecChoiceCollection->at(i).OptionNumber << " : " << vecChoiceCollection->at(i).OptionText << "\n";
+				}
+			}
+		}
+		else {
+			std::cout << "Option " << vecChoiceCollection->at(i).OptionNumber << " : " << vecChoiceCollection->at(i).OptionText << "\n";
+		}
+	}
+	std::cout << "\n";
+	std::cout << "-------------------------------------------\n";
+}
+
 // Print out functions end
 
 // Misc functions
@@ -1943,15 +1935,10 @@ void Pause()
 void TestFunction(std::vector<Journey>* vecJourneyCollection) {
 	// Testing function, adds some example journeys with large decimal point inputs.
 
-	Journey journey1{ TravelType::Travel, 25.23534 };
-	Journey journey2{ TravelType::TravelAndExpense, 23.23, 10.9263 };
-	Journey journey3{ TravelType::Travel, 27 };
-	Journey journey4{ TravelType::TravelAndExpense, 120.2553, 57.823 };
-
-	vecJourneyCollection->push_back(journey1);
-	vecJourneyCollection->push_back(journey2);
-	vecJourneyCollection->push_back(journey3);
-	vecJourneyCollection->push_back(journey4);
+	vecJourneyCollection->push_back(Journey{ TravelType::Travel, 25.23534 });
+	vecJourneyCollection->push_back(Journey{ TravelType::TravelAndExpense, 23.23, 10.9263 });
+	vecJourneyCollection->push_back(Journey{ TravelType::Travel, 27 });
+	vecJourneyCollection->push_back(Journey{ TravelType::TravelAndExpense, 120.2553, 57.823 });
 }
 
 // Misc functions end
