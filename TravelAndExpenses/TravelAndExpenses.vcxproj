@@ -153,6 +153,9 @@
   <ItemGroup>
     <ClCompile Include="TravelAndExpenses.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CalcFunctions.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
