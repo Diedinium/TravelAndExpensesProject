@@ -19,16 +19,12 @@
 // Function namespace declaration
 
 // Ouput print help functions.
-void PrintIntro(HANDLE* hConsole);
-void PrintTravelHeader(int* intWidth);
-void PrintTravelExpenseHeader(int* intWidth);
-void PrintCurrentJourneysTravel(std::vector<Journey>* vecJourneyCollection, int* intWidth);
-void PrintCurrentJourneysTravelExpense(std::vector<Journey>* vecJourneyCollection, int* intWidth);
-void PrintSummaryHeader(int* intWidth);
-void PrintAllJourneyNumberedHeader(int* intWidth);
-void PrintAllJourneyNumberedHeader(int* intWidth, std::string message);
-void PrintAllJourneysInOrder(std::vector<Journey>* vecJourneyCollection, int* intWidth);
+void OutputIntro(HANDLE* hConsole);
 void OutputMenu(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, std::vector<ChoiceOption>* vecChoiceCollection, std::string introText, bool boolUseDashes, bool boolClearScreen);
+void OutputHeader(HANDLE* hConsole, int* intWidth, std::string headerText);
+void OutputHeader(HANDLE* hConsole, int* intWidth, std::string headerText, int headerType);
+void OutputTable(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth);
+void OutputTable(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth, int tableType);
 
 // Misc helper functions
 void Pause(HANDLE* hConsole);
@@ -61,7 +57,7 @@ int main()
 	int intWidth = 15;
 	std::vector<Journey> vecJourneyCollection;
 
-	PrintIntro(&hConsole);
+	OutputIntro(&hConsole);
 
 	int intMenuMainChoice = 0;
 	bool boolExitWhile = false;
@@ -268,61 +264,50 @@ void AddNewJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection,
 		boolExitWhile = false;
 
 		switch (intTravelChoiceInput) {
-		case 3: {
-			system("cls");
-			strContinueAddingJourneys = "Y";
-			break;
-		}
-		case 9: {
-			strContinueAddingJourneys = "N";
-			break;
-		}
-		default: {
-			system("CLS");
-			SetConsoleTextAttribute(*hConsole, 10);
-			std::cout << "Journey succesfully added.\n";
-			SetConsoleTextAttribute(*hConsole, 15);
-			SetConsoleTextAttribute(*hConsole, 14);
-			std::cout << "Would you like to add another journey?\n";
-			std::cout << "Type 'Y' to add another, or type 'N' to return to the menu.\n";
-			SetConsoleTextAttribute(*hConsole, 9);
-			std::cout << "Enter Choice : ";
-			SetConsoleTextAttribute(*hConsole, 15);
-
-			bool boolExitWhileString = false;
-			while (boolExitWhileString == false)
-			{
-				std::cin.clear();
-				std::cin.ignore(123, '\n');
-				std::cin >> strContinueAddingJourneys;
-				transform(strContinueAddingJourneys.begin(), strContinueAddingJourneys.end(), strContinueAddingJourneys.begin(), std::toupper);
-
-				if (strContinueAddingJourneys.find("Y") != std::string::npos) {
-					boolExitWhileString = true;
-				} 
-				else if (strContinueAddingJourneys.find("N") != std::string::npos) {
-					boolExitWhileString = true;
-				}
-				else {
-					SetConsoleTextAttribute(*hConsole, 12);
-					std::cout << "\nERROR: Choice must be Y or N : ";
-					SetConsoleTextAttribute(*hConsole, 15);
-				}
+			case 3: {
+				system("cls");
+				strContinueAddingJourneys = "Y";
+				break;
 			}
-			boolExitWhile = false;
+			case 9: {
+				strContinueAddingJourneys = "N";
+				break;
+			}
+			default: {
+				system("CLS");
+				SetConsoleTextAttribute(*hConsole, 10);
+				std::cout << "Journey succesfully added.\n";
+				SetConsoleTextAttribute(*hConsole, 15);
+				SetConsoleTextAttribute(*hConsole, 14);
+				std::cout << "Would you like to add another journey?\n";
+				std::cout << "Type 'Y' to add another, or type 'N' to return to the menu.\n";
+				SetConsoleTextAttribute(*hConsole, 9);
+				std::cout << "Enter Choice : ";
+				SetConsoleTextAttribute(*hConsole, 15);
 
-			//while (!(std::cin >> strContinueAddingJourneys)) {
-			//	// Makes user try again if input is not an int
-			//	SetConsoleTextAttribute(*hConsole, 12);
-			//	std::cout << "ERROR: a string must be entered : ";
-			//	SetConsoleTextAttribute(*hConsole, 15);
-			//	std::cin.clear();
-			//	std::cin.ignore(123, '\n');
-			//}
+				bool boolExitWhileString = false;
+				while (boolExitWhileString == false)
+				{
+					std::cin.clear();
+					std::cin.ignore(123, '\n');
+					std::cin >> strContinueAddingJourneys;
+					transform(strContinueAddingJourneys.begin(), strContinueAddingJourneys.end(), strContinueAddingJourneys.begin(), std::toupper);
 
-			//transform(strContinueAddingJourneys.begin(), strContinueAddingJourneys.end(), strContinueAddingJourneys.begin(), std::toupper);
-			break;
-		}
+					if (strContinueAddingJourneys.find("Y") != std::string::npos) {
+						boolExitWhileString = true;
+					}
+					else if (strContinueAddingJourneys.find("N") != std::string::npos) {
+						boolExitWhileString = true;
+					}
+					else {
+						SetConsoleTextAttribute(*hConsole, 12);
+						std::cout << "\nERROR: Choice must be Y or N : ";
+						SetConsoleTextAttribute(*hConsole, 15);
+					}
+				}
+				boolExitWhile = false;
+				break;
+			}
 		}
 
 	} while (strContinueAddingJourneys == "Y");
@@ -332,12 +317,12 @@ void AddNewJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection,
 
 void ViewJourneys(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	system("CLS");
-	PrintTravelHeader(intWidth);
-	PrintCurrentJourneysTravel(vecJourneyCollection, intWidth);
+	OutputHeader(hConsole, intWidth, "Travel Only Journeys", 2);
+	OutputTable(hConsole, vecJourneyCollection, intWidth, 2);
 	std::cout << "\n";
 
-	PrintTravelExpenseHeader(intWidth);
-	PrintCurrentJourneysTravelExpense(vecJourneyCollection, intWidth);
+	OutputHeader(hConsole, intWidth, "Travel and Expense Journeys");
+	OutputTable(hConsole, vecJourneyCollection, intWidth, 1);
 	std::cout << "\n";
 	ViewDeleteSelect(hConsole, vecJourneyCollection, intWidth);
 }
@@ -405,9 +390,9 @@ void ViewSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, i
 
 void ViewTotalSummaryTwoItems(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	system("cls");
-	PrintAllJourneyNumberedHeader(intWidth, "Two item comparison : Totals");
+	OutputHeader(hConsole, intWidth, "Two Journey : Totals", 1);
 	if (vecJourneyCollection->size() > 0) {
-		PrintAllJourneysInOrder(vecJourneyCollection, intWidth);
+		OutputTable(hConsole, vecJourneyCollection, intWidth);
 	}
 
 	try {
@@ -433,9 +418,9 @@ void ViewTotalSummaryTwoItems(HANDLE* hConsole, std::vector<Journey>* vecJourney
 
 void ViewCompareSummaryTwoItems(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	system("cls");
-	PrintAllJourneyNumberedHeader(intWidth, "Two item comparison : Comparison");
+	OutputHeader(hConsole, intWidth, "Two Journeys : Comparison", 1);
 	if (vecJourneyCollection->size() > 0) {
-		PrintAllJourneysInOrder(vecJourneyCollection, intWidth);
+		OutputTable(hConsole, vecJourneyCollection, intWidth);
 	}
 
 	try {
@@ -497,10 +482,11 @@ void ViewCompareSummaryTwoItems(HANDLE* hConsole, std::vector<Journey>* vecJourn
 
 void ViewCombinedSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	system("cls");
-	PrintSummaryHeader(intWidth);
+	OutputHeader(hConsole, intWidth, "");
 	if (vecJourneyCollection->size() > 0) {
-		PrintCurrentJourneysTravel(vecJourneyCollection, intWidth);
-		PrintCurrentJourneysTravelExpense(vecJourneyCollection, intWidth);
+		OutputTable(hConsole, vecJourneyCollection, intWidth, 2);
+		OutputTable(hConsole, vecJourneyCollection, intWidth, 1);
+		//PrintCurrentJourneysTravelExpense(vecJourneyCollection, intWidth);
 	}
 
 	try {
@@ -562,8 +548,8 @@ void ViewCombinedSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyColle
 
 void ViewTravelOnlySummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	system("cls");
-	PrintTravelHeader(intWidth);
-	PrintCurrentJourneysTravel(vecJourneyCollection, intWidth);
+	OutputHeader(hConsole, intWidth, "Travel Only Journeys", 2);
+	OutputTable(hConsole, vecJourneyCollection, intWidth, 2);
 	try {
 		auto totals = CalculateTravelSummaryTotals(vecJourneyCollection);
 		std::cout << "\n";
@@ -619,8 +605,9 @@ void ViewTravelOnlySummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCol
 
 void ViewTravelExpensesOnlySummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	system("cls");
-	PrintTravelExpenseHeader(intWidth);
-	PrintCurrentJourneysTravelExpense(vecJourneyCollection, intWidth);
+	OutputHeader(hConsole, intWidth, "Travel and Expense Journeys");
+	//PrintCurrentJourneysTravelExpense(vecJourneyCollection, intWidth);
+	OutputTable(hConsole, vecJourneyCollection, intWidth, 1);
 	try {
 		auto totals = CalculateTravelExpenseSummaryTotals(vecJourneyCollection);
 		std::cout << "\n";
@@ -939,8 +926,8 @@ void ViewCompareTwoJourneys(HANDLE* hConsole, std::vector<Journey>* vecJourneyCo
 	std::vector<Journey> vecJourneyCompare;
 
 	system("cls");
-	PrintAllJourneyNumberedHeader(intWidth);
-	PrintAllJourneysInOrder(vecJourneyCollection, intWidth);
+	OutputHeader(hConsole, intWidth, "", 1);
+	OutputTable(hConsole, vecJourneyCollection, intWidth);
 
 	std::cout << "\n";
 	std::cout << "Please specify number of the first journey you would like to compare.\n";
@@ -995,8 +982,8 @@ void ViewTotalTwoJourneys(HANDLE* hConsole, std::vector<Journey>* vecJourneyColl
 	std::vector<Journey> vecJourneyTotal;
 
 	system("cls");
-	PrintAllJourneyNumberedHeader(intWidth);
-	PrintAllJourneysInOrder(vecJourneyCollection, intWidth);
+	OutputHeader(hConsole, intWidth, "", 1);
+	OutputTable(hConsole, vecJourneyCollection, intWidth);
 
 	std::cout << "\n";
 	std::cout << "Please specify number of the first journey you would like to total.\n";
@@ -1120,8 +1107,8 @@ void ViewDeleteJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollect
 	bool boolIsExiting = false;
 
 	system("cls");
-	PrintAllJourneyNumberedHeader(intWidth);
-	PrintAllJourneysInOrder(vecJourneyCollection, intWidth);
+	OutputHeader(hConsole, intWidth, "", 1);
+	OutputTable(hConsole, vecJourneyCollection, intWidth);
 
 	std::cout << "\n";
 	SetConsoleTextAttribute(*hConsole, 14);
@@ -1227,114 +1214,13 @@ void ViewSaveImportSelect(HANDLE* hConsole, std::vector<Journey>* vecJourneyColl
 }
 // Views/Menu screens end
 
-// Print out functions
-
-/// <summary>
-/// Prints the summary header for generic journey view screens
-/// </summary>
-/// <param name="intWidth"></param>
-void PrintSummaryHeader(int* intWidth) {
-	std::cout << "All Journeys" << "\n";
-	std::cout << "------------------------------------------------------------------------------------------------------------------------\n";
-	std::cout << std::setw(*intWidth) << "Travel Type" << std::setw(*intWidth) << "Travel Cost" << std::setw(*intWidth) << "Exp Cost" << std::setw(*intWidth) << "Total Cost" << std::setw(*intWidth) << "Exp Payable" << std::setw(*intWidth) << "Tax Reclaim" << std::setw(*intWidth) << "Exp not Cvrd" << std::setw(*intWidth) << "Final Pay\n";
-	std::cout << "------------------------------------------------------------------------------------------------------------------------\n";
-}
-
-/// <summary>
-/// Prints out a header for when a numbered list of all journeys currently stored in the vector are needed (for selection etc).
-/// </summary>
-/// <param name="intWidth"></param>
-void PrintAllJourneyNumberedHeader(int* intWidth) {
-	std::cout << "All Journeys" << "\n";
-	std::cout << "------------------------------------------------------------------------------------------------------------------------------\n";
-	std::cout << std::setw(5) << "Number" << std::setw(*intWidth) << "Travel Type" << std::setw(*intWidth) << "Travel Cost" << std::setw(*intWidth) << "Exp Cost" << std::setw(*intWidth) << "Total Cost" << std::setw(*intWidth) << "Exp Payable" << std::setw(*intWidth) << "Tax Reclaim" << std::setw(*intWidth) << "Exp not Cvrd" << std::setw(*intWidth) << "Final Pay\n";
-	std::cout << "------------------------------------------------------------------------------------------------------------------------------\n";
-}
-
-void PrintAllJourneyNumberedHeader(int* intWidth, std::string message) {
-	std::cout << message << "\n";
-	std::cout << "------------------------------------------------------------------------------------------------------------------------------\n";
-	std::cout << std::setw(5) << "Number" << std::setw(*intWidth) << "Travel Type" << std::setw(*intWidth) << "Travel Cost" << std::setw(*intWidth) << "Exp Cost" << std::setw(*intWidth) << "Total Cost" << std::setw(*intWidth) << "Exp Payable" << std::setw(*intWidth) << "Tax Reclaim" << std::setw(*intWidth) << "Exp not Cvrd" << std::setw(*intWidth) << "Final Pay\n";
-	std::cout << "------------------------------------------------------------------------------------------------------------------------------\n";
-}
-
-/// <summary>
-/// Prints the travel only expense header, takes the globally defined column width declared in main.
-/// </summary>
-/// <param name="intWidth"></param>
-void PrintTravelHeader(int* intWidth) {
-	std::cout << "Travel Only Journeys" << "\n";
-	std::cout << "------------------------------------------------------------\n";
-	std::cout << std::setw(*intWidth) << "Travel Type" << std::setw(*intWidth) << "Travel Cost" << std::setw(*intWidth) << "Tax Reclaim" << std::setw(*intWidth) << "Final Pay" << "\n";
-	std::cout << "------------------------------------------------------------\n";
-}
-
-/// <summary>
-/// Prints the travel expense header, takes the globally defined column width declared in main.
-/// </summary>
-/// <param name="intWidth"></param>
-void PrintTravelExpenseHeader(int* intWidth) {
-	std::cout << "Travel and Expenses Journeys" << "\n";
-	std::cout << "------------------------------------------------------------------------------------------------------------------------\n";
-	std::cout << std::setw(*intWidth) << "Travel Type" << std::setw(*intWidth) << "Travel Cost" << std::setw(*intWidth) << "Exp Cost" << std::setw(*intWidth) << "Total Cost" << std::setw(*intWidth) << "Exp Payable" << std::setw(*intWidth) << "Tax Reclaim" << std::setw(*intWidth) << "Exp not Cvrd" << std::setw(*intWidth) << "Final Pay\n";
-	std::cout << "------------------------------------------------------------------------------------------------------------------------\n";
-}
-
-/// <summary>
-/// Prints the currently stored Journeys that are of the Travel type from the Journey vector.
-/// </summary>
-/// <param name="vecJourneyCollection"></param>
-/// <param name="intWidth"></param>
-void PrintCurrentJourneysTravel(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
-	if (vecJourneyCollection->size() <= 0) {
-		std::cout << "There are currently no stored journeys\n";
-	}
-	else {
-		for (std::size_t i = 0; i < vecJourneyCollection->size(); ++i) {
-			if (vecJourneyCollection->at(i).travelType == TravelType::Travel) {
-				std::cout.precision(2);
-				std::cout
-					<< std::setw(*intWidth) << ((((int)vecJourneyCollection->at(i).travelType) == 0) ? "Travel" : "Travel & Exp")
-					<< std::setw(*intWidth) << std::fixed << vecJourneyCollection->at(i).travelCost
-					<< std::setw(*intWidth) << std::fixed << vecJourneyCollection->at(i).taxReclaim
-					<< std::setw(*intWidth) << std::fixed << vecJourneyCollection->at(i).finalPayment << "\n";
-			}
-		}
-	}
-}
-
-/// <summary>
-/// Prints the currently stored Journeys that are of the TravelAndExpense type from the Journey vector.
-/// </summary>
-/// <param name="vecJourneyCollection"></param>
-/// <param name="intWidth"></param>
-void PrintCurrentJourneysTravelExpense(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
-	if (vecJourneyCollection->size() <= 0) {
-		std::cout << "There are currently no stored journeys\n";
-	}
-	else {
-		for (std::size_t i = 0; i < vecJourneyCollection->size(); ++i) {
-			if (vecJourneyCollection->at(i).travelType == TravelType::TravelAndExpense) {
-				std::cout.precision(2);
-				std::cout
-					<< std::setw(*intWidth) << ((((int)vecJourneyCollection->at(i).travelType) == 0) ? "Travel" : "Travel & Exp")
-					<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).travelCost
-					<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).expenseCost
-					<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).totalCost
-					<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).expensePayable
-					<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).taxReclaim
-					<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).expenseNotCovered
-					<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).finalPayment << "\n";
-			}
-		}
-	}
-
-}
+// Output functions
 
 /// <summary>
 /// Prints the intro warning/notice when loading the program.
 /// </summary>
-void PrintIntro(HANDLE* hConsole) {
+/// <param name="hConsole"></param>
+void OutputIntro(HANDLE* hConsole) {
 	// Notice for users about setup needed to ensure proper formatted output.
 	SetConsoleTextAttribute(*hConsole, 12);
 	std::cout << "### NOTICE ###\n";
@@ -1348,27 +1234,6 @@ void PrintIntro(HANDLE* hConsole) {
 	SetConsoleTextAttribute(*hConsole, 15);
 
 	Pause(hConsole);
-}
-
-void PrintAllJourneysInOrder(std::vector<Journey>* vecJourneyCollection, int* intWidth) {
-	if (vecJourneyCollection->size() <= 0) {
-		std::cout << "There are currently no stored journeys\n";
-	}
-	else {
-		for (std::size_t i = 0; i < vecJourneyCollection->size(); ++i) {
-			std::cout.precision(2);
-			std::cout
-				<< std::setw(5) << (i + 1)
-				<< std::setw(*intWidth) << ((((int)vecJourneyCollection->at(i).travelType) == 0) ? "Travel" : "Travel & Exp")
-				<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).travelCost
-				<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).expenseCost
-				<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).totalCost
-				<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).expensePayable
-				<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).taxReclaim
-				<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).expenseNotCovered
-				<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).finalPayment << "\n";
-		}
-	}
 }
 
 void OutputMenu(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, std::vector<ChoiceOption>* vecChoiceCollection, std::string introText, bool boolUseDashes, bool boolClearScreen) {
@@ -1418,6 +1283,219 @@ void OutputMenu(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, st
 		SetConsoleTextAttribute(*hConsole, 6);
 		std::cout << "-------------------------------------------\n";
 		SetConsoleTextAttribute(*hConsole, 15);
+	}
+}
+
+/// <summary>
+/// Outputs standard 7 item header, accepts different titles when header text is set to non-empty value.
+/// </summary>
+/// <param name="hConsole"></param>
+/// <param name="intWidth"></param>
+/// <param name="headerText"></param>
+void OutputHeader(HANDLE* hConsole, int* intWidth, std::string headerText) {
+	// Print header text if set
+	if (!headerText.empty()) {
+		SetConsoleTextAttribute(*hConsole, 14);
+		std::cout << headerText << "\n";
+	}
+	else {
+		// Use default if string is empty
+		SetConsoleTextAttribute(*hConsole, 14);
+		std::cout << "All Journeys" << "\n";
+	}
+
+	// Output standard 7 item header
+	SetConsoleTextAttribute(*hConsole, 6);
+	std::cout << "------------------------------------------------------------------------------------------------------------------------\n";
+	SetConsoleTextAttribute(*hConsole, 13);
+	std::cout << std::setw(*intWidth) << "Travel Type" << std::setw(*intWidth) << "Travel Cost" << std::setw(*intWidth) << "Exp Cost" << std::setw(*intWidth) << "Total Cost" << std::setw(*intWidth) << "Exp Payable" << std::setw(*intWidth) << "Tax Reclaim" << std::setw(*intWidth) << "Exp not Cvrd" << std::setw(*intWidth) << "Final Pay\n";
+	SetConsoleTextAttribute(*hConsole, 6);
+	std::cout << "------------------------------------------------------------------------------------------------------------------------\n";
+	SetConsoleTextAttribute(*hConsole, 15);
+}
+
+/// <summary>
+/// Outputs header variants, overload of OutputHeader. Variants include 1 and 2. 1 is header with number column, 2 is short 4 item header (for travel only items)
+/// If header text is set to empty (""), defaults to "All Journeys".
+/// </summary>
+/// <param name="hConsole"></param>
+/// <param name="intWidth"></param>
+/// <param name="headerText"></param>
+/// <param name="headerType"></param>
+void OutputHeader(HANDLE* hConsole, int* intWidth, std::string headerText, int headerType) {
+	// Print header text if set
+	if (!headerText.empty()) {
+		SetConsoleTextAttribute(*hConsole, 14);
+		std::cout << headerText << "\n";
+	}
+	else {
+		// Use default if string is empty
+		SetConsoleTextAttribute(*hConsole, 14);
+		std::cout << "All Journeys" << "\n";
+	}
+	switch (headerType)
+	{
+		case 1: {
+			// Standard 7 item header with numbers column
+			SetConsoleTextAttribute(*hConsole, 6);
+			std::cout << "------------------------------------------------------------------------------------------------------------------------------\n";
+			SetConsoleTextAttribute(*hConsole, 13);
+			std::cout << std::setw(5) << "Number" << std::setw(*intWidth) << "Travel Type" << std::setw(*intWidth) << "Travel Cost" << std::setw(*intWidth) << "Exp Cost" << std::setw(*intWidth) << "Total Cost" << std::setw(*intWidth) << "Exp Payable" << std::setw(*intWidth) << "Tax Reclaim" << std::setw(*intWidth) << "Exp not Cvrd" << std::setw(*intWidth) << "Final Pay\n";
+			SetConsoleTextAttribute(*hConsole, 6);
+			std::cout << "------------------------------------------------------------------------------------------------------------------------------\n";
+			SetConsoleTextAttribute(*hConsole, 15);
+			break;
+		}
+		case 2: {
+			// Short 4 item header
+			SetConsoleTextAttribute(*hConsole, 6);
+			std::cout << "------------------------------------------------------------\n";
+			SetConsoleTextAttribute(*hConsole, 13);
+			std::cout << std::setw(*intWidth) << "Travel Type" << std::setw(*intWidth) << "Travel Cost" << std::setw(*intWidth) << "Tax Reclaim" << std::setw(*intWidth) << "Final Pay" << "\n";
+			SetConsoleTextAttribute(*hConsole, 6);
+			std::cout << "------------------------------------------------------------\n";
+			SetConsoleTextAttribute(*hConsole, 15);
+			break;
+		} 
+		default: {
+			SetConsoleTextAttribute(*hConsole, 12);
+			std::cout << "Error : Header could not be rendered\n";
+			SetConsoleTextAttribute(*hConsole, 15);
+			break;
+		}
+	}
+}
+
+/// <summary>
+/// Outputs a standard 7 item table with numbering, outputs all journeys passed in vector.
+/// </summary>
+/// <param name="hConsole"></param>
+/// <param name="vecJourneyCollection"></param>
+/// <param name="intWidth"></param>
+void OutputTable(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth) {
+	// Output standard 7 item table
+	if (vecJourneyCollection->size() <= 0) {
+		std::cout << "There are currently no stored journeys\n";
+	}
+	else {
+		for (std::size_t i = 0; i < vecJourneyCollection->size(); ++i) {
+			std::cout.precision(2);
+			SetConsoleTextAttribute(*hConsole, 9);
+			std::cout << std::setw(5) << (i + 1);
+			std::cout.precision(2);
+			SetConsoleTextAttribute(*hConsole, 10);
+			std::cout << std::setw(*intWidth) << ((((int)vecJourneyCollection->at(i).travelType) == 0) ? "Travel" : "Travel & Exp");
+			std::cout.precision(2);
+			SetConsoleTextAttribute(*hConsole, 15);
+			std::cout 
+				<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).travelCost
+				<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).expenseCost
+				<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).totalCost
+				<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).expensePayable
+				<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).taxReclaim
+				<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).expenseNotCovered
+				<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).finalPayment << "\n";
+		}
+	}
+}
+
+/// <summary>
+/// Overload of OutputTable that outputs non standard table variants. Option 1 outputs travel and expense only, option 2 outputs 4 item table (travel only) and option 3 outputs 
+/// the same travel only journeys, but with all 7 columns.
+/// </summary>
+/// <param name="hConsole"></param>
+/// <param name="vecJourneyCollection"></param>
+/// <param name="intWidth"></param>
+/// <param name="tableType"></param>
+void OutputTable(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth, int tableType) {
+	switch (tableType)
+	{
+		case 1: {
+			// Output travel and expense journeys only
+			if (vecJourneyCollection->size() <= 0) {
+				SetConsoleTextAttribute(*hConsole, 12);
+				std::cout << "There are currently no stored journeys\n";
+				SetConsoleTextAttribute(*hConsole, 15);
+			}
+			else {
+				for (std::size_t i = 0; i < vecJourneyCollection->size(); ++i) {
+					if (vecJourneyCollection->at(i).travelType == TravelType::TravelAndExpense) {
+						std::cout.precision(2);
+						SetConsoleTextAttribute(*hConsole, 10);
+						std::cout << std::setw(*intWidth) << ((((int)vecJourneyCollection->at(i).travelType) == 0) ? "Travel" : "Travel & Exp");
+						std::cout.precision(2);
+						SetConsoleTextAttribute(*hConsole, 15);
+						std::cout
+							<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).travelCost
+							<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).expenseCost
+							<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).totalCost
+							<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).expensePayable
+							<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).taxReclaim
+							<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).expenseNotCovered
+							<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).finalPayment << "\n";
+					}
+				}
+			}
+			break;
+		}
+		case 2: {
+			// Output travel journeys only
+			if (vecJourneyCollection->size() <= 0) {
+				SetConsoleTextAttribute(*hConsole, 12);
+				std::cout << "There are currently no stored journeys\n";
+				SetConsoleTextAttribute(*hConsole, 15);
+			}
+			else {
+				for (std::size_t i = 0; i < vecJourneyCollection->size(); ++i) {
+					if (vecJourneyCollection->at(i).travelType == TravelType::Travel) {
+						std::cout.precision(2);
+						SetConsoleTextAttribute(*hConsole, 10);
+						std::cout << std::setw(*intWidth) << ((((int)vecJourneyCollection->at(i).travelType) == 0) ? "Travel" : "Travel & Exp");
+						std::cout.precision(2);
+						SetConsoleTextAttribute(*hConsole, 15);
+						std::cout
+							<< std::setw(*intWidth) << std::fixed << vecJourneyCollection->at(i).travelCost
+							<< std::setw(*intWidth) << std::fixed << vecJourneyCollection->at(i).taxReclaim
+							<< std::setw(*intWidth) << std::fixed << vecJourneyCollection->at(i).finalPayment << "\n";
+					}
+				}
+			}
+			break;
+		}
+		case 3: {
+			// Output travel journeys only, but all 7 columns
+			if (vecJourneyCollection->size() <= 0) {
+				SetConsoleTextAttribute(*hConsole, 12);
+				std::cout << "There are currently no stored journeys\n";
+				SetConsoleTextAttribute(*hConsole, 15);
+			}
+			else {
+				for (std::size_t i = 0; i < vecJourneyCollection->size(); ++i) {
+					if (vecJourneyCollection->at(i).travelType == TravelType::Travel) {
+						std::cout.precision(2);
+						SetConsoleTextAttribute(*hConsole, 10);
+						std::cout << std::setw(*intWidth) << ((((int)vecJourneyCollection->at(i).travelType) == 0) ? "Travel" : "Travel & Exp");
+						std::cout.precision(2);
+						SetConsoleTextAttribute(*hConsole, 15);
+						std::cout
+							<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).travelCost
+							<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).expenseCost
+							<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).totalCost
+							<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).expensePayable
+							<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).taxReclaim
+							<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).expenseNotCovered
+							<< std::fixed << std::setw(*intWidth) << vecJourneyCollection->at(i).finalPayment << "\n";
+					}
+				}
+			}
+			break;
+		}
+		default: {
+			SetConsoleTextAttribute(*hConsole, 12);
+			std::cout << "Error : Table could not be rendered\n";
+			SetConsoleTextAttribute(*hConsole, 15);
+			break;
+		}
 	}
 }
 
