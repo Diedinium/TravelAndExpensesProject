@@ -1,8 +1,12 @@
 #pragma once
-#include <fstream>
-#include <string>
+
 #include <vector>
+#include <windows.h>
 #include <iostream>
+#include <iomanip>
+
+#ifndef CALCFUNCTIONS_H
+#define CALCFUNCTIONS_H
 
 enum class TravelType
 {
@@ -72,20 +76,20 @@ struct ChoiceOption {
 	}
 };
 
-struct ResultTravelExpense { 
-	double Travel; 
-	double Expense; 
-	double Totals; 
-	double ExpensePay; 
-	double TaxReclaim; 
-	double ExpenseNotCovered; 
-	double FinalPay; 
+struct ResultTravelExpense {
+	double Travel;
+	double Expense;
+	double Totals;
+	double ExpensePay;
+	double TaxReclaim;
+	double ExpenseNotCovered;
+	double FinalPay;
 };
 
-struct ResultTravel { 
-	double Travel; 
-	double TaxReclaim; 
-	double FinalPay; 
+struct ResultTravel {
+	double Travel;
+	double TaxReclaim;
+	double FinalPay;
 };
 
 int ValidateIntInput();
@@ -102,4 +106,8 @@ ResultTravelExpense CalculateTravelExpenseSummaryLargest(std::vector<Journey>* v
 ResultTravelExpense CalculateTwoItemComparison(std::vector<Journey>* vecJourneyCollection);
 bool InRange(int low, int high, int compare);
 bool fileExists(std::string fileName);
+void Pause(HANDLE* hConsole);
+
+#endif // !CALCFUNCTIONS_H
+
 

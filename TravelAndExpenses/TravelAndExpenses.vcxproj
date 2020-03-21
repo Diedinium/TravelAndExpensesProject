@@ -152,10 +152,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CalcFunctions.cpp" />
+    <ClCompile Include="MiscFunctions.cpp" />
+    <ClCompile Include="OutputFunctions.cpp" />
     <ClCompile Include="TravelAndExpenses.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CalcFunctions.h" />
+    <ClInclude Include="MiscFunctions.h" />
+    <ClInclude Include="OutputFunctions.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
