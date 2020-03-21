@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CalcFunctions.cpp" />
     <ClCompile Include="TravelAndExpenses.cpp" />
   </ItemGroup>
   <ItemGroup>
