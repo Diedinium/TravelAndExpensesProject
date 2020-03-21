@@ -42,18 +42,31 @@ void Pause(HANDLE* hConsole);
 
 int main()
 {
+	// Get the output handle (allows changing of the console text colour.
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+	// Get the console window. Resize and position to suit output tables.
+	HWND hwnd = GetConsoleWindow();
+	if (hwnd != NULL) {
+		MoveWindow(hwnd, 100, 100, 1075, 500, TRUE);
+	}
+	
+	// Set width and create vector to hold all journeys in use within the application.
 	int intWidth = 15;
 	std::vector<Journey> vecJourneyCollection;
 
+	// Output the intro
 	OutputIntro(&hConsole);
 
 	int intMenuMainChoice = 0;
 	bool boolExitWhile = false;
 
+	// Test function that inputs some example journeys for testing purposes, uncomment to use.
 	TestFunction(&vecJourneyCollection);
 
+	// Loop until user enters 9 - program then exits.
 	do {
+		// Output selection screen
 		std::vector<ChoiceOption> vecChoiceCollection;
 		vecChoiceCollection.push_back(ChoiceOption{ 1, "Enter a new Journey" });
 		vecChoiceCollection.push_back(ChoiceOption{ 2, "View current journeys", 0 });
@@ -62,6 +75,8 @@ int main()
 		vecChoiceCollection.push_back(ChoiceOption{ 5, "Remove a Journey", 0 });
 		vecChoiceCollection.push_back(ChoiceOption{ 6, "Import/Export Journeys", 0 });
 		vecChoiceCollection.push_back(ChoiceOption{ 9, "Exit" });
+
+		// Set the text different depending on number of journeys in system.
 		if (vecJourneyCollection.size() >= 2) {
 			OutputMenu(&hConsole, &vecJourneyCollection, &vecChoiceCollection, "Welcome to the travel and expense system.", true, true);
 		}
@@ -69,12 +84,15 @@ int main()
 			OutputMenu(&hConsole, &vecJourneyCollection, &vecChoiceCollection, "Welcome to the travel and expense system. Please note that there are more menu options than are currently being displayed, once you have entered two journeys all options become available.", true, true);
 		}
 
+		// Loop until valid choice is made, when valid choice is entered, exitWhile is set to true and menu gets output again.
 		while (boolExitWhile == false) {
 			SetConsoleTextAttribute(hConsole, 9);
 			std::cout << "Enter choice : ";
 			SetConsoleTextAttribute(hConsole, 15);
+			// Get choice and validate that input is an int.
 			intMenuMainChoice = ValidateIntInput();
 
+			// Once valid choice is provided, run specified function. If there are not enough items in the vector, error is thrown instead.
 			try {
 				switch (intMenuMainChoice)
 				{
@@ -174,6 +192,13 @@ int main()
 // Functions
 
 // Views/Menu screens
+
+/// <summary>
+/// A choice select function that allows user to choose to add a travel only journey, travel and expense journey, view current journeys or return to menu.
+/// </summary>
+/// <param name="hConsole"></param>
+/// <param name="vecJourneyCollection"></param>
+/// <param name="intWidth"></param>
 void AddNewJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	std::string strContinueAddingJourneys;
 	bool boolExitWhile = false;
@@ -309,6 +334,12 @@ void AddNewJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection,
 	strContinueAddingJourneys = "N";
 }
 
+/// <summary>
+/// Displays all journeys currently in the main vector (vecJourneyCollection). Prints travel only journeys and then travel and expense journeys.
+/// </summary>
+/// <param name="hConsole"></param>
+/// <param name="vecJourneyCollection"></param>
+/// <param name="intWidth"></param>
 void ViewJourneys(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	system("CLS");
 	OutputHeader(hConsole, intWidth, "Travel Only Journeys", 2);

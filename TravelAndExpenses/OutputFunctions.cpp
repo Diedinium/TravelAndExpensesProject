@@ -10,10 +10,9 @@ void OutputIntro(HANDLE* hConsole) {
 	SetConsoleTextAttribute(*hConsole, 12);
 	std::cout << "### NOTICE ###\n";
 	SetConsoleTextAttribute(*hConsole, 14);
-	std::cout << "To ensure proper text formatting while in use, please make sure you widen the console window. ";
-	std::cout << "You can do this by dragging the window larger or by right clicking on the top of this window then go to properties, ";
-	std::cout << "and the layout tab. Setting the console width to 127 is recommended. Not doing this could result in text being wrapped ";
-	std::cout << "ruining some of the output tables.\n";
+	std::cout << "Any files created/interacted with during the use of this program are saved in the same directory that you have run this application from. ";
+	std::cout << "The console window should have automatically resized itself to be the correct size, if not, please drag the console window wider so that ";
+	std::cout << "output tables within the application display correctly.\n";
 	SetConsoleTextAttribute(*hConsole, 12);
 	std::cout << "### NOTICE ###\n";
 	SetConsoleTextAttribute(*hConsole, 15);
