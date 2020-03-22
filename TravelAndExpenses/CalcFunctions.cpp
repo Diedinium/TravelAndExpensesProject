@@ -1,3 +1,4 @@
+#include "MiscFunctions.h"
 #include "CalcFunctions.h"
 
 // Calculation Functions

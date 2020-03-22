@@ -1,10 +1,12 @@
 #include "MiscFunctions.h"
 
-int ValidateIntInput() {
+int ValidateIntInput(HANDLE* hConsole) {
 	int ChoiceValue;
 	while (!(std::cin >> ChoiceValue)) {
 		// Makes user try again if input is not an int
-		std::cout << "ERROR: a whole number must be entered : ";
+		SetConsoleTextAttribute(*hConsole, 12);
+		std::cout << "Error: a whole number must be entered : ";
+		SetConsoleTextAttribute(*hConsole, 15);
 		std::cin.clear();
 		std::cin.ignore(123, '\n');
 	}
@@ -12,11 +14,13 @@ int ValidateIntInput() {
 	return ChoiceValue;
 }
 
-double ValidateDoubleInput() {
+double ValidateDoubleInput(HANDLE* hConsole) {
 	double DoubleValue;
 	while (!(std::cin >> DoubleValue)) {
 		// Makes user try again if input is not an int
-		std::cout << "ERROR: a decimal number must be entered : ";
+		SetConsoleTextAttribute(*hConsole, 12);
+		std::cout << "Error: a decimal number must be entered : ";
+		SetConsoleTextAttribute(*hConsole, 15);
 		std::cin.clear();
 		std::cin.ignore(123, '\n');
 	}

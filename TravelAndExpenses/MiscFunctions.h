@@ -8,8 +8,8 @@
 #ifndef MISCFUNCTIONS_H
 #define MISCFUNCTIONS_H
 
-int ValidateIntInput();
-double ValidateDoubleInput();
+int ValidateIntInput(HANDLE* hConsole);
+double ValidateDoubleInput(HANDLE* hConsole);
 bool InRange(int low, int high, int compare);
 bool fileExists(std::string fileName);
 void Pause(HANDLE* hConsole);

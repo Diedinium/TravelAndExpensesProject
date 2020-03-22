@@ -92,8 +92,6 @@ struct ResultTravel {
 	double FinalPay;
 };
 
-int ValidateIntInput();
-double ValidateDoubleInput();
 ResultTravelExpense CalculateAllSummaryTotals(std::vector<Journey>* vecJourneyCollection);
 ResultTravel CalculateTravelSummaryTotals(std::vector<Journey>* vecJourneyCollection);
 ResultTravelExpense CalculateTravelExpenseSummaryTotals(std::vector<Journey>* vecJourneyCollection);
@@ -104,9 +102,6 @@ ResultTravelExpense CalculateAllSummaryLargest(std::vector<Journey>* vecJourneyC
 ResultTravel CalculateTravelSummaryLargest(std::vector<Journey>* vecJourneyCollection);
 ResultTravelExpense CalculateTravelExpenseSummaryLargest(std::vector<Journey>* vecJourneyCollection);
 ResultTravelExpense CalculateTwoItemComparison(std::vector<Journey>* vecJourneyCollection);
-bool InRange(int low, int high, int compare);
-bool fileExists(std::string fileName);
-void Pause(HANDLE* hConsole);
 
 #endif // !CALCFUNCTIONS_H
 

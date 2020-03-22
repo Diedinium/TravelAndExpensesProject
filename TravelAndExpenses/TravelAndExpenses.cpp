@@ -15,9 +15,6 @@
 
 // Note : Miscallaneous, Calculation and Output functions are declared in their respective header files, and defined in their respective .cpp source file.
 
-// Testing function : Automatically adds some journeys to save time when testing.
-void TestFunction(std::vector<Journey>* vecJourneyCollection);
-
 // Menu action functinons
 void AddNewJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth);
 void ViewJourneys(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth);
@@ -35,8 +32,8 @@ void ViewDeleteJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollect
 void ViewSaveImportSelect(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth);
 void ViewImportSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection);
 
-// Misc helper functions
-void Pause(HANDLE* hConsole);
+// Testing function : Automatically adds some journeys to save time when testing.
+void TestFunction(std::vector<Journey>* vecJourneyCollection);
 
 #pragma endregion
 
@@ -90,7 +87,7 @@ int main()
 			std::cout << "Enter choice : ";
 			SetConsoleTextAttribute(hConsole, 15);
 			// Get choice and validate that input is an int.
-			intMenuMainChoice = ValidateIntInput();
+			intMenuMainChoice = ValidateIntInput(&hConsole);
 
 			// Once valid choice is provided, run specified function. If there are not enough items in the vector, error is thrown instead.
 			try {
@@ -176,10 +173,9 @@ int main()
 				}
 			}
 			catch (std::exception& exp) {
-				std::cout << "Error : " << exp.what() << "\n";
+				OutputError(&hConsole, exp.what());
 				boolExitWhile = false;
 			}
-
 		}
 
 		boolExitWhile = false;
@@ -194,7 +190,7 @@ int main()
 // Views/Menu screens
 
 /// <summary>
-/// A choice select function that allows user to choose to add a travel only journey, travel and expense journey, view current journeys or return to menu.
+/// Function that allows user to enter new journeys.
 /// </summary>
 /// <param name="hConsole"></param>
 /// <param name="vecJourneyCollection"></param>
@@ -209,7 +205,9 @@ void AddNewJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection,
 	double dTravelCost = 0;
 	double dExpenseCost = 0;
 
+	// Loops while user specifies "Y" to adding more journeys.
 	do {
+		// Output choice options
 		std::vector<ChoiceOption> vecChoiceCollection;
 		vecChoiceCollection.push_back(ChoiceOption{ 1, "Travel only" });
 		vecChoiceCollection.push_back(ChoiceOption{ 2, "Travel and expenses" });
@@ -217,12 +215,14 @@ void AddNewJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection,
 		vecChoiceCollection.push_back(ChoiceOption{ 9, "Return to menu" });
 		OutputMenu(hConsole, vecJourneyCollection, &vecChoiceCollection, "Add a new journey screen.", true, true);
 
+		// Loop until exit condition is met.
 		while (boolExitWhile != true) {
 			SetConsoleTextAttribute(*hConsole, 9);
 			std::cout << "Enter choice : ";
 			SetConsoleTextAttribute(*hConsole, 15);
 
-			intTravelChoiceInput = ValidateIntInput();
+			// Validate input is an int
+			intTravelChoiceInput = ValidateIntInput(hConsole);
 
 			try {
 				if (intTravelChoiceInput == 1) {
@@ -231,10 +231,9 @@ void AddNewJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection,
 					std::cout << "Travel cost : ";
 					SetConsoleTextAttribute(*hConsole, 15);
 
-					dTravelCost = ValidateDoubleInput();
+					dTravelCost = ValidateDoubleInput(hConsole);
 
-					Journey newJourney{ travelTypeChoice, dTravelCost };
-					vecJourneyCollection->push_back(newJourney);
+					vecJourneyCollection->push_back(Journey{ travelTypeChoice, dTravelCost });
 					boolExitWhile = true;
 				}
 				else if (intTravelChoiceInput == 2) {
@@ -243,16 +242,15 @@ void AddNewJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection,
 					std::cout << "Travel cost : ";
 					SetConsoleTextAttribute(*hConsole, 15);
 
-					dTravelCost = ValidateDoubleInput();
+					dTravelCost = ValidateDoubleInput(hConsole);
 
 					SetConsoleTextAttribute(*hConsole, 9);
 					std::cout << "Expenses cost : ";
 					SetConsoleTextAttribute(*hConsole, 15);
 
-					dExpenseCost = ValidateDoubleInput();
+					dExpenseCost = ValidateDoubleInput(hConsole);
 
-					Journey newJourney{ travelTypeChoice, dTravelCost, dExpenseCost };
-					vecJourneyCollection->push_back(newJourney);
+					vecJourneyCollection->push_back(Journey{ travelTypeChoice, dTravelCost, dExpenseCost });
 					boolExitWhile = true;
 				}
 				else if (intTravelChoiceInput == 3) {
@@ -274,14 +272,13 @@ void AddNewJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection,
 				}
 			}
 			catch (std::exception& exp) {
-				SetConsoleTextAttribute(*hConsole, 12);
-				std::cout << "Error : " << exp.what() << "\n";
-				SetConsoleTextAttribute(*hConsole, 15);
+				OutputError(hConsole, exp.what());
 			}
 		}
 
 		boolExitWhile = false;
 
+		// Allows user to loop and input more journeys, sets exit condition automatically in the case that user choose to view journeys or exit to menu.
 		switch (intTravelChoiceInput) {
 			case 3: {
 				system("cls");
@@ -304,6 +301,7 @@ void AddNewJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection,
 				std::cout << "Enter Choice : ";
 				SetConsoleTextAttribute(*hConsole, 15);
 
+				// Loops while user choice is not "Y" or "N"
 				bool boolExitWhileString = false;
 				while (boolExitWhileString == false)
 				{
@@ -319,9 +317,7 @@ void AddNewJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection,
 						boolExitWhileString = true;
 					}
 					else {
-						SetConsoleTextAttribute(*hConsole, 12);
-						std::cout << "\nERROR: Choice must be Y or N : ";
-						SetConsoleTextAttribute(*hConsole, 15);
+						OutputError(hConsole, "ERROR: Choice must be Y or N : ", true);
 					}
 				}
 				boolExitWhile = false;
@@ -335,28 +331,40 @@ void AddNewJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection,
 }
 
 /// <summary>
-/// Displays all journeys currently in the main vector (vecJourneyCollection). Prints travel only journeys and then travel and expense journeys.
+/// Displays all journeys currently in the main vector (vecJourneyCollection). Prints travel only journeys and then travel and expense journeys. Displays some choice options that allow user to view journeys 
 /// </summary>
 /// <param name="hConsole"></param>
 /// <param name="vecJourneyCollection"></param>
 /// <param name="intWidth"></param>
 void ViewJourneys(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	system("CLS");
+	// Outputs travel only journeys
 	OutputHeader(hConsole, intWidth, "Travel Only Journeys", 2);
 	OutputTable(hConsole, vecJourneyCollection, intWidth, 2);
 	std::cout << "\n";
 
+	// Outputs travel and expense journeys
 	OutputHeader(hConsole, intWidth, "Travel and Expense Journeys");
 	OutputTable(hConsole, vecJourneyCollection, intWidth, 1);
 	std::cout << "\n";
+
+	// Ouputs choices to allow user to select what to do next.
 	ViewDeleteSelect(hConsole, vecJourneyCollection, intWidth);
 }
 
+/// <summary>
+/// Choice select screen that allows user to choose a summary type to view.
+/// </summary>
+/// <param name="hConsole"></param>
+/// <param name="vecJourneyCollection"></param>
+/// <param name="intWidth"></param>
 void ViewSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	int intSummaryChoiceInput = 0;
 	bool boolExitWhile = false;
 
+	// Loop until 9 is specified as the choice option
 	do {
+		// Output menu choices.
 		std::vector<ChoiceOption> vecChoiceCollection;
 		vecChoiceCollection.push_back(ChoiceOption{ 1, "View Combined Summary" });
 		vecChoiceCollection.push_back(ChoiceOption{ 2, "View Travel only Summary" });
@@ -364,14 +372,13 @@ void ViewSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, i
 		vecChoiceCollection.push_back(ChoiceOption{ 9, "Return to menu" });
 		OutputMenu(hConsole, vecJourneyCollection, &vecChoiceCollection, "View and interact with summaries.", true, true);
 
-		//PrintSummaryScreen();
+		// Loop until exit condition is met (valid choice specified)
 		boolExitWhile = false;
-
 		while (boolExitWhile == false) {
 			SetConsoleTextAttribute(*hConsole, 9);
 			std::cout << "Enter choice : ";
 			SetConsoleTextAttribute(*hConsole, 15);
-			intSummaryChoiceInput = ValidateIntInput();
+			intSummaryChoiceInput = ValidateIntInput(hConsole);
 
 			try {
 				switch (intSummaryChoiceInput) {
@@ -402,7 +409,7 @@ void ViewSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, i
 
 			}
 			catch (std::exception& exp) {
-				std::cout << "Error : " << exp.what() << "\n";
+				OutputError(hConsole, exp.what());
 			}
 		}
 
@@ -410,96 +417,74 @@ void ViewSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, i
 
 	intSummaryChoiceInput = 0;
 	boolExitWhile = false;
-
 }
 
+/// <summary>
+/// Displays total of two journeys
+/// </summary>
+/// <param name="hConsole"></param>
+/// <param name="vecJourneyCollection"></param>
+/// <param name="intWidth"></param>
 void ViewTotalSummaryTwoItems(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	system("cls");
-	OutputHeader(hConsole, intWidth, "Two Journey : Totals", 1);
+
+	// Outputs header and table the two items to total.
+	OutputHeader(hConsole, intWidth, "Two Journeys : Totals", 1);
 	if (vecJourneyCollection->size() > 0) {
 		OutputTable(hConsole, vecJourneyCollection, intWidth);
 	}
 
+	// Displays total of the two journeys.
 	try {
 		auto totals = CalculateAllSummaryTotals(vecJourneyCollection);
-		std::cout << "\n";
-		std::cout.precision(2);
-		std::cout
-			<< std::fixed << std::setw(20) << "Totals :"
-			<< std::fixed << std::setw(*intWidth) << totals.Travel
-			<< std::fixed << std::setw(*intWidth) << totals.Expense
-			<< std::fixed << std::setw(*intWidth) << totals.Totals
-			<< std::fixed << std::setw(*intWidth) << totals.ExpensePay
-			<< std::fixed << std::setw(*intWidth) << totals.TaxReclaim
-			<< std::fixed << std::setw(*intWidth) << totals.ExpenseNotCovered
-			<< std::fixed << std::setw(*intWidth) << totals.FinalPay << "\n";
+		OutputResults(hConsole, &totals, intWidth, "Totals", true);
 	}
 	catch (std::exception& exp) {
-		std::cout << "Error : " << exp.what() << "\n";
+		OutputError(hConsole, exp.what());
 	}
 
+	// Displays save options
 	ViewSaveExport(hConsole, vecJourneyCollection, intWidth);
 }
 
+/// <summary>
+/// Displays comparison of two journeys
+/// </summary>
+/// <param name="hConsole"></param>
+/// <param name="vecJourneyCollection"></param>
+/// <param name="intWidth"></param>
 void ViewCompareSummaryTwoItems(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	system("cls");
+
+	// Outputs header and table for the two journeys to compare.
 	OutputHeader(hConsole, intWidth, "Two Journeys : Comparison", 1);
 	if (vecJourneyCollection->size() > 0) {
 		OutputTable(hConsole, vecJourneyCollection, intWidth);
 	}
 
+	//
 	try {
 		auto totals = CalculateAllSummaryTotals(vecJourneyCollection);
-		std::cout << "\n";
-		std::cout.precision(2);
-		std::cout
-			<< std::fixed << std::setw(20) << "Totals :"
-			<< std::fixed << std::setw(*intWidth) << totals.Travel
-			<< std::fixed << std::setw(*intWidth) << totals.Expense
-			<< std::fixed << std::setw(*intWidth) << totals.Totals
-			<< std::fixed << std::setw(*intWidth) << totals.ExpensePay
-			<< std::fixed << std::setw(*intWidth) << totals.TaxReclaim
-			<< std::fixed << std::setw(*intWidth) << totals.ExpenseNotCovered
-			<< std::fixed << std::setw(*intWidth) << totals.FinalPay << "\n";
+		OutputResults(hConsole, &totals, intWidth, "Totals", true);
 	}
 	catch (std::exception& exp) {
-		std::cout << "Error : " << exp.what() << "\n";
+		OutputError(hConsole, exp.what());
 	}
 
 	try {
 		auto largest = CalculateAllSummaryLargest(vecJourneyCollection);
-		std::cout << "\n";
-		std::cout.precision(2);
-		std::cout
-			<< std::fixed << std::setw(20) << "Largest :"
-			<< std::fixed << std::setw(*intWidth) << largest.Travel
-			<< std::fixed << std::setw(*intWidth) << largest.Expense
-			<< std::fixed << std::setw(*intWidth) << largest.Totals
-			<< std::fixed << std::setw(*intWidth) << largest.ExpensePay
-			<< std::fixed << std::setw(*intWidth) << largest.TaxReclaim
-			<< std::fixed << std::setw(*intWidth) << largest.ExpenseNotCovered
-			<< std::fixed << std::setw(*intWidth) << largest.FinalPay << "\n";
+		OutputResults(hConsole, &largest, intWidth, "Largest", true);
 	}
 	catch (std::exception& exp) {
-		std::cout << "Error : " << exp.what() << "\n";
+		OutputError(hConsole, exp.what());
 	}
 
 	try {
 		auto difference = CalculateTwoItemComparison(vecJourneyCollection);
-		std::cout << "\n";
-		std::cout.precision(2);
-		std::cout
-			<< std::fixed << std::setw(20) << "Difference :"
-			<< std::fixed << std::setw(*intWidth) << difference.Travel
-			<< std::fixed << std::setw(*intWidth) << difference.Expense
-			<< std::fixed << std::setw(*intWidth) << difference.Totals
-			<< std::fixed << std::setw(*intWidth) << difference.ExpensePay
-			<< std::fixed << std::setw(*intWidth) << difference.TaxReclaim
-			<< std::fixed << std::setw(*intWidth) << difference.ExpenseNotCovered
-			<< std::fixed << std::setw(*intWidth) << difference.FinalPay << "\n";
+		OutputResults(hConsole, &difference, intWidth, "Difference", true);
 	}
 	catch (std::exception& exp) {
-		std::cout << "Error : " << exp.what() << "\n";
+		OutputError(hConsole, exp.what());
 	}
 
 	ViewSaveExport(hConsole, vecJourneyCollection, intWidth);
@@ -515,56 +500,26 @@ void ViewCombinedSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyColle
 
 	try {
 		auto totals = CalculateAllSummaryTotals(vecJourneyCollection);
-		std::cout << "\n";
-		std::cout.precision(2);
-		std::cout
-			<< std::fixed << std::setw(*intWidth) << "Totals :"
-			<< std::fixed << std::setw(*intWidth) << totals.Travel
-			<< std::fixed << std::setw(*intWidth) << totals.Expense
-			<< std::fixed << std::setw(*intWidth) << totals.Totals
-			<< std::fixed << std::setw(*intWidth) << totals.ExpensePay
-			<< std::fixed << std::setw(*intWidth) << totals.TaxReclaim
-			<< std::fixed << std::setw(*intWidth) << totals.ExpenseNotCovered
-			<< std::fixed << std::setw(*intWidth) << totals.FinalPay << "\n";
+		OutputResults(hConsole, &totals, intWidth, "Totals");
 	}
 	catch (std::exception& exp) {
-		std::cout << "Error : " << exp.what() << "\n";
+		OutputError(hConsole, exp.what());
 	}
 
 	try {
 		auto average = CalculateAllSummaryAverage(vecJourneyCollection);
-		std::cout << "\n";
-		std::cout.precision(2);
-		std::cout
-			<< std::fixed << std::setw(*intWidth) << "Averages :"
-			<< std::fixed << std::setw(*intWidth) << average.Travel
-			<< std::fixed << std::setw(*intWidth) << average.Expense
-			<< std::fixed << std::setw(*intWidth) << average.Totals
-			<< std::fixed << std::setw(*intWidth) << average.ExpensePay
-			<< std::fixed << std::setw(*intWidth) << average.TaxReclaim
-			<< std::fixed << std::setw(*intWidth) << average.ExpenseNotCovered
-			<< std::fixed << std::setw(*intWidth) << average.FinalPay << "\n";
+		OutputResults(hConsole, &average, intWidth, "Averages");
 	}
 	catch (std::exception& exp) {
-		std::cout << "Error : " << exp.what() << "\n";
+		OutputError(hConsole, exp.what());
 	}
 
 	try {
 		auto largest = CalculateAllSummaryLargest(vecJourneyCollection);
-		std::cout << "\n";
-		std::cout.precision(2);
-		std::cout
-			<< std::fixed << std::setw(*intWidth) << "Largest :"
-			<< std::fixed << std::setw(*intWidth) << largest.Travel
-			<< std::fixed << std::setw(*intWidth) << largest.Expense
-			<< std::fixed << std::setw(*intWidth) << largest.Totals
-			<< std::fixed << std::setw(*intWidth) << largest.ExpensePay
-			<< std::fixed << std::setw(*intWidth) << largest.TaxReclaim
-			<< std::fixed << std::setw(*intWidth) << largest.ExpenseNotCovered
-			<< std::fixed << std::setw(*intWidth) << largest.FinalPay << "\n";
+		OutputResults(hConsole, &largest, intWidth, "Largest");
 	}
 	catch (std::exception& exp) {
-		std::cout << "Error : " << exp.what() << "\n";
+		OutputError(hConsole, exp.what());
 	}
 
 	ViewSaveExport(hConsole, vecJourneyCollection, intWidth);
@@ -576,44 +531,26 @@ void ViewTravelOnlySummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCol
 	OutputTable(hConsole, vecJourneyCollection, intWidth, 2);
 	try {
 		auto totals = CalculateTravelSummaryTotals(vecJourneyCollection);
-		std::cout << "\n";
-		std::cout.precision(2);
-		std::cout
-			<< std::fixed << std::setw(*intWidth) << "Totals :"
-			<< std::fixed << std::setw(*intWidth) << totals.Travel
-			<< std::fixed << std::setw(*intWidth) << totals.TaxReclaim
-			<< std::fixed << std::setw(*intWidth) << totals.FinalPay << "\n";
+		OutputResults(hConsole, &totals, intWidth, "Totals");
 	}
 	catch (std::exception& exp) {
-		std::cout << "Error : " << exp.what() << "\n";
+		OutputError(hConsole, exp.what());
 	}
 
 	try {
 		auto average = CalculateTravelSummaryAverage(vecJourneyCollection);
-		std::cout << "\n";
-		std::cout.precision(2);
-		std::cout
-			<< std::fixed << std::setw(*intWidth) << "Averages :"
-			<< std::fixed << std::setw(*intWidth) << average.Travel
-			<< std::fixed << std::setw(*intWidth) << average.TaxReclaim
-			<< std::fixed << std::setw(*intWidth) << average.FinalPay << "\n";
+		OutputResults(hConsole, &average, intWidth, "Averages");
 	}
 	catch (std::exception& exp) {
-		std::cout << "Error : " << exp.what() << "\n";
+		OutputError(hConsole, exp.what());
 	}
 
 	try {
 		auto largest = CalculateTravelSummaryLargest(vecJourneyCollection);
-		std::cout << "\n";
-		std::cout.precision(2);
-		std::cout
-			<< std::fixed << std::setw(*intWidth) << "Largest :"
-			<< std::fixed << std::setw(*intWidth) << largest.Travel
-			<< std::fixed << std::setw(*intWidth) << largest.TaxReclaim
-			<< std::fixed << std::setw(*intWidth) << largest.FinalPay << "\n";
+		OutputResults(hConsole, &largest, intWidth, "Largest");
 	}
 	catch (std::exception& exp) {
-		std::cout << "Error : " << exp.what() << "\n";
+		OutputError(hConsole, exp.what());
 	}
 
 	std::vector<Journey> vecTravelOnlyCollection;
@@ -633,56 +570,26 @@ void ViewTravelExpensesOnlySummary(HANDLE* hConsole, std::vector<Journey>* vecJo
 	OutputTable(hConsole, vecJourneyCollection, intWidth, 1);
 	try {
 		auto totals = CalculateTravelExpenseSummaryTotals(vecJourneyCollection);
-		std::cout << "\n";
-		std::cout.precision(2);
-		std::cout
-			<< std::fixed << std::setw(*intWidth) << "Totals :"
-			<< std::fixed << std::setw(*intWidth) << totals.Travel
-			<< std::fixed << std::setw(*intWidth) << totals.Expense
-			<< std::fixed << std::setw(*intWidth) << totals.Totals
-			<< std::fixed << std::setw(*intWidth) << totals.ExpensePay
-			<< std::fixed << std::setw(*intWidth) << totals.TaxReclaim
-			<< std::fixed << std::setw(*intWidth) << totals.ExpenseNotCovered
-			<< std::fixed << std::setw(*intWidth) << totals.FinalPay << "\n";
+		OutputResults(hConsole, &totals, intWidth, "Totals");
 	}
 	catch (std::exception& exp) {
-		std::cout << "Error : " << exp.what() << "\n";
+		OutputError(hConsole, exp.what());
 	}
 
 	try {
 		auto average = CalculateTravelExpenseSummaryAverage(vecJourneyCollection);
-		std::cout << "\n";
-		std::cout.precision(2);
-		std::cout
-			<< std::fixed << std::setw(*intWidth) << "Averages :"
-			<< std::fixed << std::setw(*intWidth) << average.Travel
-			<< std::fixed << std::setw(*intWidth) << average.Expense
-			<< std::fixed << std::setw(*intWidth) << average.Totals
-			<< std::fixed << std::setw(*intWidth) << average.ExpensePay
-			<< std::fixed << std::setw(*intWidth) << average.TaxReclaim
-			<< std::fixed << std::setw(*intWidth) << average.ExpenseNotCovered
-			<< std::fixed << std::setw(*intWidth) << average.FinalPay << "\n";
+		OutputResults(hConsole, &average, intWidth, "Averages");
 	}
 	catch (std::exception& exp) {
-		std::cout << "Error : " << exp.what() << "\n";
+		OutputError(hConsole, exp.what());
 	}
 
 	try {
 		auto largest = CalculateTravelExpenseSummaryLargest(vecJourneyCollection);
-		std::cout << "\n";
-		std::cout.precision(2);
-		std::cout
-			<< std::fixed << std::setw(*intWidth) << "Largest :"
-			<< std::fixed << std::setw(*intWidth) << largest.Travel
-			<< std::fixed << std::setw(*intWidth) << largest.Expense
-			<< std::fixed << std::setw(*intWidth) << largest.Totals
-			<< std::fixed << std::setw(*intWidth) << largest.ExpensePay
-			<< std::fixed << std::setw(*intWidth) << largest.TaxReclaim
-			<< std::fixed << std::setw(*intWidth) << largest.ExpenseNotCovered
-			<< std::fixed << std::setw(*intWidth) << largest.FinalPay << "\n";
+		OutputResults(hConsole, &largest, intWidth, "Largest");
 	}
 	catch (std::exception& exp) {
-		std::cout << "Error : " << exp.what() << "\n";
+		OutputError(hConsole, exp.what());
 	}
 
 	std::vector<Journey> vecTravelExpenseOnlyCollection;
@@ -738,8 +645,13 @@ void ViewSaveSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollectio
 
 	fout.close();
 
-	std::cout << "Journeys written to '" << fname << "'. Please check the directory that you ran this application from to find this file." << "\n";
-
+	SetConsoleTextAttribute(*hConsole, 14);
+	std::cout << "Journeys written to '";
+	SetConsoleTextAttribute(*hConsole, 13);
+	std::cout << fname;
+	SetConsoleTextAttribute(*hConsole, 14);
+	std::cout << "'. Please check the directory that you ran this application from to find this file." << "\n";
+	SetConsoleTextAttribute(*hConsole, 15);
 	Pause(hConsole);
 }
 
@@ -751,13 +663,21 @@ void ViewImportSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollect
 	bool boolHasReadFile = false;
 
 	system("cls");
-	std::cout << "Please specify the name of the file you would like to import below\n";
-	std::cout << "Note : Please enter the full file name, such as 'JourneyList.csv', otherwise the file will not be found. The file must also be in the same directory that you are running this program from. Type 'exit' if you would like to cancel and return to the previous screen.\n";
+	SetConsoleTextAttribute(*hConsole, 14);
+	std::cout << "Please specify the name of the file you would like to import below.\n";
+	std::cout << "Note : Please enter the full file name, such as '";
+	SetConsoleTextAttribute(*hConsole, 13);
+	std::cout << "journeyList.csv";
+	SetConsoleTextAttribute(*hConsole, 14);
+	std::cout << "', otherwise the file will not be found.The file must also be in the same directory that you are running this program from.Type 'exit' if you would like to canceland return to the previous screen.\n";
+	SetConsoleTextAttribute(*hConsole, 15);
 	std::cout << "\n";
 
 	do {
 		try {
+			SetConsoleTextAttribute(*hConsole, 9);
 			std::cout << "File name : ";
+			SetConsoleTextAttribute(*hConsole, 15);
 			std::cin >> strFilename;
 			fin.open(strFilename, std::ios::in);
 			if (strFilename == "exit") {
@@ -766,20 +686,20 @@ void ViewImportSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollect
 			}
 			else {
 				if (fileExists(strFilename)) {
+					SetConsoleTextAttribute(*hConsole, 10);
 					std::cout << "File exists.\n";
+					SetConsoleTextAttribute(*hConsole, 15);
 					boolExitLoop = true;
 					boolHasReadFile = true;
 				}
 				else {
-					std::cout << "\n";
-					std::cout << "Error : File could not be found. Please ensure you are specifying the filename correctly.\n";
+					OutputError(hConsole, "File could not be found. Please ensure you are specifying the file name correctly.", true);
 					boolHasReadFile = false;
 				}
 			}
 		}
-		catch (std::exception& ex) {
-			std::cout << "\n";
-			std::cout << "Error :" << ex.what() << "\n";
+		catch (std::exception& exp) {
+			OutputError(hConsole, exp.what(), true);
 		}
 	} while (boolExitLoop == false);
 
@@ -801,32 +721,30 @@ void ViewImportSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollect
 				}
 
 				if (!vecRowTemp.empty()) {
-					if (vecRowTemp[0] != "Travel Type") {
+					if (vecRowTemp.at(0) != "Travel Type") {
 						Journey journeyTemp{ TravelType::Travel, 0 };
-						journeyTemp.travelType = (((vecRowTemp[0]) == "Travel") ? TravelType::Travel : TravelType::TravelAndExpense);
-						journeyTemp.travelCost = std::stod(vecRowTemp[1]);
-						journeyTemp.expenseCost = std::stod(vecRowTemp[2]);
-						journeyTemp.totalCost = std::stod(vecRowTemp[3]);
-						journeyTemp.taxReclaim = std::stod(vecRowTemp[4]);
-						journeyTemp.expensePayable = std::stod(vecRowTemp[5]);
-						journeyTemp.finalPayment = std::stod(vecRowTemp[6]);
-						journeyTemp.expenseNotCovered = std::stod(vecRowTemp[7]);
+						journeyTemp.travelType = (((vecRowTemp.at(0)) == "Travel") ? TravelType::Travel : TravelType::TravelAndExpense);
+						journeyTemp.travelCost = std::stod(vecRowTemp.at(1));
+						journeyTemp.expenseCost = std::stod(vecRowTemp.at(2));
+						journeyTemp.totalCost = std::stod(vecRowTemp.at(3));
+						journeyTemp.taxReclaim = std::stod(vecRowTemp.at(4));
+						journeyTemp.expensePayable = std::stod(vecRowTemp.at(5));
+						journeyTemp.finalPayment = std::stod(vecRowTemp.at(6));
+						journeyTemp.expenseNotCovered = std::stod(vecRowTemp.at(7));
 
 						vecJourneyCollection->push_back(journeyTemp);
 					}
 				}
 			}
-
+			SetConsoleTextAttribute(*hConsole, 10);
 			std::cout << "Journeys succssfully imported.\n";
+			SetConsoleTextAttribute(*hConsole, 15);
 		}
-		catch (std::exception& ex) {
-			std::cout << "\n";
-			std::cout << "Sorry, but the file could not be imported. This is likely because the file is not formatted correctly.\n";
-			std::cout << "Exception Generated : " << ex.what() << "\n";
-
-			Pause(hConsole);
+		catch (std::exception& exp) {
+			std::string strErrorText = "Sorry, but the file could not be imported. This is likely because the file is not formatted correctly.\nException Generated : ";
+			strErrorText += exp.what();
+			OutputError(hConsole, strErrorText, true);
 		}
-
 
 		Pause(hConsole);
 	}
@@ -849,7 +767,7 @@ void ViewComparison(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection
 			SetConsoleTextAttribute(*hConsole, 9);
 			std::cout << "Enter choice : ";
 			SetConsoleTextAttribute(*hConsole, 15);
-			intComparisonChoiceInput = ValidateIntInput();
+			intComparisonChoiceInput = ValidateIntInput(hConsole);
 
 			try {
 				switch (intComparisonChoiceInput) {
@@ -876,7 +794,7 @@ void ViewComparison(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection
 
 			}
 			catch (std::exception& exp) {
-				std::cout << "Error : " << exp.what() << "\n";
+				OutputError(hConsole, exp.what());
 			}
 		}
 
@@ -907,7 +825,7 @@ void ViewSaveExport(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection
 			SetConsoleTextAttribute(*hConsole, 9);
 			std::cout << "Enter choice : ";
 			SetConsoleTextAttribute(*hConsole, 15);
-			intSaveExportChoiceInput = ValidateIntInput();
+			intSaveExportChoiceInput = ValidateIntInput(hConsole);
 
 			try {
 				switch (intSaveExportChoiceInput) {
@@ -929,7 +847,7 @@ void ViewSaveExport(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection
 
 			}
 			catch (std::exception& exp) {
-				std::cout << "Error : " << exp.what() << "\n";
+				OutputError(hConsole, exp.what());
 			}
 		}
 
@@ -953,28 +871,30 @@ void ViewCompareTwoJourneys(HANDLE* hConsole, std::vector<Journey>* vecJourneyCo
 	OutputTable(hConsole, vecJourneyCollection, intWidth);
 
 	std::cout << "\n";
+	SetConsoleTextAttribute(*hConsole, 14);
 	std::cout << "Please specify number of the first journey you would like to compare.\n";
 	do {
 		SetConsoleTextAttribute(*hConsole, 9);
 		std::cout << "Enter Choice : ";
 		SetConsoleTextAttribute(*hConsole, 15);
-		intCompareFirst = ValidateIntInput() - 1;
+		intCompareFirst = ValidateIntInput(hConsole) - 1;
 
 		try {
 			vecJourneyCompare.push_back(vecJourneyCollection->at(intCompareFirst));
 		}
-		catch (std::exception ex) {
-			std::cout << "The number you specified is not a valid item currently in the list.\n";
+		catch (std::exception) {
+			OutputError(hConsole, "The number you specified is not a valid item currently in the list.");
 		}
 	} while (!InRange(0, (int)vecJourneyCollection->size() - 1, intCompareFirst));
 
 	std::cout << "\n";
+	SetConsoleTextAttribute(*hConsole, 14);
 	std::cout << "Please specify number of the second journey you would like to compare.\n";
 	do {
 		SetConsoleTextAttribute(*hConsole, 9);
 		std::cout << "Enter Choice : ";
 		SetConsoleTextAttribute(*hConsole, 15);
-		intCompareSecond = (ValidateIntInput() - 1);
+		intCompareSecond = (ValidateIntInput(hConsole) - 1);
 
 		try {
 			if (intCompareSecond == intCompareFirst) {
@@ -984,11 +904,11 @@ void ViewCompareTwoJourneys(HANDLE* hConsole, std::vector<Journey>* vecJourneyCo
 				vecJourneyCompare.push_back(vecJourneyCollection->at(intCompareSecond));
 			}
 		}
-		catch (std::out_of_range ex) {
-			std::cout << "The number you specified is not a valid item currently in the list.\n";
+		catch (std::out_of_range) {
+			OutputError(hConsole, "The number you specified is not a valid item currently in the list.");
 		}
-		catch (std::runtime_error ex) {
-			std::cout << ex.what() << "\n";
+		catch (std::runtime_error& exp) {
+			OutputError(hConsole, exp.what());
 		}
 	} while (!InRange(0, (int)vecJourneyCollection->size() - 1, intCompareSecond) || intCompareFirst == intCompareSecond);
 
@@ -1009,28 +929,30 @@ void ViewTotalTwoJourneys(HANDLE* hConsole, std::vector<Journey>* vecJourneyColl
 	OutputTable(hConsole, vecJourneyCollection, intWidth);
 
 	std::cout << "\n";
+	SetConsoleTextAttribute(*hConsole, 14);
 	std::cout << "Please specify number of the first journey you would like to total.\n";
 	do {
 		SetConsoleTextAttribute(*hConsole, 9);
 		std::cout << "Enter Choice : ";
 		SetConsoleTextAttribute(*hConsole, 15);
-		intTotalFirst = ValidateIntInput() - 1;
+		intTotalFirst = ValidateIntInput(hConsole) - 1;
 
 		try {
 			vecJourneyTotal.push_back(vecJourneyCollection->at(intTotalFirst));
 		}
-		catch (std::exception ex) {
-			std::cout << "The number you specified is not a valid item currently in the list.\n";
+		catch (std::exception) {
+			OutputError(hConsole, "The number you specified is not a valid item currently in the list.");
 		}
 	} while (!InRange(0, (int)vecJourneyCollection->size() - 1, intTotalFirst));
 
 	std::cout << "\n";
+	SetConsoleTextAttribute(*hConsole, 14);
 	std::cout << "Please specify number of the second journey you would like to total.\n";
 	do {
 		SetConsoleTextAttribute(*hConsole, 9);
 		std::cout << "Enter Choice : ";
 		SetConsoleTextAttribute(*hConsole, 15);
-		intTotalSecond = (ValidateIntInput() - 1);
+		intTotalSecond = (ValidateIntInput(hConsole) - 1);
 
 		try {
 			if (intTotalSecond == intTotalFirst) {
@@ -1040,11 +962,11 @@ void ViewTotalTwoJourneys(HANDLE* hConsole, std::vector<Journey>* vecJourneyColl
 				vecJourneyTotal.push_back(vecJourneyCollection->at(intTotalSecond));
 			}
 		}
-		catch (std::out_of_range ex) {
-			std::cout << "The number you specified is not a valid item currently in the list.\n";
+		catch (std::out_of_range) {
+			OutputError(hConsole, "The number you specified is not a valid item currently in the list.");
 		}
-		catch (std::runtime_error ex) {
-			std::cout << ex.what() << "\n";
+		catch (std::runtime_error& exp) {
+			OutputError(hConsole, exp.what());
 		}
 	} while (!InRange(0, (int)vecJourneyCollection->size() - 1, intTotalSecond) || intTotalFirst == intTotalSecond);
 
@@ -1075,7 +997,7 @@ void ViewDeleteSelect(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollecti
 			SetConsoleTextAttribute(*hConsole, 9);
 			std::cout << "Enter choice : ";
 			SetConsoleTextAttribute(*hConsole, 15);
-			intDeleteChoiceInput = ValidateIntInput();
+			intDeleteChoiceInput = ValidateIntInput(hConsole);
 
 			try {
 				switch (intDeleteChoiceInput) {
@@ -1109,7 +1031,7 @@ void ViewDeleteSelect(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollecti
 
 			}
 			catch (std::exception& exp) {
-				std::cout << "Error : " << exp.what() << "\n";
+				OutputError(hConsole, exp.what());
 			}
 		}
 
@@ -1142,7 +1064,7 @@ void ViewDeleteJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollect
 		SetConsoleTextAttribute(*hConsole, 9);
 		std::cout << "Enter Choice : ";
 		SetConsoleTextAttribute(*hConsole, 15);
-		intJourneyToDelete = ValidateIntInput() - 1;
+		intJourneyToDelete = ValidateIntInput(hConsole) - 1;
 
 		if (intJourneyToDelete == -1) {
 			boolIsValid = true;
@@ -1152,25 +1074,22 @@ void ViewDeleteJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollect
 			boolIsValid = true;
 		}
 		else {
-			SetConsoleTextAttribute(*hConsole, 12);
-			std::cout << "The number you specified is not a valid item currently in the list.\n";
-			SetConsoleTextAttribute(*hConsole, 15);
+			OutputError(hConsole, "The number you specified is not a valid item currently in the list.");
 		}
 	}
 
 	if (!boolIsExiting) {
 		try {
 			vecJourneyCollection->erase(vecJourneyCollection->begin() + intJourneyToDelete);
-		}
-		catch (std::exception& ex) {
-			std::cout << "Sorry, something went wrong while removing this item.\n";
+
+			std::cout << "\n";
+			SetConsoleTextAttribute(*hConsole, 10);
+			std::cout << "Journey " << (intJourneyToDelete + 1) << " successfully removed.\n";
 			SetConsoleTextAttribute(*hConsole, 15);
 		}
-
-		std::cout << "\n";
-		SetConsoleTextAttribute(*hConsole, 10);
-		std::cout << "Journey " << (intJourneyToDelete + 1) << " successfully removed.\n";
-		SetConsoleTextAttribute(*hConsole, 15);
+		catch (std::exception) {
+			OutputError(hConsole, "Sorry, something went wrong while removing this item.");
+		}
 
 		Pause(hConsole);
 	}
@@ -1194,7 +1113,7 @@ void ViewSaveImportSelect(HANDLE* hConsole, std::vector<Journey>* vecJourneyColl
 			SetConsoleTextAttribute(*hConsole, 9);
 			std::cout << "Enter choice : ";
 			SetConsoleTextAttribute(*hConsole, 15);
-			intSaveImportChoiceInput = ValidateIntInput();
+			intSaveImportChoiceInput = ValidateIntInput(hConsole);
 
 			try {
 				switch (intSaveImportChoiceInput) {
@@ -1226,7 +1145,7 @@ void ViewSaveImportSelect(HANDLE* hConsole, std::vector<Journey>* vecJourneyColl
 
 			}
 			catch (std::exception& exp) {
-				std::cout << "Error : " << exp.what() << "\n";
+				OutputError(hConsole, exp.what());
 			}
 		}
 

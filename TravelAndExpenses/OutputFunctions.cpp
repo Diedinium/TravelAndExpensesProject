@@ -1,3 +1,4 @@
+#include "MiscFunctions.h"
 #include "CalcFunctions.h"
 #include "OutputFunctions.h"
 
@@ -20,25 +21,44 @@ void OutputIntro(HANDLE* hConsole) {
 	Pause(hConsole);
 }
 
+/// <summary>
+/// Takes a list of ChoiceOptions, introText and options to use dashes and clear screen. Based on these options, menu screen choices are output.
+/// </summary>
+/// <param name="hConsole"></param>
+/// <param name="vecJourneyCollection"></param>
+/// <param name="vecChoiceCollection"></param>
+/// <param name="introText"></param>
+/// <param name="boolUseDashes"></param>
+/// <param name="boolClearScreen"></param>
 void OutputMenu(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, std::vector<ChoiceOption>* vecChoiceCollection, std::string introText, bool boolUseDashes, bool boolClearScreen) {
+	// Clears screen if boolClearScreen is true.
 	if (boolClearScreen) {
 		system("cls");
 	}
+
+	// Dashes are displayed when boolUseDashes is true.
 	SetConsoleTextAttribute(*hConsole, 6);
 	if (boolUseDashes) {
 		std::cout << "-------------------------------------------\n";
 	}
 	SetConsoleTextAttribute(*hConsole, 15);
 	std::cout << "\n";
+	
+	// Intro text is displayed.
 	SetConsoleTextAttribute(*hConsole, 14);
 	std::cout << introText;
 	std::cout << "\nPlease specify your option :\n";
 	std::cout << "\n";
+
+	// Outputs choice options
 	SetConsoleTextAttribute(*hConsole, 15);
 	for (size_t i = 0; i < vecChoiceCollection->size(); i++)
 	{
+		// If hide threshold is not default value.
 		if (vecChoiceCollection->at(i).OptionHideThreshold != 99) {
+			// If option should be hidden when not greater than 0
 			if (vecChoiceCollection->at(i).OptionHideThreshold == 0) {
+				// Ouputs option if vector size is greater than the option threshold (0)
 				if (vecJourneyCollection->size() > vecChoiceCollection->at(i).OptionHideThreshold) {
 					SetConsoleTextAttribute(*hConsole, 10);
 					std::cout << "Option " << vecChoiceCollection->at(i).OptionNumber << " : ";
@@ -46,7 +66,9 @@ void OutputMenu(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, st
 					std::cout << vecChoiceCollection->at(i).OptionText << "\n";
 				}
 			}
+			// For all other choice options that need to be hidden when not greater than or equal to specified hide threshold
 			else {
+				// Outputs option if vector size is greater than or equal to threshold (1 and above)
 				if (vecJourneyCollection->size() >= vecChoiceCollection->at(i).OptionHideThreshold) {
 					SetConsoleTextAttribute(*hConsole, 10);
 					std::cout << "Option " << vecChoiceCollection->at(i).OptionNumber << " : ";
@@ -55,6 +77,7 @@ void OutputMenu(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, st
 				}
 			}
 		}
+		// Default output for options that are always visible regardless of number of journeys.
 		else {
 			SetConsoleTextAttribute(*hConsole, 10);
 			std::cout << "Option " << vecChoiceCollection->at(i).OptionNumber << " : ";
@@ -142,9 +165,7 @@ void OutputHeader(HANDLE* hConsole, int* intWidth, std::string headerText, int h
 		break;
 	}
 	default: {
-		SetConsoleTextAttribute(*hConsole, 12);
-		std::cout << "Error : Header could not be rendered\n";
-		SetConsoleTextAttribute(*hConsole, 15);
+		OutputError(hConsole, "Header could not be rendered.");
 		break;
 	}
 	}
@@ -159,7 +180,7 @@ void OutputHeader(HANDLE* hConsole, int* intWidth, std::string headerText, int h
 void OutputTable(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	// Output standard 7 item table
 	if (vecJourneyCollection->size() <= 0) {
-		std::cout << "There are currently no stored journeys\n";
+		OutputError(hConsole, "There are currently no stored journeys");
 	}
 	else {
 		for (std::size_t i = 0; i < vecJourneyCollection->size(); ++i) {
@@ -197,9 +218,7 @@ void OutputTable(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, i
 	case 1: {
 		// Output travel and expense journeys only
 		if (vecJourneyCollection->size() <= 0) {
-			SetConsoleTextAttribute(*hConsole, 12);
-			std::cout << "There are currently no stored journeys\n";
-			SetConsoleTextAttribute(*hConsole, 15);
+			OutputError(hConsole, "There are currently no stored journeys");
 		}
 		else {
 			for (std::size_t i = 0; i < vecJourneyCollection->size(); ++i) {
@@ -225,9 +244,7 @@ void OutputTable(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, i
 	case 2: {
 		// Output travel journeys only
 		if (vecJourneyCollection->size() <= 0) {
-			SetConsoleTextAttribute(*hConsole, 12);
-			std::cout << "There are currently no stored journeys\n";
-			SetConsoleTextAttribute(*hConsole, 15);
+			OutputError(hConsole, "There are currently no stored journeys");
 		}
 		else {
 			for (std::size_t i = 0; i < vecJourneyCollection->size(); ++i) {
@@ -249,9 +266,7 @@ void OutputTable(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, i
 	case 3: {
 		// Output travel journeys only, but all 7 columns
 		if (vecJourneyCollection->size() <= 0) {
-			SetConsoleTextAttribute(*hConsole, 12);
-			std::cout << "There are currently no stored journeys\n";
-			SetConsoleTextAttribute(*hConsole, 15);
+			OutputError(hConsole, "There are currently no stored journeys");
 		}
 		else {
 			for (std::size_t i = 0; i < vecJourneyCollection->size(); ++i) {
@@ -275,10 +290,95 @@ void OutputTable(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, i
 		break;
 	}
 	default: {
-		SetConsoleTextAttribute(*hConsole, 12);
-		std::cout << "Error : Table could not be rendered\n";
-		SetConsoleTextAttribute(*hConsole, 15);
+		OutputError(hConsole, "Table could not be rendered");
 		break;
 	}
 	}
+}
+
+/// <summary>
+/// Outputs results for travel only items. resultType specifies the type of comparison, for example; total, difference, average.
+/// </summary>
+/// <param name="hConsole"></param>
+/// <param name="resultTravel"></param>
+/// <param name="intWidth"></param>
+/// <param name="resultType"></param>
+void OutputResults(HANDLE* hConsole, ResultTravel* resultTravel, int* intWidth, std::string strResultType) {
+	strResultType += " :";
+	std::cout << "\n";
+	std::cout.precision(2);
+	SetConsoleTextAttribute(*hConsole, 13);
+	std::cout
+		<< std::fixed << std::setw(*intWidth) << strResultType;
+	std::cout.precision(2);
+	SetConsoleTextAttribute(*hConsole, 15);
+	std::cout
+		<< std::fixed << std::setw(*intWidth) << resultTravel->Travel
+		<< std::fixed << std::setw(*intWidth) << resultTravel->TaxReclaim
+		<< std::fixed << std::setw(*intWidth) << resultTravel->FinalPay << "\n";
+}
+
+/// <summary>
+/// Outputs results for travel and expense. resultType specifies the type of comparison, for example; total, difference, average.
+/// </summary>
+/// <param name="hConsole"></param>
+/// <param name="resultTravelExpense"></param>
+/// <param name="intWidth"></param>
+/// <param name="resultType"></param>
+void OutputResults(HANDLE* hConsole, ResultTravelExpense* resultTravelExpense, int* intWidth, std::string strResultType) {
+	strResultType += " :";
+	std::cout << "\n";
+	std::cout.precision(2);
+	SetConsoleTextAttribute(*hConsole, 13);
+	std::cout
+		<< std::fixed << std::setw(*intWidth) << strResultType;
+	std::cout.precision(2);
+	SetConsoleTextAttribute(*hConsole, 15);
+	std::cout
+		<< std::fixed << std::setw(*intWidth) << resultTravelExpense->Travel
+		<< std::fixed << std::setw(*intWidth) << resultTravelExpense->Expense
+		<< std::fixed << std::setw(*intWidth) << resultTravelExpense->Totals
+		<< std::fixed << std::setw(*intWidth) << resultTravelExpense->ExpensePay
+		<< std::fixed << std::setw(*intWidth) << resultTravelExpense->TaxReclaim
+		<< std::fixed << std::setw(*intWidth) << resultTravelExpense->ExpenseNotCovered
+		<< std::fixed << std::setw(*intWidth) << resultTravelExpense->FinalPay << "\n";
+}
+
+void OutputResults(HANDLE* hConsole, ResultTravelExpense* resultTravelExpense, int* intWidth, std::string strResultType, bool boolIsNumbered) {
+	strResultType += " :";
+	std::cout << "\n";
+	std::cout.precision(2);
+	SetConsoleTextAttribute(*hConsole, 13);
+	std::cout
+		<< std::fixed << std::setw(20) << strResultType;
+	std::cout.precision(2);
+	SetConsoleTextAttribute(*hConsole, 15);
+	std::cout
+		<< std::fixed << std::setw(*intWidth) << resultTravelExpense->Travel
+		<< std::fixed << std::setw(*intWidth) << resultTravelExpense->Expense
+		<< std::fixed << std::setw(*intWidth) << resultTravelExpense->Totals
+		<< std::fixed << std::setw(*intWidth) << resultTravelExpense->ExpensePay
+		<< std::fixed << std::setw(*intWidth) << resultTravelExpense->TaxReclaim
+		<< std::fixed << std::setw(*intWidth) << resultTravelExpense->ExpenseNotCovered
+		<< std::fixed << std::setw(*intWidth) << resultTravelExpense->FinalPay << "\n";
+}
+
+/// <summary>
+/// Outputs an error (user facing) to the console.
+/// </summary>
+/// <param name="hConsole"></param>
+/// <param name="strErrorText"></param>
+void OutputError(HANDLE* hConsole, std::string strErrorText) {
+	SetConsoleTextAttribute(*hConsole, 12);
+	std::cout << "Error : " << strErrorText << "\n";
+	SetConsoleTextAttribute(*hConsole, 15);
+}
+
+void OutputError(HANDLE* hConsole, std::string strErrorText, bool boolNewLine) {
+	if (boolNewLine) {
+		std::cout << "\n";
+	}
+	SetConsoleTextAttribute(*hConsole, 12);
+	std::cout << "Error : " << strErrorText << (boolNewLine ? "\n" : "");
+	SetConsoleTextAttribute(*hConsole, 15);
 }
