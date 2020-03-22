@@ -7,6 +7,7 @@
 #include <sstream>
 #include <algorithm>
 #include <stdexcept>
+#include "Structs.h"
 #include "MiscFunctions.h"
 #include "CalcFunctions.h"
 #include "OutputFunctions.h"
@@ -16,7 +17,7 @@
 // Note : Miscallaneous, Calculation and Output functions are declared in their respective header files, and defined in their respective .cpp source file.
 
 // Menu action functinons
-void AddNewJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth);
+void ViewAddNewJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth);
 void ViewJourneys(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth);
 void ViewSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth);
 void ViewCombinedSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth);
@@ -30,7 +31,7 @@ void ViewTotalTwoJourneys(HANDLE* hConsole, std::vector<Journey>* vecJourneyColl
 void ViewDeleteSelect(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth);
 void ViewDeleteJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth);
 void ViewSaveImportSelect(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth);
-void ViewImportSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection);
+void ViewImportSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth);
 
 // Testing function : Automatically adds some journeys to save time when testing.
 void TestFunction(std::vector<Journey>* vecJourneyCollection);
@@ -94,7 +95,8 @@ int main()
 				switch (intMenuMainChoice)
 				{
 				case 1: {
-					AddNewJourney(&hConsole, &vecJourneyCollection, &intWidth);
+					// Go to view that allows user to add new journeys when "1" is entered.
+					ViewAddNewJourney(&hConsole, &vecJourneyCollection, &intWidth);
 					boolExitWhile = true;
 					break;
 				}
@@ -105,6 +107,7 @@ int main()
 						break;
 					}
 					else {
+						// Go to view save/import menu when "2" is entered.
 						ViewJourneys(&hConsole, &vecJourneyCollection, &intWidth);
 						boolExitWhile = true;
 					}
@@ -117,6 +120,7 @@ int main()
 						break;
 					}
 					else {
+						// Go to view summaries menu when "3" is entered.
 						ViewSummary(&hConsole, &vecJourneyCollection, &intWidth);
 						boolExitWhile = true;
 					}
@@ -129,6 +133,7 @@ int main()
 						break;
 					}
 					else {
+						// Go to view comparisons menu when "4" is entered.
 						ViewComparison(&hConsole, &vecJourneyCollection, &intWidth);
 						boolExitWhile = true;
 					}
@@ -142,6 +147,7 @@ int main()
 						break;
 					}
 					else {
+						// Go to delete journey menu when "5" is entered.
 						ViewDeleteJourney(&hConsole, &vecJourneyCollection, &intWidth);
 						boolExitWhile = true;
 					}
@@ -155,6 +161,7 @@ int main()
 						break;
 					}
 					else {
+						// Go to view save/import menu when "6" is entered.
 						ViewSaveImportSelect(&hConsole, &vecJourneyCollection, &intWidth);
 						boolExitWhile = true;
 						break;
@@ -190,18 +197,17 @@ int main()
 // Views/Menu screens
 
 /// <summary>
-/// Function that allows user to enter new journeys.
+/// Add new journey view. Function that allows user to enter new journeys.
 /// </summary>
 /// <param name="hConsole"></param>
 /// <param name="vecJourneyCollection"></param>
 /// <param name="intWidth"></param>
-void AddNewJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth) {
+void ViewAddNewJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth) {
+	// Declare variables.
 	std::string strContinueAddingJourneys;
 	bool boolExitWhile = false;
-
 	int intTravelChoiceInput;
 	TravelType travelTypeChoice;
-
 	double dTravelCost = 0;
 	double dExpenseCost = 0;
 
@@ -226,6 +232,7 @@ void AddNewJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection,
 
 			try {
 				if (intTravelChoiceInput == 1) {
+					// Input travel cost
 					travelTypeChoice = TravelType::Travel;
 					SetConsoleTextAttribute(*hConsole, 9);
 					std::cout << "Travel cost : ";
@@ -233,10 +240,12 @@ void AddNewJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection,
 
 					dTravelCost = ValidateDoubleInput(hConsole);
 
+					// Create journey and add to vector.
 					vecJourneyCollection->push_back(Journey{ travelTypeChoice, dTravelCost });
 					boolExitWhile = true;
 				}
 				else if (intTravelChoiceInput == 2) {
+					// Input travel cost
 					travelTypeChoice = TravelType::TravelAndExpense;
 					SetConsoleTextAttribute(*hConsole, 9);
 					std::cout << "Travel cost : ";
@@ -244,12 +253,14 @@ void AddNewJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection,
 
 					dTravelCost = ValidateDoubleInput(hConsole);
 
+					// Input expense cost
 					SetConsoleTextAttribute(*hConsole, 9);
 					std::cout << "Expenses cost : ";
 					SetConsoleTextAttribute(*hConsole, 15);
 
 					dExpenseCost = ValidateDoubleInput(hConsole);
 
+					// Create journey and add to vector.
 					vecJourneyCollection->push_back(Journey{ travelTypeChoice, dTravelCost, dExpenseCost });
 					boolExitWhile = true;
 				}
@@ -259,6 +270,7 @@ void AddNewJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection,
 						boolExitWhile = false;
 					}
 					else {
+						// View current journeys when "3" is entered.
 						ViewJourneys(hConsole, vecJourneyCollection, intWidth);
 						boolExitWhile = true;
 					}
@@ -282,10 +294,12 @@ void AddNewJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection,
 		switch (intTravelChoiceInput) {
 			case 3: {
 				system("cls");
+				// If user is viewing journeys, allow user to add more journeys once they return to this function.
 				strContinueAddingJourneys = "Y";
 				break;
 			}
 			case 9: {
+				// Set option to N if user is intending to exit this function.
 				strContinueAddingJourneys = "N";
 				break;
 			}
@@ -308,8 +322,10 @@ void AddNewJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection,
 					std::cin.clear();
 					std::cin.ignore(123, '\n');
 					std::cin >> strContinueAddingJourneys;
+					// Ensure that input is always in upper case.
 					transform(strContinueAddingJourneys.begin(), strContinueAddingJourneys.end(), strContinueAddingJourneys.begin(), std::toupper);
 
+					// Check if value is valid
 					if (strContinueAddingJourneys.find("Y") != std::string::npos) {
 						boolExitWhileString = true;
 					}
@@ -331,7 +347,7 @@ void AddNewJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection,
 }
 
 /// <summary>
-/// Displays all journeys currently in the main vector (vecJourneyCollection). Prints travel only journeys and then travel and expense journeys. Displays some choice options that allow user to view journeys 
+/// Display journeys view. Displays all journeys currently in the main vector (vecJourneyCollection). Prints travel only journeys and then travel and expense journeys. Displays some choice options that allow user to view journeys 
 /// </summary>
 /// <param name="hConsole"></param>
 /// <param name="vecJourneyCollection"></param>
@@ -339,26 +355,31 @@ void AddNewJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection,
 void ViewJourneys(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	system("CLS");
 	// Outputs travel only journeys
-	OutputHeader(hConsole, intWidth, "Travel Only Journeys", 2);
-	OutputTable(hConsole, vecJourneyCollection, intWidth, 2);
-	std::cout << "\n";
+	if (FindNumOfJourneys(vecJourneyCollection, TravelType::Travel) > 0) {
+		OutputHeader(hConsole, intWidth, "Travel Only Journeys", 2);
+		OutputTable(hConsole, vecJourneyCollection, intWidth, 2);
+		std::cout << "\n";
+	}
 
 	// Outputs travel and expense journeys
-	OutputHeader(hConsole, intWidth, "Travel and Expense Journeys");
-	OutputTable(hConsole, vecJourneyCollection, intWidth, 1);
-	std::cout << "\n";
+	if (FindNumOfJourneys(vecJourneyCollection, TravelType::TravelAndExpense) > 0) {
+		OutputHeader(hConsole, intWidth, "Travel and Expense Journeys");
+		OutputTable(hConsole, vecJourneyCollection, intWidth, 1);
+		std::cout << "\n";
+	}
 
 	// Ouputs choices to allow user to select what to do next.
 	ViewDeleteSelect(hConsole, vecJourneyCollection, intWidth);
 }
 
 /// <summary>
-/// Choice select screen that allows user to choose a summary type to view.
+/// Summary select view. Allows user to choose a summary type to view.
 /// </summary>
 /// <param name="hConsole"></param>
 /// <param name="vecJourneyCollection"></param>
 /// <param name="intWidth"></param>
 void ViewSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth) {
+	// Declare variables.
 	int intSummaryChoiceInput = 0;
 	bool boolExitWhile = false;
 
@@ -380,20 +401,24 @@ void ViewSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, i
 			SetConsoleTextAttribute(*hConsole, 15);
 			intSummaryChoiceInput = ValidateIntInput(hConsole);
 
+			// Once valid numeric choice is provided, execute relevant function.
 			try {
 				switch (intSummaryChoiceInput) {
 				case 1: {
 					boolExitWhile = true;
+					// View combined summary when "1" is entered.
 					ViewCombinedSummary(hConsole, vecJourneyCollection, intWidth);
 					break;
 				}
 				case 2: {
 					boolExitWhile = true;
+					// View travel only summary when "2" is entered.
 					ViewTravelOnlySummary(hConsole, vecJourneyCollection, intWidth);
 					break;
 				}
 				case 3: {
 					boolExitWhile = true;
+					// View travel and expenses summary when "3" is entered.
 					ViewTravelExpensesOnlySummary(hConsole, vecJourneyCollection, intWidth);
 					break;
 				}
@@ -420,7 +445,7 @@ void ViewSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, i
 }
 
 /// <summary>
-/// Displays total of two journeys
+/// Total two items summary view. Displays total of two journeys
 /// </summary>
 /// <param name="hConsole"></param>
 /// <param name="vecJourneyCollection"></param>
@@ -448,7 +473,7 @@ void ViewTotalSummaryTwoItems(HANDLE* hConsole, std::vector<Journey>* vecJourney
 }
 
 /// <summary>
-/// Displays comparison of two journeys
+/// Compare two items summary view. Displays comparison of two journeys
 /// </summary>
 /// <param name="hConsole"></param>
 /// <param name="vecJourneyCollection"></param>
@@ -462,7 +487,7 @@ void ViewCompareSummaryTwoItems(HANDLE* hConsole, std::vector<Journey>* vecJourn
 		OutputTable(hConsole, vecJourneyCollection, intWidth);
 	}
 
-	//
+	// Ouputs results showing the combined total of the two items being compared
 	try {
 		auto totals = CalculateAllSummaryTotals(vecJourneyCollection);
 		OutputResults(hConsole, &totals, intWidth, "Totals", true);
@@ -471,6 +496,7 @@ void ViewCompareSummaryTwoItems(HANDLE* hConsole, std::vector<Journey>* vecJourn
 		OutputError(hConsole, exp.what());
 	}
 
+	// Oupputs results showing the larget value of hte two items being compared.
 	try {
 		auto largest = CalculateAllSummaryLargest(vecJourneyCollection);
 		OutputResults(hConsole, &largest, intWidth, "Largest", true);
@@ -479,6 +505,7 @@ void ViewCompareSummaryTwoItems(HANDLE* hConsole, std::vector<Journey>* vecJourn
 		OutputError(hConsole, exp.what());
 	}
 
+	// Outputs results showing the difference of the two items being compared.
 	try {
 		auto difference = CalculateTwoItemComparison(vecJourneyCollection);
 		OutputResults(hConsole, &difference, intWidth, "Difference", true);
@@ -487,17 +514,27 @@ void ViewCompareSummaryTwoItems(HANDLE* hConsole, std::vector<Journey>* vecJourn
 		OutputError(hConsole, exp.what());
 	}
 
+	// Displays save options
 	ViewSaveExport(hConsole, vecJourneyCollection, intWidth);
 }
 
+/// <summary>
+/// Combined summary view. Displays a combined summary (summarises all journeys currently in system)
+/// </summary>
+/// <param name="hConsole"></param>
+/// <param name="vecJourneyCollection"></param>
+/// <param name="intWidth"></param>
 void ViewCombinedSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	system("cls");
+
+	// Output the header with the default description, output table showing both types of journeys.
 	OutputHeader(hConsole, intWidth, "");
 	if (vecJourneyCollection->size() > 0) {
 		OutputTable(hConsole, vecJourneyCollection, intWidth, 3);
 		OutputTable(hConsole, vecJourneyCollection, intWidth, 1);
 	}
 
+	// Output results showing the total of all the items in the summary.
 	try {
 		auto totals = CalculateAllSummaryTotals(vecJourneyCollection);
 		OutputResults(hConsole, &totals, intWidth, "Totals");
@@ -506,6 +543,7 @@ void ViewCombinedSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyColle
 		OutputError(hConsole, exp.what());
 	}
 
+	// Output results showing the average of all the items in the summary
 	try {
 		auto average = CalculateAllSummaryAverage(vecJourneyCollection);
 		OutputResults(hConsole, &average, intWidth, "Averages");
@@ -514,6 +552,7 @@ void ViewCombinedSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyColle
 		OutputError(hConsole, exp.what());
 	}
 
+	// Output results showing the largest of all the items in the summary
 	try {
 		auto largest = CalculateAllSummaryLargest(vecJourneyCollection);
 		OutputResults(hConsole, &largest, intWidth, "Largest");
@@ -522,13 +561,24 @@ void ViewCombinedSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyColle
 		OutputError(hConsole, exp.what());
 	}
 
+	// Displays save options
 	ViewSaveExport(hConsole, vecJourneyCollection, intWidth);
 }
 
+/// <summary>
+/// Travel only summary view. Displays a summary of travel only journeys.
+/// </summary>
+/// <param name="hConsole"></param>
+/// <param name="vecJourneyCollection"></param>
+/// <param name="intWidth"></param>
 void ViewTravelOnlySummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	system("cls");
+
+	// Output header and table for travel only journeys
 	OutputHeader(hConsole, intWidth, "Travel Only Journeys", 2);
 	OutputTable(hConsole, vecJourneyCollection, intWidth, 2);
+
+	// Output results showing total of all travel journeys in the summmary.
 	try {
 		auto totals = CalculateTravelSummaryTotals(vecJourneyCollection);
 		OutputResults(hConsole, &totals, intWidth, "Totals");
@@ -537,6 +587,7 @@ void ViewTravelOnlySummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCol
 		OutputError(hConsole, exp.what());
 	}
 
+	// Output results showing average of all travel journeys in the summmary.
 	try {
 		auto average = CalculateTravelSummaryAverage(vecJourneyCollection);
 		OutputResults(hConsole, &average, intWidth, "Averages");
@@ -545,6 +596,7 @@ void ViewTravelOnlySummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCol
 		OutputError(hConsole, exp.what());
 	}
 
+	// Output results showing largest of all travel journeys in the summmary.
 	try {
 		auto largest = CalculateTravelSummaryLargest(vecJourneyCollection);
 		OutputResults(hConsole, &largest, intWidth, "Largest");
@@ -553,6 +605,7 @@ void ViewTravelOnlySummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCol
 		OutputError(hConsole, exp.what());
 	}
 
+	// Store travel only journeys in vector
 	std::vector<Journey> vecTravelOnlyCollection;
 	for (size_t i = 0; i < vecJourneyCollection->size(); i++)
 	{
@@ -561,13 +614,24 @@ void ViewTravelOnlySummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCol
 		}
 	}
 
+	// Displays save options - will only save travel journey types
 	ViewSaveExport(hConsole, &vecTravelOnlyCollection, intWidth);
 }
 
+/// <summary>
+/// Travel and expenses summary view. Displays a summary of travel and expense journeys.
+/// </summary>
+/// <param name="hConsole"></param>
+/// <param name="vecJourneyCollection"></param>
+/// <param name="intWidth"></param>
 void ViewTravelExpensesOnlySummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	system("cls");
+
+	//Output header and table for travel and expense journeys
 	OutputHeader(hConsole, intWidth, "Travel and Expense Journeys");
 	OutputTable(hConsole, vecJourneyCollection, intWidth, 1);
+
+	// Output results for total of all travel and expense journeys
 	try {
 		auto totals = CalculateTravelExpenseSummaryTotals(vecJourneyCollection);
 		OutputResults(hConsole, &totals, intWidth, "Totals");
@@ -576,6 +640,7 @@ void ViewTravelExpensesOnlySummary(HANDLE* hConsole, std::vector<Journey>* vecJo
 		OutputError(hConsole, exp.what());
 	}
 
+	// Output results for average of all travel and expense journeys
 	try {
 		auto average = CalculateTravelExpenseSummaryAverage(vecJourneyCollection);
 		OutputResults(hConsole, &average, intWidth, "Averages");
@@ -584,6 +649,7 @@ void ViewTravelExpensesOnlySummary(HANDLE* hConsole, std::vector<Journey>* vecJo
 		OutputError(hConsole, exp.what());
 	}
 
+	// Output results for largest of all travel and expense journeys
 	try {
 		auto largest = CalculateTravelExpenseSummaryLargest(vecJourneyCollection);
 		OutputResults(hConsole, &largest, intWidth, "Largest");
@@ -592,6 +658,7 @@ void ViewTravelExpensesOnlySummary(HANDLE* hConsole, std::vector<Journey>* vecJo
 		OutputError(hConsole, exp.what());
 	}
 
+	// Store all travel and expense journeys in vector
 	std::vector<Journey> vecTravelExpenseOnlyCollection;
 	for (size_t i = 0; i < vecJourneyCollection->size(); i++)
 	{
@@ -600,26 +667,34 @@ void ViewTravelExpensesOnlySummary(HANDLE* hConsole, std::vector<Journey>* vecJo
 		}
 	}
 
+	// Displays save options - will only save travel and expense journeys 
 	ViewSaveExport(hConsole, &vecTravelExpenseOnlyCollection, intWidth);
 }
 
+/// <summary>
+/// Save summary view. Saves passed vector of journeys to a .csv file.
+/// </summary>
+/// <param name="hConsole"></param>
+/// <param name="vecJourneyCollection"></param>
 void ViewSaveSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection) {
 	system("cls");
 
+	// Declare variables.
 	std::fstream fout;
 	std::string fnameOriginal = "journeyList.csv";
 	std::string fname = "journeyList.csv";
 	int intCount = 0;
-
-	while (fileExists(fname))
+	
+	// Loop until a valid file name is found (iterates by 1 until an unused file name is found.)
+	while (FileExists(fname))
 	{
 		fname = fnameOriginal;
 		fname = fname.insert(11, std::to_string(intCount));
 		intCount++;
 	}
 
+	// Add a row of headers to the csv file.
 	fout.open(fname, std::ios::out | std::ios::app);
-
 	fout << "Travel Type" << ", "
 		<< "Travel Cost" << ", "
 		<< "Expense Cost" << ", "
@@ -630,6 +705,7 @@ void ViewSaveSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollectio
 		<< "Expense Not Covered"
 		<< "\n";
 
+	// Loop and add values to the file, ouputs all 7 values of each journey in the vector.
 	for (size_t i = 0; i < vecJourneyCollection->size(); i++)
 	{
 		fout << std::fixed << std::setprecision(2) << ((((int)vecJourneyCollection->at(i).travelType) == 0) ? "Travel" : "Travel & Exp") << ", "
@@ -645,6 +721,7 @@ void ViewSaveSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollectio
 
 	fout.close();
 
+	// Explain to user where file was saved.
 	SetConsoleTextAttribute(*hConsole, 14);
 	std::cout << "Journeys written to '";
 	SetConsoleTextAttribute(*hConsole, 13);
@@ -655,8 +732,14 @@ void ViewSaveSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollectio
 	Pause(hConsole);
 }
 
-void ViewImportSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection) {
-
+/// <summary>
+/// Import summary view. Allows user to import journeys from a .csv file.
+/// </summary>
+/// <param name="hConsole"></param>
+/// <param name="vecJourneyCollection"></param>
+void ViewImportSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth) {
+	// Declare variables.
+	std::vector<Journey> vecJourneyTemp;
 	std::string strFilename = "";
 	std::fstream fin;
 	bool boolExitLoop = false;
@@ -673,25 +756,31 @@ void ViewImportSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollect
 	SetConsoleTextAttribute(*hConsole, 15);
 	std::cout << "\n";
 
+	// Loop until file is successfully read, or user specifies "exit"
 	do {
 		try {
 			SetConsoleTextAttribute(*hConsole, 9);
 			std::cout << "File name : ";
 			SetConsoleTextAttribute(*hConsole, 15);
 			std::cin >> strFilename;
+
 			fin.open(strFilename, std::ios::in);
+
+			// If exit is specified, exit loop and ensure HasFileRead is false.
 			if (strFilename == "exit") {
 				boolExitLoop = true;
 				boolHasReadFile = false;
 			}
 			else {
-				if (fileExists(strFilename)) {
+				// If the file exists, exit loop and set HasFileRead to true.
+				if (FileExists(strFilename)) {
 					SetConsoleTextAttribute(*hConsole, 10);
-					std::cout << "File exists.\n";
+					std::cout << "File exists...\n";
 					SetConsoleTextAttribute(*hConsole, 15);
 					boolExitLoop = true;
 					boolHasReadFile = true;
 				}
+				// Otherwise continue looping until "exit" is specified or valid filename is provided.
 				else {
 					OutputError(hConsole, "File could not be found. Please ensure you are specifying the file name correctly.", true);
 					boolHasReadFile = false;
@@ -703,11 +792,18 @@ void ViewImportSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollect
 		}
 	} while (boolExitLoop == false);
 
+	// If a file has be read into file stream
 	if (boolHasReadFile) {
+		// Declare variables
 		std::vector<std::string> vecRowTemp;
 		std::string strLine, strWord, strTemp;
 
+		// Try reading file.
 		try {
+			SetConsoleTextAttribute(*hConsole, 10);
+			std::cout << "Attempting to read file...\n";
+			SetConsoleTextAttribute(*hConsole, 15);
+			// If not end of file.
 			while (!fin.eof()) {
 				vecRowTemp.clear();
 
@@ -715,13 +811,16 @@ void ViewImportSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollect
 
 				std::stringstream s(strLine);
 
-
+				// Split read line into seperate items. Split on comma.
 				while (std::getline(s, strWord, ',')) {
 					vecRowTemp.push_back(strWord);
 				}
 
+				// If items were read from line.
 				if (!vecRowTemp.empty()) {
+					// If first item is not "Travel Type" (makes sure that header is not read in)
 					if (vecRowTemp.at(0) != "Travel Type") {
+						// Create a journey and set appropraite values from the vector of items read from line.
 						Journey journeyTemp{ TravelType::Travel, 0 };
 						journeyTemp.travelType = (((vecRowTemp.at(0)) == "Travel") ? TravelType::Travel : TravelType::TravelAndExpense);
 						journeyTemp.travelCost = std::stod(vecRowTemp.at(1));
@@ -732,15 +831,20 @@ void ViewImportSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollect
 						journeyTemp.finalPayment = std::stod(vecRowTemp.at(6));
 						journeyTemp.expenseNotCovered = std::stod(vecRowTemp.at(7));
 
+						// Store journey in main collection, and in temp collection in order to display to user.
 						vecJourneyCollection->push_back(journeyTemp);
+						vecJourneyTemp.push_back(journeyTemp);
 					}
 				}
 			}
-			SetConsoleTextAttribute(*hConsole, 10);
-			std::cout << "Journeys succssfully imported.\n";
-			SetConsoleTextAttribute(*hConsole, 15);
+
+			// Display header and table showing journeys that were imported.
+			std::cout << "\n";
+			OutputHeader(hConsole, intWidth, "The following journeys were successfully imported", 1);
+			OutputTable(hConsole, &vecJourneyTemp, intWidth);
 		}
 		catch (std::exception& exp) {
+			// If file could not be imported, output error
 			std::string strErrorText = "Sorry, but the file could not be imported. This is likely because the file is not formatted correctly.\nException Generated : ";
 			strErrorText += exp.what();
 			OutputError(hConsole, strErrorText, true);
@@ -750,34 +854,47 @@ void ViewImportSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollect
 	}
 }
 
+/// <summary>
+/// Comparison menu view. Allows user to select type of comparison they would like to make.
+/// </summary>
+/// <param name="hConsole"></param>
+/// <param name="vecJourneyCollection"></param>
+/// <param name="intWidth"></param>
 void ViewComparison(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth) {
+	// Declare variables.
 	int intComparisonChoiceInput = 0;
 	bool boolExitWhile = false;
 
+	// Loop until user enters "9"
 	do {
+		// Output menu options
 		std::vector<ChoiceOption> vecChoiceCollection;
 		vecChoiceCollection.push_back(ChoiceOption{ 1, "Compare two journeys", 2 });
 		vecChoiceCollection.push_back(ChoiceOption{ 2, "Total two journeys", 2 });
 		vecChoiceCollection.push_back(ChoiceOption{ 9, "Return to menu" });
 		OutputMenu(hConsole, vecJourneyCollection, &vecChoiceCollection, "Make Comparisons and total invoices.", true, true);
 
+		// Loop until valid choice is made
 		boolExitWhile = false;
-
 		while (boolExitWhile == false) {
+			// Validate input is an int
 			SetConsoleTextAttribute(*hConsole, 9);
 			std::cout << "Enter choice : ";
 			SetConsoleTextAttribute(*hConsole, 15);
 			intComparisonChoiceInput = ValidateIntInput(hConsole);
 
+			// Execute function depending on choice made.
 			try {
 				switch (intComparisonChoiceInput) {
 				case 1: {
 					boolExitWhile = true;
+					// Compare two journeys when "1" is entered.
 					ViewCompareTwoJourneys(hConsole, vecJourneyCollection, intWidth);
 					break;
 				}
 				case 2: {
 					boolExitWhile = true;
+					// Total two journeys when "2" is entered.
 					ViewTotalTwoJourneys(hConsole, vecJourneyCollection, intWidth);
 					break;
 				}
@@ -805,23 +922,28 @@ void ViewComparison(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection
 }
 
 /// <summary>
-/// Save/Export menu view. Printed in particular places where saving/exporting needs to be only option. Importing and Saving handled in seperate View.
+/// Save/Export menu view. Printed in particular places where saving/exporting needs to be only option. Importing and Saving handled in seperate Views.
 /// </summary>
+/// <param name="hConsole"></param>
 /// <param name="vecJourneyCollection"></param>
 /// <param name="intWidth"></param>
 void ViewSaveExport(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth) {
+	// Declare variables
 	int intSaveExportChoiceInput = 0;
 	bool boolExitWhile = false;
 
+	// Loop until "9" is entered.
 	do {
+		// Output menu choices.
 		std::vector<ChoiceOption> vecChoiceCollection;
 		vecChoiceCollection.push_back(ChoiceOption{ 1, "Export list as CSV" });
 		vecChoiceCollection.push_back(ChoiceOption{ 9, "Return to previous" });
 		OutputMenu(hConsole, vecJourneyCollection, &vecChoiceCollection, "Make Comparisons and total invoices.", false, false);
 
+		// Loop until valid choice number is made. Execute function depending on number entered.
 		boolExitWhile = false;
-
 		while (boolExitWhile == false) {
+			// Validate input is an int.
 			SetConsoleTextAttribute(*hConsole, 9);
 			std::cout << "Enter choice : ";
 			SetConsoleTextAttribute(*hConsole, 15);
@@ -830,6 +952,7 @@ void ViewSaveExport(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection
 			try {
 				switch (intSaveExportChoiceInput) {
 				case 1: {
+					// View save summary when "1" is entered.
 					ViewSaveSummary(hConsole, vecJourneyCollection);
 					boolExitWhile = true;
 					intSaveExportChoiceInput = 9;
@@ -858,31 +981,37 @@ void ViewSaveExport(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection
 }
 
 /// <summary>
-/// Asks user to choose two items, presents comparison of two items.
+/// Compare two journeys select view. Allows user to select two journeys to compare.
 /// </summary>
+/// <param name="hConsole"></param>
 /// <param name="vecJourneyCollection"></param>
 /// <param name="intWidth"></param>
 void ViewCompareTwoJourneys(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth) {
+	// Declare variables
 	int intCompareFirst = 0, intCompareSecond = 0;
 	std::vector<Journey> vecJourneyCompare;
 
 	system("cls");
+	// Output header and table for all items currently in main vector.
 	OutputHeader(hConsole, intWidth, "", 1);
 	OutputTable(hConsole, vecJourneyCollection, intWidth);
 
 	std::cout << "\n";
 	SetConsoleTextAttribute(*hConsole, 14);
 	std::cout << "Please specify number of the first journey you would like to compare.\n";
+	// Loop while comparision choice is not a valid item of the main vector.
 	do {
+		// Validate input is an int.
 		SetConsoleTextAttribute(*hConsole, 9);
 		std::cout << "Enter Choice : ";
 		SetConsoleTextAttribute(*hConsole, 15);
 		intCompareFirst = ValidateIntInput(hConsole) - 1;
 
+		// Attempt to add specified selection to vector of journeys to compare. If input is not a valid item, error is displayed.
 		try {
 			vecJourneyCompare.push_back(vecJourneyCollection->at(intCompareFirst));
 		}
-		catch (std::exception) {
+		catch (std::out_of_range) {
 			OutputError(hConsole, "The number you specified is not a valid item currently in the list.");
 		}
 	} while (!InRange(0, (int)vecJourneyCollection->size() - 1, intCompareFirst));
@@ -890,13 +1019,17 @@ void ViewCompareTwoJourneys(HANDLE* hConsole, std::vector<Journey>* vecJourneyCo
 	std::cout << "\n";
 	SetConsoleTextAttribute(*hConsole, 14);
 	std::cout << "Please specify number of the second journey you would like to compare.\n";
+	// Loop while second comparision choice is not a valid item of the main vector
 	do {
+		// Validate input is an int
 		SetConsoleTextAttribute(*hConsole, 9);
 		std::cout << "Enter Choice : ";
 		SetConsoleTextAttribute(*hConsole, 15);
 		intCompareSecond = (ValidateIntInput(hConsole) - 1);
 
+		// Attempt to add specified selection to vector of journeys to compare. If input is not a valid item, error is displayed.
 		try {
+			// Throw error if second item to compare is the same as the first.
 			if (intCompareSecond == intCompareFirst) {
 				throw std::runtime_error("You cannot compare two of the same item.");
 			}
@@ -907,40 +1040,47 @@ void ViewCompareTwoJourneys(HANDLE* hConsole, std::vector<Journey>* vecJourneyCo
 		catch (std::out_of_range) {
 			OutputError(hConsole, "The number you specified is not a valid item currently in the list.");
 		}
+		// Catch statement to print error when same item is added twice.
 		catch (std::runtime_error& exp) {
 			OutputError(hConsole, exp.what());
 		}
 	} while (!InRange(0, (int)vecJourneyCollection->size() - 1, intCompareSecond) || intCompareFirst == intCompareSecond);
 
+	// Display comparison of the two items.
 	ViewCompareSummaryTwoItems(hConsole, &vecJourneyCompare, intWidth);
 }
 
 /// <summary>
-/// Asks user to choose two items currently in system. Then displays comparison.
+/// Total two journeys select view. Allows user to select two journeys to total.
 /// </summary>
 /// <param name="vecJourneyCollection"></param>
 /// <param name="intWidth"></param>
 void ViewTotalTwoJourneys(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth) {
+	// Declare variables
 	int intTotalFirst = 0, intTotalSecond = 0;
 	std::vector<Journey> vecJourneyTotal;
 
 	system("cls");
+	// Output header and table for all items currently in main vector.
 	OutputHeader(hConsole, intWidth, "", 1);
 	OutputTable(hConsole, vecJourneyCollection, intWidth);
 
 	std::cout << "\n";
 	SetConsoleTextAttribute(*hConsole, 14);
 	std::cout << "Please specify number of the first journey you would like to total.\n";
+	// Loop while comparision choice is not a valid item of the main vector.
 	do {
+		// Validate input is an int.
 		SetConsoleTextAttribute(*hConsole, 9);
 		std::cout << "Enter Choice : ";
 		SetConsoleTextAttribute(*hConsole, 15);
 		intTotalFirst = ValidateIntInput(hConsole) - 1;
 
+		// Attempt to add specified selection to vector of journeys to compare. If input is not a valid item, error is displayed.
 		try {
 			vecJourneyTotal.push_back(vecJourneyCollection->at(intTotalFirst));
 		}
-		catch (std::exception) {
+		catch (std::out_of_range) {
 			OutputError(hConsole, "The number you specified is not a valid item currently in the list.");
 		}
 	} while (!InRange(0, (int)vecJourneyCollection->size() - 1, intTotalFirst));
@@ -948,13 +1088,17 @@ void ViewTotalTwoJourneys(HANDLE* hConsole, std::vector<Journey>* vecJourneyColl
 	std::cout << "\n";
 	SetConsoleTextAttribute(*hConsole, 14);
 	std::cout << "Please specify number of the second journey you would like to total.\n";
+	// Loop while comparision choice is not a valid item of the main vector.
 	do {
+		// Validate input is an int.
 		SetConsoleTextAttribute(*hConsole, 9);
 		std::cout << "Enter Choice : ";
 		SetConsoleTextAttribute(*hConsole, 15);
 		intTotalSecond = (ValidateIntInput(hConsole) - 1);
 
+		// Attempt to add specified selection to vector of journeys to compare. If input is not a valid item, error is displayed.
 		try {
+			// Throw error if second item to compare is the same as the first.
 			if (intTotalSecond == intTotalFirst) {
 				throw std::runtime_error("You cannot compare two of the same item.");
 			}
@@ -965,6 +1109,7 @@ void ViewTotalTwoJourneys(HANDLE* hConsole, std::vector<Journey>* vecJourneyColl
 		catch (std::out_of_range) {
 			OutputError(hConsole, "The number you specified is not a valid item currently in the list.");
 		}
+		// Catch statement to print error when same item is added twice.
 		catch (std::runtime_error& exp) {
 			OutputError(hConsole, exp.what());
 		}
@@ -978,12 +1123,21 @@ void ViewTotalTwoJourneys(HANDLE* hConsole, std::vector<Journey>* vecJourneyColl
 /// </summary>
 /// <param name="vecJourneyCollection"></param>
 /// <param name="intWidth"></param>
+
+/// <summary>
+/// Delete choice select menu. Dispalyed in various locations in program, allows user to perform actions on displayed list of journeys.
+/// </summary>
+/// <param name="hConsole"></param>
+/// <param name="vecJourneyCollection"></param>
+/// <param name="intWidth"></param>
 void ViewDeleteSelect(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth) {
+	// Declare variables.
 	int intDeleteChoiceInput = 0;
 	bool boolExitWhile = false;
 
+	// Loop until "9" is entered.
 	do {
-
+		// Output menu choices
 		std::vector<ChoiceOption> vecChoiceCollection;
 		vecChoiceCollection.push_back(ChoiceOption{ 1, "Delete a journey" });
 		vecChoiceCollection.push_back(ChoiceOption{ 2, "Export List as CSV" });
@@ -991,9 +1145,10 @@ void ViewDeleteSelect(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollecti
 		vecChoiceCollection.push_back(ChoiceOption{ 9, "Return to previous" });
 		OutputMenu(hConsole, vecJourneyCollection, &vecChoiceCollection, "Please specifiy which of the following options you would like to do.", false, false);
 
+		// Loop until valid choice is entered.
 		boolExitWhile = false;
-
 		while (boolExitWhile == false) {
+			// Validate input is an int
 			SetConsoleTextAttribute(*hConsole, 9);
 			std::cout << "Enter choice : ";
 			SetConsoleTextAttribute(*hConsole, 15);
@@ -1002,19 +1157,22 @@ void ViewDeleteSelect(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollecti
 			try {
 				switch (intDeleteChoiceInput) {
 				case 1: {
+					// Run view delete journeys when "1" entered.
 					ViewDeleteJourney(hConsole, vecJourneyCollection, intWidth);
 					boolExitWhile = true;
 					intDeleteChoiceInput = 9;
 					break;
 				}
 				case 2: {
+					// Run view save summary when "2" entered.
 					ViewSaveSummary(hConsole, vecJourneyCollection);
 					boolExitWhile = true;
 					intDeleteChoiceInput = 9;
 					break;
 				}
 				case 3: {
-					AddNewJourney(hConsole, vecJourneyCollection, intWidth);
+					// Run add new journey view when "3" entered.
+					ViewAddNewJourney(hConsole, vecJourneyCollection, intWidth);
 					boolExitWhile = true;
 					intDeleteChoiceInput = 9;
 					break;
@@ -1042,8 +1200,9 @@ void ViewDeleteSelect(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollecti
 }
 
 /// <summary>
-/// Asks user to choose a item to delete, removes item. Continues to loop until valid array item is given.
+/// Delete journey view. Allows user to delete a journey from the main journey vector.
 /// </summary>
+/// <param name="hConsole"></param>
 /// <param name="vecJourneyCollection"></param>
 /// <param name="intWidth"></param>
 void ViewDeleteJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth) {
@@ -1052,6 +1211,7 @@ void ViewDeleteJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollect
 	bool boolIsExiting = false;
 
 	system("cls");
+	// Output header and table for all current journeys, with numeric numbering.
 	OutputHeader(hConsole, intWidth, "", 1);
 	OutputTable(hConsole, vecJourneyCollection, intWidth);
 
@@ -1060,16 +1220,20 @@ void ViewDeleteJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollect
 	std::cout << "Please specify number of the journey you would like to remove. Type '0' to cancel. \n";
 	SetConsoleTextAttribute(*hConsole, 15);
 
+	// Loop until valid item to delete is enteered.
 	while (boolIsValid == false) {
+		// Validate that input is an int.
 		SetConsoleTextAttribute(*hConsole, 9);
 		std::cout << "Enter Choice : ";
 		SetConsoleTextAttribute(*hConsole, 15);
 		intJourneyToDelete = ValidateIntInput(hConsole) - 1;
 
+		// If "0" is entered; user intends to exit. Exit loop and skip delete.
 		if (intJourneyToDelete == -1) {
 			boolIsValid = true;
 			boolIsExiting = true;
 		}
+		// If number is valid item in vector, exit loop.
 		else if (InRange(0, (int)vecJourneyCollection->size() - 1, intJourneyToDelete)) {
 			boolIsValid = true;
 		}
@@ -1078,7 +1242,9 @@ void ViewDeleteJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollect
 		}
 	}
 
+	// If not exiting.
 	if (!boolIsExiting) {
+		// Try to delete journey from vector.
 		try {
 			vecJourneyCollection->erase(vecJourneyCollection->begin() + intJourneyToDelete);
 
@@ -1095,11 +1261,19 @@ void ViewDeleteJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollect
 	}
 }
 
+/// <summary>
+/// Save and import select view. Allows uesr to choose to save, import or view journeys.
+/// </summary>
+/// <param name="hConsole"></param>
+/// <param name="vecJourneyCollection"></param>
+/// <param name="intWidth"></param>
 void ViewSaveImportSelect(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth) {
+	// Declare variables.
 	int intSaveImportChoiceInput = 0;
 	bool boolExitWhile = false;
 
 	do {
+		// Output menu options
 		std::vector<ChoiceOption> vecChoiceCollection;
 		vecChoiceCollection.push_back(ChoiceOption{ 1, "Export current Journeys" });
 		vecChoiceCollection.push_back(ChoiceOption{ 2, "Import Journeys from CSV" });
@@ -1107,9 +1281,10 @@ void ViewSaveImportSelect(HANDLE* hConsole, std::vector<Journey>* vecJourneyColl
 		vecChoiceCollection.push_back(ChoiceOption{ 9, "Return to previous" });
 		OutputMenu(hConsole, vecJourneyCollection, &vecChoiceCollection, "Import or export journeys.", true, true);
 
+		// Loop until "9" entered.
 		boolExitWhile = false;
-
 		while (boolExitWhile == false) {
+			// Validate input is an int.
 			SetConsoleTextAttribute(*hConsole, 9);
 			std::cout << "Enter choice : ";
 			SetConsoleTextAttribute(*hConsole, 15);
@@ -1119,16 +1294,19 @@ void ViewSaveImportSelect(HANDLE* hConsole, std::vector<Journey>* vecJourneyColl
 				switch (intSaveImportChoiceInput) {
 				case 1: {
 					boolExitWhile = true;
+					// Run view save summary when "1" entered.
 					ViewSaveSummary(hConsole, vecJourneyCollection);
 					break;
 				}
 				case 2: {
 					boolExitWhile = true;
-					ViewImportSummary(hConsole, vecJourneyCollection);
+					// Run view import summary when "2" entered.
+					ViewImportSummary(hConsole, vecJourneyCollection, intWidth);
 					break;
 				}
 				case 3: {
 					boolExitWhile = true;
+					// Run view journeys when "3" entered.
 					ViewJourneys(hConsole, vecJourneyCollection, intWidth);
 					break;
 				}
@@ -1159,6 +1337,10 @@ void ViewSaveImportSelect(HANDLE* hConsole, std::vector<Journey>* vecJourneyColl
 
 // Test functions
 
+/// <summary>
+/// Testing function. Adds 4 pre-made journeys to vector to speed up process of testing when debugging application.
+/// </summary>
+/// <param name="vecJourneyCollection"></param>
 void TestFunction(std::vector<Journey>* vecJourneyCollection) {
 	// Testing function, adds some example journeys with large decimal point inputs.
 

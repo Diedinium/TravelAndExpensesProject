@@ -8,10 +8,13 @@
 #ifndef MISCFUNCTIONS_H
 #define MISCFUNCTIONS_H
 
+// Misc functions declarations.
+
 int ValidateIntInput(HANDLE* hConsole);
 double ValidateDoubleInput(HANDLE* hConsole);
 bool InRange(int low, int high, int compare);
-bool fileExists(std::string fileName);
+bool FileExists(std::string fileName);
 void Pause(HANDLE* hConsole);
+int FindNumOfJourneys(std::vector<Journey>* vecJourneyCollection, TravelType travelType);
 
 #endif // !MISCFUNCTIONS_H

@@ -1,3 +1,4 @@
+#include "Structs.h"
 #include "MiscFunctions.h"
 #include "CalcFunctions.h"
 #include "OutputFunctions.h"
@@ -7,7 +8,6 @@
 /// </summary>
 /// <param name="hConsole"></param>
 void OutputIntro(HANDLE* hConsole) {
-	// Notice for users about setup needed to ensure proper formatted output.
 	SetConsoleTextAttribute(*hConsole, 12);
 	std::cout << "### NOTICE ###\n";
 	SetConsoleTextAttribute(*hConsole, 14);
@@ -184,12 +184,15 @@ void OutputTable(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, i
 	}
 	else {
 		for (std::size_t i = 0; i < vecJourneyCollection->size(); ++i) {
+			// Output numbering
 			std::cout.precision(2);
 			SetConsoleTextAttribute(*hConsole, 9);
 			std::cout << std::setw(5) << (i + 1);
+			// Output travel type
 			std::cout.precision(2);
 			SetConsoleTextAttribute(*hConsole, 10);
 			std::cout << std::setw(*intWidth) << ((((int)vecJourneyCollection->at(i).travelType) == 0) ? "Travel" : "Travel & Exp");
+			// Output other 7 values.
 			std::cout.precision(2);
 			SetConsoleTextAttribute(*hConsole, 15);
 			std::cout
@@ -223,9 +226,11 @@ void OutputTable(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, i
 		else {
 			for (std::size_t i = 0; i < vecJourneyCollection->size(); ++i) {
 				if (vecJourneyCollection->at(i).travelType == TravelType::TravelAndExpense) {
+					// Output travel type
 					std::cout.precision(2);
 					SetConsoleTextAttribute(*hConsole, 10);
 					std::cout << std::setw(*intWidth) << ((((int)vecJourneyCollection->at(i).travelType) == 0) ? "Travel" : "Travel & Exp");
+					// Output other 7 values.
 					std::cout.precision(2);
 					SetConsoleTextAttribute(*hConsole, 15);
 					std::cout
@@ -249,9 +254,11 @@ void OutputTable(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, i
 		else {
 			for (std::size_t i = 0; i < vecJourneyCollection->size(); ++i) {
 				if (vecJourneyCollection->at(i).travelType == TravelType::Travel) {
+					// Output travel type
 					std::cout.precision(2);
 					SetConsoleTextAttribute(*hConsole, 10);
 					std::cout << std::setw(*intWidth) << ((((int)vecJourneyCollection->at(i).travelType) == 0) ? "Travel" : "Travel & Exp");
+					// Output other 7 values.
 					std::cout.precision(2);
 					SetConsoleTextAttribute(*hConsole, 15);
 					std::cout
@@ -271,9 +278,11 @@ void OutputTable(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, i
 		else {
 			for (std::size_t i = 0; i < vecJourneyCollection->size(); ++i) {
 				if (vecJourneyCollection->at(i).travelType == TravelType::Travel) {
+					// Output travel type
 					std::cout.precision(2);
 					SetConsoleTextAttribute(*hConsole, 10);
 					std::cout << std::setw(*intWidth) << ((((int)vecJourneyCollection->at(i).travelType) == 0) ? "Travel" : "Travel & Exp");
+					// Output other 7 values.
 					std::cout.precision(2);
 					SetConsoleTextAttribute(*hConsole, 15);
 					std::cout
@@ -304,12 +313,14 @@ void OutputTable(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, i
 /// <param name="intWidth"></param>
 /// <param name="resultType"></param>
 void OutputResults(HANDLE* hConsole, ResultTravel* resultTravel, int* intWidth, std::string strResultType) {
+	// Add colon to result type
 	strResultType += " :";
 	std::cout << "\n";
+	// Output result type.
 	std::cout.precision(2);
 	SetConsoleTextAttribute(*hConsole, 13);
-	std::cout
-		<< std::fixed << std::setw(*intWidth) << strResultType;
+	std::cout << std::fixed << std::setw(*intWidth) << strResultType;
+	// Output result values
 	std::cout.precision(2);
 	SetConsoleTextAttribute(*hConsole, 15);
 	std::cout
@@ -326,31 +337,14 @@ void OutputResults(HANDLE* hConsole, ResultTravel* resultTravel, int* intWidth, 
 /// <param name="intWidth"></param>
 /// <param name="resultType"></param>
 void OutputResults(HANDLE* hConsole, ResultTravelExpense* resultTravelExpense, int* intWidth, std::string strResultType) {
+	// Add colon to result type
 	strResultType += " :";
 	std::cout << "\n";
+	// Output result type.
 	std::cout.precision(2);
 	SetConsoleTextAttribute(*hConsole, 13);
-	std::cout
-		<< std::fixed << std::setw(*intWidth) << strResultType;
-	std::cout.precision(2);
-	SetConsoleTextAttribute(*hConsole, 15);
-	std::cout
-		<< std::fixed << std::setw(*intWidth) << resultTravelExpense->Travel
-		<< std::fixed << std::setw(*intWidth) << resultTravelExpense->Expense
-		<< std::fixed << std::setw(*intWidth) << resultTravelExpense->Totals
-		<< std::fixed << std::setw(*intWidth) << resultTravelExpense->ExpensePay
-		<< std::fixed << std::setw(*intWidth) << resultTravelExpense->TaxReclaim
-		<< std::fixed << std::setw(*intWidth) << resultTravelExpense->ExpenseNotCovered
-		<< std::fixed << std::setw(*intWidth) << resultTravelExpense->FinalPay << "\n";
-}
-
-void OutputResults(HANDLE* hConsole, ResultTravelExpense* resultTravelExpense, int* intWidth, std::string strResultType, bool boolIsNumbered) {
-	strResultType += " :";
-	std::cout << "\n";
-	std::cout.precision(2);
-	SetConsoleTextAttribute(*hConsole, 13);
-	std::cout
-		<< std::fixed << std::setw(20) << strResultType;
+	std::cout << std::fixed << std::setw(*intWidth) << strResultType;
+	// Output result values
 	std::cout.precision(2);
 	SetConsoleTextAttribute(*hConsole, 15);
 	std::cout
@@ -364,7 +358,36 @@ void OutputResults(HANDLE* hConsole, ResultTravelExpense* resultTravelExpense, i
 }
 
 /// <summary>
-/// Outputs an error (user facing) to the console.
+/// Outputs results for travel and expense, but spaced differently for when numbered table/header is used.
+/// </summary>
+/// <param name="hConsole"></param>
+/// <param name="resultTravelExpense"></param>
+/// <param name="intWidth"></param>
+/// <param name="strResultType"></param>
+/// <param name="boolIsNumbered"></param>
+void OutputResults(HANDLE* hConsole, ResultTravelExpense* resultTravelExpense, int* intWidth, std::string strResultType, bool boolIsNumbered) {
+	// Add colon to result type
+	strResultType += " :";
+	std::cout << "\n";
+	// Output result type.
+	std::cout.precision(2);
+	SetConsoleTextAttribute(*hConsole, 13);
+	std::cout << std::fixed << std::setw(20) << strResultType;
+	// Output result values
+	std::cout.precision(2);
+	SetConsoleTextAttribute(*hConsole, 15);
+	std::cout
+		<< std::fixed << std::setw(*intWidth) << resultTravelExpense->Travel
+		<< std::fixed << std::setw(*intWidth) << resultTravelExpense->Expense
+		<< std::fixed << std::setw(*intWidth) << resultTravelExpense->Totals
+		<< std::fixed << std::setw(*intWidth) << resultTravelExpense->ExpensePay
+		<< std::fixed << std::setw(*intWidth) << resultTravelExpense->TaxReclaim
+		<< std::fixed << std::setw(*intWidth) << resultTravelExpense->ExpenseNotCovered
+		<< std::fixed << std::setw(*intWidth) << resultTravelExpense->FinalPay << "\n";
+}
+
+/// <summary>
+/// Outputs an error to the console.
 /// </summary>
 /// <param name="hConsole"></param>
 /// <param name="strErrorText"></param>
@@ -374,6 +397,12 @@ void OutputError(HANDLE* hConsole, std::string strErrorText) {
 	SetConsoleTextAttribute(*hConsole, 15);
 }
 
+/// <summary>
+/// Outputs an error to the console, when boolNewLine is true, extra new line is added. Without, error is inline (no ending newline);
+/// </summary>
+/// <param name="hConsole"></param>
+/// <param name="strErrorText"></param>
+/// <param name="boolNewLine"></param>
 void OutputError(HANDLE* hConsole, std::string strErrorText, bool boolNewLine) {
 	if (boolNewLine) {
 		std::cout << "\n";

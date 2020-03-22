@@ -160,6 +160,7 @@
     <ClInclude Include="CalcFunctions.h" />
     <ClInclude Include="MiscFunctions.h" />
     <ClInclude Include="OutputFunctions.h" />
+    <ClInclude Include="Structs.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

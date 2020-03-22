@@ -3,6 +3,8 @@
 #ifndef OUTPUTFUNCTIONS_H
 #define OUTPUTFUNCTIONS_H
 
+// Output function declarations
+
 void OutputIntro(HANDLE* hConsole);
 void OutputMenu(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, std::vector<ChoiceOption>* vecChoiceCollection, std::string introText, bool boolUseDashes, bool boolClearScreen);
 void OutputHeader(HANDLE* hConsole, int* intWidth, std::string headerText);
