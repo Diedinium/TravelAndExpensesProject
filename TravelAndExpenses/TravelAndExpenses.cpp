@@ -1206,7 +1206,7 @@ void ViewDeleteSelect(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollecti
 /// <param name="vecJourneyCollection"></param>
 /// <param name="intWidth"></param>
 void ViewDeleteJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth) {
-	int intJourneyToDelete = 0, intCompareSecond = 0;
+	int intJourneyToDelete = 0;
 	bool boolIsValid = false;
 	bool boolIsExiting = false;
 
