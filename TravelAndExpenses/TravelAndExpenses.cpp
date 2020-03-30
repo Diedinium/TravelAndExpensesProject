@@ -62,7 +62,7 @@ int main()
 	bool boolExitWhile = false;
 
 	// Test function that inputs some example journeys for testing purposes, uncomment to use.
-	//TestFunction(&vecJourneyCollection);
+	TestFunction(&vecJourneyCollection);
 
 	// Loop until user enters 9 - program then exits.
 	do {
@@ -1344,10 +1344,10 @@ void ViewImportSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollect
 void TestFunction(std::vector<Journey>* vecJourneyCollection) {
 	// Testing function, adds some example journeys with large decimal point inputs.
 
-	vecJourneyCollection->push_back(Journey{ TravelType::Travel, 25.23534 });
-	vecJourneyCollection->push_back(Journey{ TravelType::TravelAndExpense, 23.23, 10.9263 });
-	vecJourneyCollection->push_back(Journey{ TravelType::Travel, 27 });
-	vecJourneyCollection->push_back(Journey{ TravelType::TravelAndExpense, 120.2553, 57.823 });
+	vecJourneyCollection->push_back(Journey{ TravelType::Travel, 50 });
+	vecJourneyCollection->push_back(Journey{ TravelType::TravelAndExpense, 50, 100 });
+	vecJourneyCollection->push_back(Journey{ TravelType::Travel, 100 });
+	vecJourneyCollection->push_back(Journey{ TravelType::TravelAndExpense, 75, 150 });
 }
 
 // Test functions end
