@@ -232,6 +232,7 @@ void ViewAddNewJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollect
 					SetConsoleTextAttribute(*hConsole, 9);
 					std::cout << "Travel cost : ";
 					SetConsoleTextAttribute(*hConsole, 15);
+					std::cout << char(156);
 
 					dTravelCost = ValidateDoubleInput(hConsole);
 
@@ -245,6 +246,7 @@ void ViewAddNewJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollect
 					SetConsoleTextAttribute(*hConsole, 9);
 					std::cout << "Travel cost : ";
 					SetConsoleTextAttribute(*hConsole, 15);
+					std::cout << char(156);
 
 					dTravelCost = ValidateDoubleInput(hConsole);
 
@@ -252,6 +254,7 @@ void ViewAddNewJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollect
 					SetConsoleTextAttribute(*hConsole, 9);
 					std::cout << "Expenses cost : ";
 					SetConsoleTextAttribute(*hConsole, 15);
+					std::cout << char(156);
 
 					dExpenseCost = ValidateDoubleInput(hConsole);
 
