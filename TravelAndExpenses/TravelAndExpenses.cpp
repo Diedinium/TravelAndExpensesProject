@@ -50,7 +50,7 @@ int main()
 	if (hwnd != NULL) {
 		MoveWindow(hwnd, 100, 100, 1075, 500, TRUE);
 	}
-	
+
 	// Set width and create vector to hold all journeys in use within the application.
 	int intWidth = 15;
 	std::vector<Journey> vecJourneyCollection;
@@ -62,7 +62,7 @@ int main()
 	bool boolExitWhile = false;
 
 	// Test function that inputs some example journeys for testing purposes, uncomment to use.
-	TestFunction(&vecJourneyCollection);
+	//TestFunction(&vecJourneyCollection);
 
 	// Loop until user enters 9 - program then exits.
 	do {
@@ -70,10 +70,10 @@ int main()
 		std::vector<ChoiceOption> vecChoiceCollection;
 		vecChoiceCollection.push_back(ChoiceOption{ 1, "Enter a new Journey" });
 		vecChoiceCollection.push_back(ChoiceOption{ 2, "View current journeys", 0 });
-		vecChoiceCollection.push_back(ChoiceOption{ 3, "Summaries", 2 });
+		vecChoiceCollection.push_back(ChoiceOption{ 3, "Summaries", 0 });
 		vecChoiceCollection.push_back(ChoiceOption{ 4, "Comparisons and itemised summary", 2 });
 		vecChoiceCollection.push_back(ChoiceOption{ 5, "Remove a Journey", 0 });
-		vecChoiceCollection.push_back(ChoiceOption{ 6, "Import/Export Journeys", 0 });
+		vecChoiceCollection.push_back(ChoiceOption{ 6, "Import/Export Journeys" });
 		vecChoiceCollection.push_back(ChoiceOption{ 9, "Exit" });
 
 		// Set the text different depending on number of journeys in system.
@@ -116,7 +116,7 @@ int main()
 					break;
 				}
 				case 3: {
-					if (vecJourneyCollection.size() <= 1) {
+					if (vecJourneyCollection.size() <= 0) {
 						boolExitWhile = false;
 						throw std::runtime_error("You have not yet added enough journeys, this menu option is not available yet.");
 						break;
@@ -129,7 +129,7 @@ int main()
 					break;
 				}
 				case 4: {
-					if (vecJourneyCollection.size() <= 2) {
+					if (vecJourneyCollection.size() < 2) {
 						boolExitWhile = false;
 						throw std::exception("You have not yet added any journeys, or there are not at least two journeys. This menu option is not available yet.");
 						break;
@@ -156,18 +156,11 @@ int main()
 					break;
 				}
 				case 6: {
-					if (vecJourneyCollection.size() <= 0)
-					{
-						boolExitWhile = false;
-						throw std::exception("You have not yet added a journey, this option is not yet available. It will become a visible choice once you have added a journey.");
-						break;
-					}
-					else {
-						// Go to view save/import menu when "6" is entered.
-						ViewSaveImportSelect(&hConsole, &vecJourneyCollection, &intWidth);
-						boolExitWhile = true;
-						break;
-					}
+
+					// Go to view save/import menu when "6" is entered.
+					ViewSaveImportSelect(&hConsole, &vecJourneyCollection, &intWidth);
+					boolExitWhile = true;
+					break;
 				}
 				case 9: {
 					boolExitWhile = true;
@@ -294,53 +287,53 @@ void ViewAddNewJourney(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollect
 
 		// Allows user to loop and input more journeys, sets exit condition automatically in the case that user choose to view journeys or exit to menu.
 		switch (intTravelChoiceInput) {
-			case 3: {
-				system("cls");
-				// If user is viewing journeys, allow user to add more journeys once they return to this function.
-				strContinueAddingJourneys = "Y";
-				break;
-			}
-			case 9: {
-				// Set option to N if user is intending to exit this function.
-				strContinueAddingJourneys = "N";
-				break;
-			}
-			default: {
-				system("CLS");
-				SetConsoleTextAttribute(*hConsole, 10);
-				std::cout << "Journey succesfully added.\n";
-				SetConsoleTextAttribute(*hConsole, 15);
-				SetConsoleTextAttribute(*hConsole, 14);
-				std::cout << "Would you like to add another journey?\n";
-				std::cout << "Type 'Y' to add another, or type 'N' to return to the menu.\n";
-				SetConsoleTextAttribute(*hConsole, 9);
-				std::cout << "Enter Choice : ";
-				SetConsoleTextAttribute(*hConsole, 15);
+		case 3: {
+			system("cls");
+			// If user is viewing journeys, allow user to add more journeys once they return to this function.
+			strContinueAddingJourneys = "Y";
+			break;
+		}
+		case 9: {
+			// Set option to N if user is intending to exit this function.
+			strContinueAddingJourneys = "N";
+			break;
+		}
+		default: {
+			system("CLS");
+			SetConsoleTextAttribute(*hConsole, 10);
+			std::cout << "Journey succesfully added.\n";
+			SetConsoleTextAttribute(*hConsole, 15);
+			SetConsoleTextAttribute(*hConsole, 14);
+			std::cout << "Would you like to add another journey?\n";
+			std::cout << "Type 'Y' to add another, or type 'N' to return to the menu.\n";
+			SetConsoleTextAttribute(*hConsole, 9);
+			std::cout << "Enter Choice : ";
+			SetConsoleTextAttribute(*hConsole, 15);
 
-				// Loops while user choice is not "Y" or "N"
-				bool boolExitWhileString = false;
-				while (boolExitWhileString == false)
-				{
-					std::cin.clear();
-					std::cin.ignore(123, '\n');
-					std::cin >> strContinueAddingJourneys;
-					// Ensure that input is always in upper case.
-					transform(strContinueAddingJourneys.begin(), strContinueAddingJourneys.end(), strContinueAddingJourneys.begin(), std::toupper);
+			// Loops while user choice is not "Y" or "N"
+			bool boolExitWhileString = false;
+			while (boolExitWhileString == false)
+			{
+				std::cin.clear();
+				std::cin.ignore(123, '\n');
+				std::cin >> strContinueAddingJourneys;
+				// Ensure that input is always in upper case.
+				transform(strContinueAddingJourneys.begin(), strContinueAddingJourneys.end(), strContinueAddingJourneys.begin(), std::toupper);
 
-					// Check if value is valid
-					if (strContinueAddingJourneys.find("Y") != std::string::npos) {
-						boolExitWhileString = true;
-					}
-					else if (strContinueAddingJourneys.find("N") != std::string::npos) {
-						boolExitWhileString = true;
-					}
-					else {
-						OutputError(hConsole, "ERROR: Choice must be Y or N : ", true);
-					}
+				// Check if value is valid
+				if (strContinueAddingJourneys.find("Y") != std::string::npos) {
+					boolExitWhileString = true;
 				}
-				boolExitWhile = false;
-				break;
+				else if (strContinueAddingJourneys.find("N") != std::string::npos) {
+					boolExitWhileString = true;
+				}
+				else {
+					OutputError(hConsole, "ERROR: Choice must be Y or N : ", true);
+				}
 			}
+			boolExitWhile = false;
+			break;
+		}
 		}
 
 	} while (strContinueAddingJourneys == "Y");
@@ -549,15 +542,27 @@ void ViewSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, i
 					break;
 				}
 				case 2: {
-					boolExitWhile = true;
-					// View travel only summary when "2" is entered.
-					ViewTravelOnlySummary(hConsole, vecJourneyCollection, intWidth);
+					// Check that at least 1 Travel journey is stored before loading summary.
+					if (FindNumOfJourneys(vecJourneyCollection, TravelType::Travel) < 1) {
+						throw std::exception("This summary cannot be viewed until there is at least one Travel journey.");
+					}
+					else {
+						boolExitWhile = true;
+						// View travel only summary when "2" is entered.
+						ViewTravelOnlySummary(hConsole, vecJourneyCollection, intWidth);
+					}
 					break;
 				}
 				case 3: {
-					boolExitWhile = true;
-					// View travel and expenses summary when "3" is entered.
-					ViewTravelExpensesOnlySummary(hConsole, vecJourneyCollection, intWidth);
+					// Check that at least 1 TravelAndExpense journey is stored before loading summary.
+					if (FindNumOfJourneys(vecJourneyCollection, TravelType::TravelAndExpense) < 1) {
+						throw std::exception("This summary cannot be viewed until there is at least one Travel and expense journey.");
+					}
+					else {
+						boolExitWhile = true;
+						// View travel and expenses summary when "3" is entered.
+						ViewTravelExpensesOnlySummary(hConsole, vecJourneyCollection, intWidth);
+					}
 					break;
 				}
 				case 9: {
@@ -638,7 +643,7 @@ void ViewCombinedSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyColle
 void ViewTravelOnlySummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	// Store travel only journeys in vector
 	std::vector<Journey> vecTravelOnlyCollection;
-	
+
 	system("cls");
 
 	// Output header and table for travel only journeys
@@ -693,7 +698,7 @@ void ViewTravelOnlySummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCol
 void ViewTravelExpensesOnlySummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollection, int* intWidth) {
 	// Store all travel and expense journeys in vector
 	std::vector<Journey> vecTravelExpenseOnlyCollection;
-	
+
 	system("cls");
 
 	//Output header and table for travel and expense journeys
@@ -1094,9 +1099,9 @@ void ViewSaveImportSelect(HANDLE* hConsole, std::vector<Journey>* vecJourneyColl
 	do {
 		// Output menu options
 		std::vector<ChoiceOption> vecChoiceCollection;
-		vecChoiceCollection.push_back(ChoiceOption{ 1, "Export current Journeys" });
+		vecChoiceCollection.push_back(ChoiceOption{ 1, "Export current Journeys", 0 });
 		vecChoiceCollection.push_back(ChoiceOption{ 2, "Import Journeys from CSV" });
-		vecChoiceCollection.push_back(ChoiceOption{ 3, "View current journeys" });
+		vecChoiceCollection.push_back(ChoiceOption{ 3, "View current journeys", 0 });
 		vecChoiceCollection.push_back(ChoiceOption{ 9, "Return to previous" });
 		OutputMenu(hConsole, vecJourneyCollection, &vecChoiceCollection, "Import or export journeys.", true, true);
 
@@ -1112,9 +1117,14 @@ void ViewSaveImportSelect(HANDLE* hConsole, std::vector<Journey>* vecJourneyColl
 			try {
 				switch (intSaveImportChoiceInput) {
 				case 1: {
-					boolExitWhile = true;
-					// Run view save summary when "1" entered.
-					ViewSaveSummary(hConsole, vecJourneyCollection);
+					if (vecJourneyCollection->size() < 1) {
+						throw std::exception("This option is not available until at least one journey has been added.");
+					}
+					else {
+						boolExitWhile = true;
+						// Run view save summary when "1" entered.
+						ViewSaveSummary(hConsole, vecJourneyCollection);
+					}
 					break;
 				}
 				case 2: {
@@ -1124,9 +1134,14 @@ void ViewSaveImportSelect(HANDLE* hConsole, std::vector<Journey>* vecJourneyColl
 					break;
 				}
 				case 3: {
-					boolExitWhile = true;
-					// Run view journeys when "3" entered.
-					ViewJourneys(hConsole, vecJourneyCollection, intWidth);
+					if (vecJourneyCollection->size() < 1) {
+						throw std::exception("This option is not available until at least one journey has been added.");
+					}
+					else {
+						boolExitWhile = true;
+						// Run view journeys when "3" entered.
+						ViewJourneys(hConsole, vecJourneyCollection, intWidth);
+					}
 					break;
 				}
 				case 9: {
@@ -1344,10 +1359,10 @@ void ViewImportSummary(HANDLE* hConsole, std::vector<Journey>* vecJourneyCollect
 void TestFunction(std::vector<Journey>* vecJourneyCollection) {
 	// Testing function, adds some example journeys with large decimal point inputs.
 
+	vecJourneyCollection->push_back(Journey{ TravelType::Travel, 25 });
 	vecJourneyCollection->push_back(Journey{ TravelType::Travel, 50 });
-	vecJourneyCollection->push_back(Journey{ TravelType::TravelAndExpense, 50, 100 });
-	vecJourneyCollection->push_back(Journey{ TravelType::Travel, 100 });
-	vecJourneyCollection->push_back(Journey{ TravelType::TravelAndExpense, 75, 150 });
+	vecJourneyCollection->push_back(Journey{ TravelType::TravelAndExpense, 25, 25 });
+	vecJourneyCollection->push_back(Journey{ TravelType::TravelAndExpense, 100, 100 });
 }
 
 // Test functions end

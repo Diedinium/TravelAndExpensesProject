@@ -10,7 +10,7 @@ int ValidateIntInput(HANDLE* hConsole) {
 	int ChoiceValue;
 
 	// While cin is not valid, loop.
-	while (!(std::cin >> ChoiceValue)) {
+	while (!(std::cin >> ChoiceValue && std::isspace(std::cin.peek()))) {
 		SetConsoleTextAttribute(*hConsole, 12);
 		std::cout << "Error: a whole number must be entered : ";
 		SetConsoleTextAttribute(*hConsole, 15);
@@ -28,16 +28,23 @@ int ValidateIntInput(HANDLE* hConsole) {
 /// <param name="hConsole"></param>
 /// <returns></returns>
 double ValidateDoubleInput(HANDLE* hConsole) {
-	double DoubleValue;
+	double DoubleValue = 0;
 
-	// While cin is not valid, loop.
-	while (!(std::cin >> DoubleValue)) {
-		SetConsoleTextAttribute(*hConsole, 12);
-		std::cout << "Error: a decimal number must be entered : ";
-		SetConsoleTextAttribute(*hConsole, 15);
-		// Clear cin
-		std::cin.clear();
-		std::cin.ignore(123, '\n');
+	while (DoubleValue <= 0) {
+		// While cin is not valid, loop.
+		while (!(std::cin >> DoubleValue)) {
+			SetConsoleTextAttribute(*hConsole, 12);
+			std::cout << "Error: a decimal number must be entered : ";
+			SetConsoleTextAttribute(*hConsole, 15);
+			// Clear cin
+			std::cin.clear();
+			std::cin.ignore(123, '\n');
+		}
+		if (DoubleValue <= 0) {
+			SetConsoleTextAttribute(*hConsole, 12);
+			std::cout << "Error: Value cannot be less than or equal to 0 : ";
+			SetConsoleTextAttribute(*hConsole, 15);
+		}
 	}
 
 	return DoubleValue;
